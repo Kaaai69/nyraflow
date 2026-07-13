@@ -44,19 +44,120 @@ describe("application foundation", () => {
     expect(layout).not.toMatch(/title:\s*["']MyLand["']/);
     expect(layout).toContain('title: "Digital-продукты для бизнеса"');
   });
+
+  it("generates Next.js types before a clean-checkout typecheck", () => {
+    const packageJson = JSON.parse(readProjectFile("package.json")) as {
+      scripts?: Record<string, string>;
+    };
+    const gitignore = readProjectFile(".gitignore");
+
+    expect(packageJson.scripts?.typecheck).toBe(
+      "next typegen && tsc --noEmit",
+    );
+    expect(gitignore.split("\n")).toContain("next-env.d.ts");
+  });
 });
 
 describe("locked Spline hero", () => {
-  it("uses only the protected Next.js Spline entry and exact scene URL", () => {
+  it("renders the exact scene through the protected default import", () => {
     const hero = readProjectFile("components/LockedSplineHero.tsx");
+    const sourceFile = ts.createSourceFile(
+      "components/LockedSplineHero.tsx",
+      hero,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    );
+    const splineImport = sourceFile.statements.find(
+      (statement): statement is ts.ImportDeclaration =>
+        ts.isImportDeclaration(statement) &&
+        ts.isStringLiteral(statement.moduleSpecifier) &&
+        statement.moduleSpecifier.text === "@splinetool/react-spline/next",
+    );
+    const importedName = splineImport?.importClause?.name?.text;
+    const defaultExport = sourceFile.statements.find(
+      (statement): statement is ts.FunctionDeclaration =>
+        ts.isFunctionDeclaration(statement) &&
+        statement.modifiers?.some(
+          (modifier) => modifier.kind === ts.SyntaxKind.DefaultKeyword,
+        ) === true,
+    );
+    const returnStatement = defaultExport?.body?.statements.find(
+      ts.isReturnStatement,
+    );
+    let renderedExpression = returnStatement?.expression;
+    const shadowingDeclarations: string[] = [];
 
-    expect(hero).toContain(
-      'import Spline from "@splinetool/react-spline/next";',
+    function collectShadowingDeclarations(node: ts.Node) {
+      if (ts.isIdentifier(node) && node.text === importedName) {
+        const { parent } = node;
+        const isBinding =
+          ((ts.isParameter(parent) ||
+            ts.isVariableDeclaration(parent) ||
+            ts.isBindingElement(parent)) &&
+            parent.name === node) ||
+          (ts.isCatchClause(parent) &&
+            parent.variableDeclaration?.name === node) ||
+          ((ts.isFunctionDeclaration(parent) ||
+            ts.isFunctionExpression(parent) ||
+            ts.isClassDeclaration(parent) ||
+            ts.isClassExpression(parent) ||
+            ts.isEnumDeclaration(parent) ||
+            ts.isModuleDeclaration(parent)) &&
+            parent.name === node);
+
+        if (isBinding) {
+          shadowingDeclarations.push(node.getText(sourceFile));
+        }
+      }
+
+      ts.forEachChild(node, collectShadowingDeclarations);
+    }
+
+    if (defaultExport) {
+      defaultExport.parameters.forEach(collectShadowingDeclarations);
+      defaultExport.body?.statements.forEach(collectShadowingDeclarations);
+    }
+
+    while (
+      renderedExpression &&
+      ts.isParenthesizedExpression(renderedExpression)
+    ) {
+      renderedExpression = renderedExpression.expression;
+    }
+
+    expect(importedName).toBe("Spline");
+    expect(defaultExport).toBeDefined();
+    expect(shadowingDeclarations).toEqual([]);
+
+    if (
+      !renderedExpression ||
+      !ts.isJsxSelfClosingElement(renderedExpression)
+    ) {
+      expect.fail("default export must directly return the protected Spline");
+    }
+
+    expect(renderedExpression.tagName.getText(sourceFile)).toBe(importedName);
+
+    const sceneAttribute = renderedExpression.attributes.properties.find(
+      (property): property is ts.JsxAttribute =>
+        ts.isJsxAttribute(property) &&
+        property.name.getText(sourceFile) === "scene",
     );
-    expect(hero).toContain(
-      'scene="https://prod.spline.design/xOl5brZcGdsZ7KV4/scene.splinecode"',
+
+    expect(renderedExpression.attributes.properties).toHaveLength(1);
+    expect(sceneAttribute).toBeDefined();
+
+    if (
+      !sceneAttribute?.initializer ||
+      !ts.isStringLiteral(sceneAttribute.initializer)
+    ) {
+      expect.fail("scene must be an exact string literal");
+    }
+
+    expect(sceneAttribute.initializer.text).toBe(
+      "https://prod.spline.design/xOl5brZcGdsZ7KV4/scene.splinecode",
     );
-    expect(hero.match(/prod\.spline\.design/g)).toHaveLength(1);
   });
 
   it("keeps the hero isolated without an HTML or CSS overlay", () => {
