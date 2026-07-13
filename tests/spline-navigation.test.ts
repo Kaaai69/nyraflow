@@ -43,6 +43,42 @@ describe("Spline hero navigation", () => {
     expect(resolveSplineTarget("__proto__")).toBeNull();
   });
 
+  it("toggles the same runtime hover target from enter to leave", async () => {
+    const { nextSplineHoverTarget } = await loadNavigationAdapter();
+
+    expect(nextSplineHoverTarget).toBeTypeOf("function");
+
+    const active = nextSplineHoverTarget(null, "Rectangle 4");
+
+    expect(active).toBe("Rectangle 4");
+    expect(nextSplineHoverTarget(active, "Rectangle 4")).toBeNull();
+  });
+
+  it("activates target B after runtime reports target A leaving", async () => {
+    const { nextSplineHoverTarget } = await loadNavigationAdapter();
+
+    expect(nextSplineHoverTarget).toBeTypeOf("function");
+
+    const afterALeave = nextSplineHoverTarget("Rectangle 4", "Rectangle 4");
+
+    expect(afterALeave).toBeNull();
+    expect(nextSplineHoverTarget(afterALeave, "get")).toBe("get");
+  });
+
+  it("clears empty names and leaves unknown names safely unroutable", async () => {
+    const { nextSplineHoverTarget, resolveSplineTarget } =
+      await loadNavigationAdapter();
+
+    expect(nextSplineHoverTarget).toBeTypeOf("function");
+
+    const unknown = nextSplineHoverTarget(null, "Camera");
+
+    expect(unknown).toBe("Camera");
+    expect(resolveSplineTarget(unknown ?? "")).toBeNull();
+    expect(nextSplineHoverTarget("Rectangle 4", "")).toBeNull();
+    expect(nextSplineHoverTarget(null, "")).toBeNull();
+  });
+
   it("smoothly scrolls to an existing section and updates the hash", async () => {
     const { scrollToSection } = await loadNavigationAdapter();
     const scrollIntoView = vi.fn();
@@ -111,7 +147,7 @@ describe("Spline hero navigation", () => {
     expect(heroSource).not.toMatch(/<button|<a\b/);
   });
 
-  it("clears stale hover state before raycasting and when the pointer leaves", () => {
+  it("toggles runtime hover events and keeps pointer-leave as a reset", () => {
     const heroSource = readFileSync(
       resolve(projectRoot, "components/LockedSplineHero.tsx"),
       "utf8",
@@ -186,10 +222,13 @@ describe("Spline hero navigation", () => {
     expect(clearTarget.initializer.getText(sourceFile)).toContain(
       "activeTarget.current = null",
     );
-    expect(hoverTarget.initializer.getText(sourceFile)).toContain(
-      "activeTarget.current = event.target.name",
+    const hoverHandlerSource = hoverTarget.initializer
+      .getText(sourceFile)
+      .replace(/\s+/g, " ");
+
+    expect(hoverHandlerSource).toMatch(
+      /nextSplineHoverTarget\(\s*activeTarget\.current,\s*event\.target\.name,?\s*\)/,
     );
-    expect(eventHandler("onPointerMoveCapture")).toBe("clearActiveTarget");
     expect(eventHandler("onPointerLeave")).toBe("clearActiveTarget");
     expect(eventHandler("onSplineMouseHover")).toBe("handleSplineHover");
   });

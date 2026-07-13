@@ -9,6 +9,15 @@ export function resolveSplineTarget(name: string) {
   return splineTargets.get(name) ?? null;
 }
 
+export function nextSplineHoverTarget(
+  current: string | null,
+  eventName: string,
+) {
+  if (!eventName) return null;
+
+  return current === eventName ? null : eventName;
+}
+
 export function scrollToSection(id: HeroSectionId) {
   const section = document.getElementById(id);
 

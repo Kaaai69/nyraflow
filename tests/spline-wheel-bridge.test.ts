@@ -116,7 +116,6 @@ describe("Spline wheel bridge", () => {
     );
     expect(attributeNames.sort()).toEqual([
       "onPointerLeave",
-      "onPointerMoveCapture",
       "onPointerUp",
       "onSplineMouseHover",
       "scene",
