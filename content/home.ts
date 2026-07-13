@@ -17,22 +17,16 @@ export type ImageAsset = {
 };
 
 type WorkMediaBase = ImageAsset & {
+  id: string;
+  title: string;
   caption: string;
 };
 
-export type WorkMedia =
-  | (WorkMediaBase & {
-      status: "published";
-      isTemporary: false;
-      href: `https://${string}`;
-      cta: string;
-    })
-  | (WorkMediaBase & {
-      status: "concept";
-      isTemporary: true;
-      href?: never;
-      cta?: never;
-    });
+export type WorkMedia = WorkMediaBase & {
+  status: "published";
+  href: `https://${string}`;
+  cta: string;
+};
 
 type TextItem = {
   id: string;
@@ -192,33 +186,124 @@ export const homeContent = {
       "Показываем не только интерфейс. Для каждого проекта объясняем контекст, принятые решения и подтверждённый результат.",
     media: [
       {
-        src: "/images/work/aura-reference.jpg",
-        alt: "Скриншот опубликованного проекта в сфере загородной недвижимости",
-        caption: "Опубликованный проект в сфере загородной недвижимости",
-        width: 1272,
-        height: 716,
+        id: "atelier-kitchens",
+        title: "Atelier Kitchens",
+        src: "/images/work/atelier-kitchens.jpg",
+        alt: "Главная страница кухонной студии Atelier Kitchens",
+        caption: "Кухонная студия",
+        width: 1440,
+        height: 900,
         status: "published",
-        isTemporary: false,
-        href: "https://aura-developer.vercel.app/",
-        cta: "Открыть опубликованный проект",
+        href: "https://atelier-kitchens.vercel.app",
+        cta: "Открыть проект",
       },
       {
-        src: "/images/work/concept-01.jpg",
-        alt: "Временный визуальный референс для композиции портфолио",
-        caption: "Концепт",
-        width: 1600,
-        height: 1000,
-        status: "concept",
-        isTemporary: true,
+        id: "premium-school-landing",
+        title: "Лингва.Академия",
+        src: "/images/work/premium-school-landing.jpg",
+        alt: "Главная страница онлайн-школы языков Лингва.Академия",
+        caption: "Онлайн-школа языков",
+        width: 1440,
+        height: 900,
+        status: "published",
+        href: "https://premium-school-landing.vercel.app",
+        cta: "Открыть проект",
       },
       {
-        src: "/images/work/concept-02.jpg",
-        alt: "Временный визуальный референс для композиции портфолио",
-        caption: "Концепт",
-        width: 1600,
-        height: 1000,
-        status: "concept",
-        isTemporary: true,
+        id: "glamping-silenzio",
+        title: "Silenzio",
+        src: "/images/work/glamping-silenzio.jpg",
+        alt: "Главная страница загородного глэмпинга Silenzio",
+        caption: "Загородный глэмпинг",
+        width: 1440,
+        height: 900,
+        status: "published",
+        href: "https://glamping-silenzio.vercel.app",
+        cta: "Открыть проект",
+      },
+      {
+        id: "aether-landing",
+        title: "Мезонин",
+        src: "/images/work/aether-landing.jpg",
+        alt: "Главная страница агентства недвижимости Мезонин",
+        caption: "Агентство недвижимости",
+        width: 1440,
+        height: 900,
+        status: "published",
+        href: "https://aether-landing-liard.vercel.app",
+        cta: "Открыть проект",
+      },
+      {
+        id: "furniture",
+        title: "Дом в деталях",
+        src: "/images/work/furniture.jpg",
+        alt: "Главная страница студии мебели на заказ Дом в деталях",
+        caption: "Мебель на заказ",
+        width: 1440,
+        height: 900,
+        status: "published",
+        href: "https://furniture-tau-two.vercel.app",
+        cta: "Открыть проект",
+      },
+      {
+        id: "florist",
+        title: "Florea",
+        src: "/images/work/florist.jpg",
+        alt: "Главная страница цветочной студии Florea",
+        caption: "Цветочная студия",
+        width: 1440,
+        height: 900,
+        status: "published",
+        href: "https://florist-six.vercel.app",
+        cta: "Открыть проект",
+      },
+      {
+        id: "amore",
+        title: "Amore",
+        src: "/images/work/amore.jpg",
+        alt: "Главная страница свадебного агентства Amore",
+        caption: "Свадебное агентство",
+        width: 1440,
+        height: 900,
+        status: "published",
+        href: "https://amore-liart.vercel.app",
+        cta: "Открыть проект",
+      },
+      {
+        id: "soul",
+        title: "SOUL",
+        src: "/images/work/soul.jpg",
+        alt: "Главная страница студии йоги и пилатеса SOUL",
+        caption: "Студия йоги и пилатеса",
+        width: 1440,
+        height: 900,
+        status: "published",
+        href: "https://soul-dun-two.vercel.app",
+        cta: "Открыть проект",
+      },
+      {
+        id: "detailing",
+        title: "Detail Pro",
+        src: "/images/work/detailing.jpg",
+        alt: "Главная страница студии автодетейлинга Detail Pro",
+        caption: "Студия автодетейлинга",
+        width: 1440,
+        height: 900,
+        status: "published",
+        href: "https://detailing-silk.vercel.app",
+        cta: "Открыть проект",
+      },
+      {
+        id: "groom",
+        title: "Groom Atelier",
+        src: "/images/work/groom.jpg",
+        alt: "Главная страница салона груминга Groom Atelier",
+        caption: "Салон груминга",
+        width: 1440,
+        height: 900,
+        status: "published",
+        href: "https://groom-woad.vercel.app",
+        cta: "Открыть проект",
       },
     ],
   },

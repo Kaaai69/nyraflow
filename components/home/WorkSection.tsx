@@ -1,68 +1,78 @@
 import Image from "next/image";
 
-import { homeContent } from "../../content/home";
+import { homeContent, type WorkMedia } from "../../content/home";
 
 import { SectionContainer, SectionHeading } from "./Layout";
 
+type ProjectCardProps = {
+  project: WorkMedia;
+  featured?: boolean;
+  className?: string;
+};
+
+function ProjectCard({ project, featured = false, className }: ProjectCardProps) {
+  return (
+    <figure className={className}>
+      <a
+        href={project.href}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="block"
+      >
+        <div className="aspect-[8/5] overflow-hidden rounded-media bg-surface">
+          <Image
+            src={project.src}
+            alt={project.alt}
+            width={project.width}
+            height={project.height}
+            sizes={
+              featured
+                ? "(max-width: 1240px) 100vw, 1112px"
+                : "(max-width: 768px) 100vw, 58vw"
+            }
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <figcaption className="mt-4 flex items-start justify-between gap-4">
+          <span>
+            <span className="block text-lg font-semibold text-text-primary">
+              {project.title}
+            </span>
+            <span className="mt-1 block text-sm font-medium text-text-secondary">
+              {project.caption}
+            </span>
+          </span>
+          <span className="shrink-0 text-sm font-semibold text-blue-deep">
+            {project.cta}
+          </span>
+        </figcaption>
+      </a>
+    </figure>
+  );
+}
+
 export default function WorkSection() {
   const content = homeContent.work;
-  const published = content.media.find((media) => media.status === "published");
-  const concepts = content.media.filter((media) => media.status === "concept");
+  const [featured, ...projects] = content.media;
 
   return (
-    <section id="work" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
+    <section
+      id="work"
+      className="py-section-mobile md:py-section-desktop xl:py-section-wide"
+    >
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
 
         <div className="mt-14 md:mt-20">
-          {published ? (
-            <figure>
-              <div className="overflow-hidden rounded-media bg-surface">
-                <Image
-                  src={published.src}
-                  alt={published.alt}
-                  width={published.width}
-                  height={published.height}
-                  sizes="(max-width: 1240px) 100vw, 1112px"
-                  className="h-auto w-full object-cover"
-                />
-              </div>
-              <figcaption className="mt-4 flex flex-col items-start gap-4 text-sm font-medium text-text-secondary md:flex-row md:items-center md:justify-between">
-                <span>{published.caption}</span>
-                <a
-                  href={published.href}
-                  className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-blue px-5 font-semibold whitespace-nowrap text-blue-deep transition-transform duration-base ease-premium hover:-translate-y-px"
-                >
-                  {published.cta}
-                </a>
-              </figcaption>
-            </figure>
-          ) : null}
+          {featured ? <ProjectCard project={featured} featured /> : null}
 
-          <div className="mt-12 grid items-start gap-8 md:mt-16 md:grid-cols-12 md:gap-6">
-            {concepts.map((media, index) => (
-              <figure
-                key={media.src}
-                className={index === 0 ? "md:col-span-7" : "md:col-span-5 md:mt-24"}
-              >
-                <div
-                  className={`overflow-hidden rounded-media bg-surface ${
-                    index === 0 ? "aspect-[8/5]" : "aspect-[4/5]"
-                  }`}
-                >
-                  <Image
-                    src={media.src}
-                    alt={media.alt}
-                    width={media.width}
-                    height={media.height}
-                    sizes={index === 0 ? "(max-width: 768px) 100vw, 58vw" : "(max-width: 768px) 100vw, 42vw"}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <figcaption className="mt-4 text-sm font-semibold text-blue-deep">
-                  {media.caption}
-                </figcaption>
-              </figure>
+          <div className="mt-12 grid items-start gap-x-6 gap-y-14 md:mt-16 md:grid-cols-12">
+            {projects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                className={index % 2 === 0 ? "md:col-span-7" : "md:col-span-5"}
+              />
             ))}
           </div>
         </div>

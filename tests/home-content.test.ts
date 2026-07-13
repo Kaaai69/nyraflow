@@ -13,11 +13,12 @@ type ImageAsset = {
 };
 
 type WorkMedia = ImageAsset & {
+  id: string;
+  title: string;
   caption: string;
-  isTemporary: boolean;
-  status: "published" | "concept";
-  href?: string;
-  cta?: string;
+  status: "published";
+  href: string;
+  cta: string;
 };
 
 type HomeModule = {
@@ -147,7 +148,7 @@ describe("home content assets", () => {
       ...homeContent.team.items.map((member) => member.photo),
     ];
 
-    expect(homeContent.work.media).toHaveLength(3);
+    expect(homeContent.work.media).toHaveLength(10);
     expect(homeContent.team.items).toHaveLength(2);
 
     for (const media of assets) {
@@ -161,55 +162,68 @@ describe("home content assets", () => {
     }
   });
 
-  it("keeps the published real media entry neutral and non-temporary", async () => {
+  it("publishes the ten approved projects in editorial order", async () => {
     const { homeContent } = await loadHomeModule();
-    const publishedMedia = homeContent.work.media.find(
-      (media) => media.src === "/images/work/aura-reference.jpg",
-    );
+    const projects = homeContent.work.media;
 
-    expect(publishedMedia).toBeDefined();
-    expect(publishedMedia?.isTemporary).toBe(false);
-
-    const publicStrings = Object.entries(publishedMedia ?? {})
-      .filter(
-        ([key, value]) =>
-          key !== "src" && key !== "href" && typeof value === "string",
-      )
-      .map(([, value]) => value)
-      .join(" ");
-
-    expect(publicStrings).not.toMatch(/AURA|МЕЗОНИН/i);
-  });
-
-  it("labels temporary project media honestly", async () => {
-    const { homeContent } = await loadHomeModule();
-    const temporaryMedia = homeContent.work.media.filter(
-      (media) => media.isTemporary,
-    );
-
-    expect(temporaryMedia).toHaveLength(2);
-    expect(temporaryMedia.map((media) => media.caption)).toEqual([
-      "Концепт",
-      "Концепт",
+    expect(projects).toHaveLength(10);
+    expect(projects.every((project) => project.status === "published")).toBe(true);
+    expect(new Set(projects.map((project) => project.href)).size).toBe(10);
+    expect(
+      projects.map(({ title, caption, href }) => ({ title, caption, href })),
+    ).toEqual([
+      {
+        title: "Atelier Kitchens",
+        caption: "Кухонная студия",
+        href: "https://atelier-kitchens.vercel.app",
+      },
+      {
+        title: "Лингва.Академия",
+        caption: "Онлайн-школа языков",
+        href: "https://premium-school-landing.vercel.app",
+      },
+      {
+        title: "Silenzio",
+        caption: "Загородный глэмпинг",
+        href: "https://glamping-silenzio.vercel.app",
+      },
+      {
+        title: "Мезонин",
+        caption: "Агентство недвижимости",
+        href: "https://aether-landing-liard.vercel.app",
+      },
+      {
+        title: "Дом в деталях",
+        caption: "Мебель на заказ",
+        href: "https://furniture-tau-two.vercel.app",
+      },
+      {
+        title: "Florea",
+        caption: "Цветочная студия",
+        href: "https://florist-six.vercel.app",
+      },
+      {
+        title: "Amore",
+        caption: "Свадебное агентство",
+        href: "https://amore-liart.vercel.app",
+      },
+      {
+        title: "SOUL",
+        caption: "Студия йоги и пилатеса",
+        href: "https://soul-dun-two.vercel.app",
+      },
+      {
+        title: "Detail Pro",
+        caption: "Студия автодетейлинга",
+        href: "https://detailing-silk.vercel.app",
+      },
+      {
+        title: "Groom Atelier",
+        caption: "Салон груминга",
+        href: "https://groom-woad.vercel.app",
+      },
     ]);
-    expect(temporaryMedia.map((media) => media.status)).toEqual([
-      "concept",
-      "concept",
-    ]);
-    expect(temporaryMedia.every((media) => !("href" in media))).toBe(true);
-    expect(temporaryMedia.every((media) => !("cta" in media))).toBe(true);
-  });
-
-  it("stores the published project destination on the published media entry", async () => {
-    const { homeContent } = await loadHomeModule();
-    const publishedMedia = homeContent.work.media.find(
-      (media) => media.status === "published",
-    );
-
-    expect(publishedMedia).toMatchObject({
-      isTemporary: false,
-      href: "https://aura-developer.vercel.app/",
-      cta: "Открыть опубликованный проект",
-    });
+    expect(projects.every((project) => project.cta === "Открыть проект")).toBe(true);
+    expect(projects.every((project) => project.alt.trim().length > 0)).toBe(true);
   });
 });

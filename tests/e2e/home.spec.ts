@@ -7,7 +7,7 @@ const approvedHeadings = [
   "Красивого интерфейса недостаточно.",
   "Работа, которую можно проверить.",
   "Собираем продукт вокруг бизнес-задачи.",
-  "Два человека. Одна ответственность за результат.",
+  "Три человека. Одна ответственность за результат.",
   "Сначала смысл. Потом система. Затем запуск.",
   "Обсудим, какой продукт нужен вашему бизнесу.",
 ] as const;
@@ -172,13 +172,19 @@ test("desktop home page keeps its published content and interactions intact", as
     ),
   ).toBeVisible();
 
-  await expect(
-    page.getByRole("link", { name: "Открыть опубликованный проект" }),
-  ).toHaveAttribute("href", "https://aura-developer.vercel.app/");
-  const conceptLabels = page.getByText("Концепт", { exact: true });
-  await expect(conceptLabels).toHaveCount(2);
-  await expect(conceptLabels.nth(0)).toBeVisible();
-  await expect(conceptLabels.nth(1)).toBeVisible();
+  const projectLinks = page.locator(
+    '#work a[target="_blank"][rel="noreferrer noopener"]',
+  );
+  await expect(projectLinks).toHaveCount(10);
+  await expect(projectLinks.first()).toHaveAttribute(
+    "href",
+    "https://atelier-kitchens.vercel.app",
+  );
+  await expect(projectLinks.last()).toHaveAttribute(
+    "href",
+    "https://groom-woad.vercel.app",
+  );
+  await expect(page.getByText("Концепт", { exact: true })).toHaveCount(0);
 
   const overflow = await page.evaluate(() => ({
     body: document.body.scrollWidth - document.body.clientWidth,

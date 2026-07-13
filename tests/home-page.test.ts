@@ -142,22 +142,26 @@ describe("home page sections", () => {
     expect(disabledRule).not.toContain("opacity:");
   });
 
-  it("exposes portfolio truth labels, team images, and footer anchors", async () => {
+  it("renders ten secure published project links, team images, and footer anchors", async () => {
     const markup = await renderPageAfterHero();
     const workSection = readProjectFile("components/home/WorkSection.tsx");
 
-    expect(markup.match(/>Концепт</g)).toHaveLength(2);
+    expect(markup).not.toContain("Концепт");
+    expect(markup.match(/target="_blank"/g)).toHaveLength(10);
+    expect(markup.match(/rel="noreferrer noopener"/g)).toHaveLength(10);
     const decodedMarkup = decodeURIComponent(markup);
 
-    expect(decodedMarkup).toContain("/images/work/aura-reference.jpg");
+    expect(decodedMarkup).toContain("/images/work/atelier-kitchens.jpg");
+    expect(decodedMarkup).toContain("/images/work/groom.jpg");
     expect(decodedMarkup).toContain("/images/team/arseniy.jpg");
     expect(decodedMarkup).toContain("/images/team/artem.jpg");
-    expect(markup).toContain('href="https://aura-developer.vercel.app/"');
-    expect(markup).toContain("Открыть опубликованный проект");
-    expect(workSection).not.toContain("https://aura-developer.vercel.app/");
-    expect(workSection).not.toContain("Открыть опубликованный проект");
-    expect(workSection).toContain("published.href");
-    expect(workSection).toContain("published.cta");
+    expect(markup).toContain('href="https://atelier-kitchens.vercel.app"');
+    expect(markup).toContain('href="https://groom-woad.vercel.app"');
+    expect(markup.match(/>Открыть проект</g)).toHaveLength(10);
+    expect(workSection).not.toContain("atelier-kitchens.vercel.app");
+    expect(workSection).not.toContain("groom-woad.vercel.app");
+    expect(workSection).toContain("project.href");
+    expect(workSection).toContain("project.cta");
 
     for (const href of ["#work", "#services", "#team", "#faq", "#contact"]) {
       expect(markup).toContain(`href="${href}"`);
