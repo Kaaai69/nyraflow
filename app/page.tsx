@@ -1,9 +1,11 @@
 import LockedSplineHero from "@/components/LockedSplineHero";
+import HomeSections from "@/components/HomeSections";
 
 export default function Home() {
   return (
-    <main className="h-dvh w-full">
+    <main className="site-main w-full overflow-x-clip bg-canvas text-text-primary">
       <LockedSplineHero />
+      <HomeSections />
     </main>
   );
 }
