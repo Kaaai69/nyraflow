@@ -1,9 +1,15 @@
-export type HeroSectionId = "work" | "contact";
+export type HeroNavigationTarget = "home" | "team" | "work" | "contact";
 
-const splineTargets: ReadonlyMap<string, HeroSectionId> = new Map([
-  ["Rectangle 4", "contact"],
-  ["Text 3", "contact"],
-  ["get", "work"],
+const splineTargets: ReadonlyMap<string, HeroNavigationTarget> = new Map([
+  ["Text 5", "home"],
+  ["Text 6", "team"],
+  ["Text 7", "contact"],
+  ["Rectangle 3", "contact"],
+  ["Text 4", "contact"],
+  ["get", "contact"],
+  ["Rectangle 4", "work"],
+  ["Text 3", "work"],
+  ["dis", "work"],
 ]);
 
 export function resolveSplineTarget(name: string) {
@@ -40,20 +46,32 @@ export function getCurrentSplineTarget(application: unknown): string | null {
   return null;
 }
 
-export function scrollToSection(id: HeroSectionId) {
-  const section = document.getElementById(id);
-
-  if (!section) return false;
-
+export function navigateToHeroTarget(target: HeroNavigationTarget) {
   const reduceMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches;
+  const behavior = reduceMotion ? "auto" : "smooth";
+
+  if (target === "home") {
+    window.scrollTo({ top: 0, behavior });
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}`,
+    );
+
+    return true;
+  }
+
+  const section = document.getElementById(target);
+
+  if (!section) return false;
 
   section.scrollIntoView({
-    behavior: reduceMotion ? "auto" : "smooth",
+    behavior,
     block: "start",
   });
-  window.history.replaceState(null, "", `#${id}`);
+  window.history.replaceState(null, "", `#${target}`);
 
   return true;
 }

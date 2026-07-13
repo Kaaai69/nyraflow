@@ -4,8 +4,8 @@ import { useRef, type ComponentProps } from "react";
 import Spline from "@splinetool/react-spline";
 import {
   getCurrentSplineTarget,
+  navigateToHeroTarget,
   resolveSplineTarget,
-  scrollToSection,
 } from "@/lib/spline-navigation";
 
 type SplineOnLoad = NonNullable<ComponentProps<typeof Spline>["onLoad"]>;
@@ -20,9 +20,9 @@ export default function LockedSplineHero() {
 
   const handlePointerUp = () => {
     const target = getCurrentSplineTarget(appRef.current);
-    const id = target ? resolveSplineTarget(target) : null;
+    const destination = target ? resolveSplineTarget(target) : null;
 
-    if (id) scrollToSection(id);
+    if (destination) navigateToHeroTarget(destination);
   };
 
   return (

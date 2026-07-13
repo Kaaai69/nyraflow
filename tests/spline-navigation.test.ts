@@ -23,9 +23,21 @@ describe("Spline hero navigation", () => {
   it("routes the confirmed Spline object names to their sections", async () => {
     const { resolveSplineTarget } = await loadNavigationAdapter();
 
-    expect(resolveSplineTarget("Rectangle 4")).toBe("contact");
-    expect(resolveSplineTarget("Text 3")).toBe("contact");
-    expect(resolveSplineTarget("get")).toBe("work");
+    const expectedTargets = [
+      ["Text 5", "home"],
+      ["Text 6", "team"],
+      ["Text 7", "contact"],
+      ["Rectangle 3", "contact"],
+      ["Text 4", "contact"],
+      ["get", "contact"],
+      ["Rectangle 4", "work"],
+      ["Text 3", "work"],
+      ["dis", "work"],
+    ] as const;
+
+    for (const [name, target] of expectedTargets) {
+      expect(resolveSplineTarget(name)).toBe(target);
+    }
   });
 
   it("ignores unknown and differently-cased object names", async () => {
@@ -33,8 +45,10 @@ describe("Spline hero navigation", () => {
 
     expect(resolveSplineTarget("Camera")).toBeNull();
     expect(resolveSplineTarget("rectangle 4")).toBeNull();
+    expect(resolveSplineTarget("rectangle 3")).toBeNull();
     expect(resolveSplineTarget("text 3")).toBeNull();
-    expect(resolveSplineTarget("Text 4")).toBeNull();
+    expect(resolveSplineTarget("Text 8")).toBeNull();
+    expect(resolveSplineTarget("DIS")).toBeNull();
     expect(resolveSplineTarget("Get")).toBeNull();
   });
 
@@ -178,7 +192,7 @@ describe("Spline hero navigation", () => {
   });
 
   it("smoothly scrolls to an existing section and updates the hash", async () => {
-    const { scrollToSection } = await loadNavigationAdapter();
+    const { navigateToHeroTarget } = await loadNavigationAdapter();
     const scrollIntoView = vi.fn();
     const replaceState = vi.fn();
 
@@ -190,7 +204,7 @@ describe("Spline hero navigation", () => {
       history: { replaceState },
     });
 
-    expect(scrollToSection("work")).toBe(true);
+    expect(navigateToHeroTarget("work")).toBe(true);
     expect(scrollIntoView).toHaveBeenCalledWith({
       behavior: "smooth",
       block: "start",
@@ -199,7 +213,7 @@ describe("Spline hero navigation", () => {
   });
 
   it("uses immediate scrolling when reduced motion is requested", async () => {
-    const { scrollToSection } = await loadNavigationAdapter();
+    const { navigateToHeroTarget } = await loadNavigationAdapter();
     const scrollIntoView = vi.fn();
     const replaceState = vi.fn();
 
@@ -211,7 +225,7 @@ describe("Spline hero navigation", () => {
       history: { replaceState },
     });
 
-    expect(scrollToSection("contact")).toBe(true);
+    expect(navigateToHeroTarget("contact")).toBe(true);
     expect(scrollIntoView).toHaveBeenCalledWith({
       behavior: "auto",
       block: "start",
@@ -220,7 +234,7 @@ describe("Spline hero navigation", () => {
   });
 
   it("does nothing when the requested section is absent", async () => {
-    const { scrollToSection } = await loadNavigationAdapter();
+    const { navigateToHeroTarget } = await loadNavigationAdapter();
     const replaceState = vi.fn();
 
     vi.stubGlobal("document", {
@@ -231,8 +245,32 @@ describe("Spline hero navigation", () => {
       history: { replaceState },
     });
 
-    expect(scrollToSection("work")).toBe(false);
+    expect(navigateToHeroTarget("work")).toBe(false);
     expect(replaceState).not.toHaveBeenCalled();
+  });
+
+  it("scrolls home and removes a stale hash without dropping the query", async () => {
+    const { navigateToHeroTarget } = await loadNavigationAdapter();
+    const scrollTo = vi.fn();
+    const replaceState = vi.fn();
+
+    vi.stubGlobal("window", {
+      matchMedia: vi.fn(() => ({ matches: false })),
+      history: { replaceState },
+      location: { pathname: "/", search: "?source=hero" },
+      scrollTo,
+    });
+
+    expect(navigateToHeroTarget("home")).toBe(true);
+    expect(scrollTo).toHaveBeenCalledWith({
+      top: 0,
+      behavior: "smooth",
+    });
+    expect(replaceState).toHaveBeenCalledWith(
+      null,
+      "",
+      "/?source=hero",
+    );
   });
 
   it("keeps the locked scene URL and adds no HTML controls", () => {
@@ -336,6 +374,7 @@ describe("Spline hero navigation", () => {
     expect(pointerUpSource).toMatch(
       /getCurrentSplineTarget\(\s*appRef\.current\s*\)/,
     );
+    expect(pointerUpSource).toContain("navigateToHeroTarget");
     expect(eventHandler("onLoad")).toBe("handleLoad");
     expect(eventHandler("onPointerUp")).toBe("handlePointerUp");
     expect(heroSource).not.toMatch(
