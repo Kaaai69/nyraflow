@@ -12,13 +12,13 @@ type ProjectCardProps = {
 
 function ProjectCard({ project, featured = false, className }: ProjectCardProps) {
   return (
-    <figure className={className}>
-      <a
-        href={project.href}
-        target="_blank"
-        rel="noreferrer noopener"
-        className="block"
-      >
+    <a
+      href={project.href}
+      target="_blank"
+      rel="noreferrer noopener"
+      className={`block ${className ?? ""}`}
+    >
+      <figure>
         <div className="aspect-[8/5] overflow-hidden rounded-media bg-surface">
           <Image
             src={project.src}
@@ -46,8 +46,8 @@ function ProjectCard({ project, featured = false, className }: ProjectCardProps)
             {project.cta}
           </span>
         </figcaption>
-      </a>
-    </figure>
+      </figure>
+    </a>
   );
 }
 

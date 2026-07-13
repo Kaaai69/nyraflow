@@ -145,10 +145,21 @@ describe("home page sections", () => {
   it("renders ten secure published project links, team images, and footer anchors", async () => {
     const markup = await renderPageAfterHero();
     const workSection = readProjectFile("components/home/WorkSection.tsx");
+    const workMarkup = markup.slice(
+      markup.indexOf('<section id="work"'),
+      markup.indexOf('<section id="services"'),
+    );
 
     expect(markup).not.toContain("Концепт");
     expect(markup.match(/target="_blank"/g)).toHaveLength(10);
     expect(markup.match(/rel="noreferrer noopener"/g)).toHaveLength(10);
+    expect(
+      workMarkup.match(
+        /<a\b[^>]*target="_blank"[^>]*rel="noreferrer noopener"[^>]*><figure(?:\s|>)/g,
+      ) ?? [],
+    ).toHaveLength(10);
+    expect(workMarkup.match(/<\/figcaption><\/figure><\/a>/g) ?? []).toHaveLength(10);
+    expect(workMarkup).not.toMatch(/<figure[^>]*><a\b/);
     const decodedMarkup = decodeURIComponent(markup);
 
     expect(decodedMarkup).toContain("/images/work/atelier-kitchens.jpg");

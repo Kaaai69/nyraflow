@@ -65,3 +65,30 @@ Exit 0: 2 files passed, 19 tests passed.
 ## Concern
 
 Дополнительный Playwright smoke был запущен после обновления устаревших portfolio/team ожиданий, но не завершился зелёным из-за существующих ошибок загрузки Spline hero (`Failed to fetch`, async Client Component) и был остановлен после многократного повторения. Task 3 не меняет защищённый hero; targeted/full/typecheck/build остаются зелёными. Отдельный browser smoke portfolio следует повторить после стабилизации Spline runtime или с изолированным hero fixture.
+
+## Review fix: семантика `figcaption`
+
+Minor finding подтверждён по SSR: карточка рендерилась как `<figure><a>...<figcaption>`, поэтому `figcaption` не был прямым ребёнком `figure`.
+
+### RED
+
+В `tests/home-page.test.ts` сначала добавлен rendering contract для всех десяти карточек: безопасная внешняя ссылка должна непосредственно содержать `figure`, а `figure` должен заканчиваться последовательностью `</figcaption></figure>`.
+
+```sh
+npm test -- tests/home-page.test.ts
+```
+
+Exit 1: 1 failed, 9 passed. Контракт обнаружил 0 из 10 ожидаемых структур `<a><figure>`.
+
+### Fix
+
+`ProjectCard` теперь рендерит `<a><figure>...<figcaption>...</figcaption></figure></a>`. Grid class перенесён с `figure` на внешний anchor, поэтому полноширинная карточка, чередование span 7/5, внешний вид и адаптивность не изменились. Изображение и вся подпись остались одной кликабельной областью; `target="_blank"` и `rel="noreferrer noopener"` сохранены.
+
+### GREEN
+
+- Targeted: `tests/home-page.test.ts`, 10/10 passed.
+- Full unit: 5 files, 42/42 passed.
+- Typecheck: route types generated, `tsc --noEmit` passed.
+- `git diff --check`: clean.
+
+Review-fix concerns: новых нет. Исходный Spline browser-smoke concern выше остаётся вне scope этого семантического исправления.
