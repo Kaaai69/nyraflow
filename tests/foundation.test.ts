@@ -152,6 +152,8 @@ describe("locked Spline hero", () => {
     );
 
     expect(attributeNames.sort()).toEqual([
+      "onPointerLeave",
+      "onPointerMoveCapture",
       "onPointerUp",
       "onSplineMouseHover",
       "scene",

@@ -15,6 +15,10 @@ export default function LockedSplineHero() {
     activeTarget.current = event.target.name;
   };
 
+  const clearActiveTarget = () => {
+    activeTarget.current = null;
+  };
+
   const handlePointerUp = () => {
     const id = activeTarget.current
       ? resolveSplineTarget(activeTarget.current)
@@ -26,7 +30,9 @@ export default function LockedSplineHero() {
   return (
     <Spline
       scene="https://prod.spline.design/xOl5brZcGdsZ7KV4/scene.splinecode"
+      onPointerMoveCapture={clearActiveTarget}
       onSplineMouseHover={handleSplineHover}
+      onPointerLeave={clearActiveTarget}
       onPointerUp={handlePointerUp}
     />
   );

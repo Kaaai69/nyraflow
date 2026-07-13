@@ -97,6 +97,12 @@ describe("Spline wheel bridge", () => {
         ts.isJsxAttribute(property) &&
         property.name.getText(sourceFile) === "scene",
     );
+    const attributeNames = renderedExpression.attributes.properties.map(
+      (property) =>
+        ts.isJsxAttribute(property)
+          ? property.name.getText(sourceFile)
+          : `...${property.expression.getText(sourceFile)}`,
+    );
 
     if (
       !sceneAttribute?.initializer ||
@@ -108,6 +114,13 @@ describe("Spline wheel bridge", () => {
     expect(sceneAttribute.initializer.text).toBe(
       "https://prod.spline.design/xOl5brZcGdsZ7KV4/scene.splinecode",
     );
+    expect(attributeNames.sort()).toEqual([
+      "onPointerLeave",
+      "onPointerMoveCapture",
+      "onPointerUp",
+      "onSplineMouseHover",
+      "scene",
+    ]);
     expect(lockedHero).not.toMatch(
       /<button|<a\b|className=|style=|position\s*:|z-index|animation/,
     );

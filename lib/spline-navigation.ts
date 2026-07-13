@@ -1,12 +1,12 @@
 export type HeroSectionId = "work" | "contact";
 
-const splineTargets: Readonly<Record<string, HeroSectionId>> = {
-  "Rectangle 4": "contact",
-  get: "work",
-};
+const splineTargets: ReadonlyMap<string, HeroSectionId> = new Map([
+  ["Rectangle 4", "contact"],
+  ["get", "work"],
+]);
 
 export function resolveSplineTarget(name: string) {
-  return splineTargets[name] ?? null;
+  return splineTargets.get(name) ?? null;
 }
 
 export function scrollToSection(id: HeroSectionId) {
