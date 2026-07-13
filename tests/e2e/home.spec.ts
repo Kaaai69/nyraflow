@@ -90,6 +90,84 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
   expect(severeBrowserErrors).toEqual([]);
 });
 
+test.describe("Spline hero navigation", () => {
+  test.use({
+    viewport: { width: 1280, height: 720 },
+  });
+
+  test("routes every visible layer of the hero controls", async ({ page }) => {
+    test.setTimeout(90_000);
+    const severeBrowserErrors: string[] = [];
+
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        severeBrowserErrors.push(`console.error: ${message.text()}`);
+      }
+    });
+    page.on("pageerror", (error) => {
+      severeBrowserErrors.push(`pageerror: ${error.message}`);
+    });
+
+    const controls: ReadonlyArray<{
+      name: string;
+      x: number;
+      y: number;
+      hash: string;
+      staleHash?: string;
+    }> = [
+      { name: "Главная", x: 536, y: 24, hash: "", staleHash: "#contact" },
+      { name: "О нас", x: 621, y: 24, hash: "#team" },
+      { name: "Контакты", x: 725, y: 24, hash: "#contact" },
+      { name: "Обсудить проект: фон", x: 100, y: 440, hash: "#contact" },
+      { name: "Обсудить проект: текст", x: 215, y: 440, hash: "#contact" },
+      { name: "Обсудить проект: стрелка", x: 318, y: 440, hash: "#contact" },
+      { name: "Узнать больше: фон", x: 375, y: 440, hash: "#work" },
+      { name: "Узнать больше: текст", x: 455, y: 440, hash: "#work" },
+      { name: "Узнать больше: стрелка", x: 523, y: 440, hash: "#work" },
+    ];
+
+    for (const control of controls) {
+      const response = await page.goto("/", { waitUntil: "load" });
+
+      expect(response?.ok()).toBe(true);
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.waitForFunction(() => {
+        const canvas = document.querySelector("main > div > canvas");
+
+        return (
+          canvas instanceof HTMLCanvasElement &&
+          canvas.width > 0 &&
+          canvas.height > 0 &&
+          Object.keys(canvas).some((key) => key.startsWith("__reactFiber$"))
+        );
+      });
+      await page.waitForTimeout(2_500);
+
+      if (control.staleHash) {
+        await page.evaluate((staleHash) => {
+          window.history.replaceState(null, "", staleHash);
+        }, control.staleHash);
+      }
+
+      await page.mouse.move(1_270, 710);
+      await page.waitForTimeout(100);
+      await page.mouse.move(control.x, control.y);
+      await page.waitForTimeout(150);
+      await page.mouse.click(control.x, control.y);
+
+      await expect
+        .poll(
+          () => page.evaluate(() => window.location.hash),
+          { message: `${control.name} should navigate to ${control.hash || "home"}` },
+        )
+        .toBe(control.hash);
+    }
+
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThanOrEqual(0);
+    expect(severeBrowserErrors).toEqual([]);
+  });
+});
+
 test("desktop home page keeps its published content and interactions intact", async ({
   page,
 }) => {
