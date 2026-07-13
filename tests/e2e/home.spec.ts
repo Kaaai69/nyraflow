@@ -1,6 +1,3 @@
-import { mkdir } from "node:fs/promises";
-import { resolve } from "node:path";
-
 import { expect, test } from "@playwright/test";
 
 const approvedHeadings = [
@@ -75,7 +72,7 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
 
 test("desktop home page keeps its published content and interactions intact", async ({
   page,
-}, testInfo) => {
+}) => {
   const severeBrowserErrors: string[] = [];
 
   page.on("console", (message) => {
@@ -170,18 +167,6 @@ test("desktop home page keeps its published content and interactions intact", as
       document.documentElement.clientWidth,
   }));
   expect(overflow).toEqual({ body: 0, document: 0 });
-
-  const screenshotDirectory = resolve(process.cwd(), "artifacts/ignored");
-  const screenshotPath = resolve(
-    screenshotDirectory,
-    "home-desktop-full-page.png",
-  );
-  await mkdir(screenshotDirectory, { recursive: true });
-  await page.screenshot({ path: screenshotPath, fullPage: true });
-  await testInfo.attach("home-desktop-full-page", {
-    path: screenshotPath,
-    contentType: "image/png",
-  });
 
   expect(severeBrowserErrors).toEqual([]);
 });
