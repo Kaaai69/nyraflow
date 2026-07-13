@@ -15,6 +15,9 @@ type ImageAsset = {
 type WorkMedia = ImageAsset & {
   caption: string;
   isTemporary: boolean;
+  status: "published" | "concept";
+  href?: string;
+  cta?: string;
 };
 
 type HomeModule = {
@@ -151,7 +154,10 @@ describe("home content assets", () => {
     expect(publishedMedia?.isTemporary).toBe(false);
 
     const publicStrings = Object.entries(publishedMedia ?? {})
-      .filter(([key, value]) => key !== "src" && typeof value === "string")
+      .filter(
+        ([key, value]) =>
+          key !== "src" && key !== "href" && typeof value === "string",
+      )
       .map(([, value]) => value)
       .join(" ");
 
@@ -169,5 +175,24 @@ describe("home content assets", () => {
       "Концепт",
       "Концепт",
     ]);
+    expect(temporaryMedia.map((media) => media.status)).toEqual([
+      "concept",
+      "concept",
+    ]);
+    expect(temporaryMedia.every((media) => !("href" in media))).toBe(true);
+    expect(temporaryMedia.every((media) => !("cta" in media))).toBe(true);
+  });
+
+  it("stores the published project destination on the published media entry", async () => {
+    const { homeContent } = await loadHomeModule();
+    const publishedMedia = homeContent.work.media.find(
+      (media) => media.status === "published",
+    );
+
+    expect(publishedMedia).toMatchObject({
+      isTemporary: false,
+      href: "https://aura-developer.vercel.app/",
+      cta: "Открыть опубликованный проект",
+    });
   });
 });

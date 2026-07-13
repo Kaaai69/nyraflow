@@ -18,7 +18,7 @@ export default function SiteFooter() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="inline-flex min-h-11 items-center font-medium text-text-secondary transition-opacity duration-200 hover:opacity-65 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue/25"
+                  className="inline-flex min-h-11 items-center font-medium text-text-secondary transition-opacity duration-200 hover:opacity-65"
                 >
                   {link.label}
                 </a>

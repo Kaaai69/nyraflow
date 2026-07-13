@@ -16,10 +16,23 @@ export type ImageAsset = {
   height: number;
 };
 
-export type WorkMedia = ImageAsset & {
+type WorkMediaBase = ImageAsset & {
   caption: string;
-  isTemporary: boolean;
 };
+
+export type WorkMedia =
+  | (WorkMediaBase & {
+      status: "published";
+      isTemporary: false;
+      href: `https://${string}`;
+      cta: string;
+    })
+  | (WorkMediaBase & {
+      status: "concept";
+      isTemporary: true;
+      href?: never;
+      cta?: never;
+    });
 
 type TextItem = {
   id: string;
@@ -70,7 +83,6 @@ export type HomeContent = {
     id: "work";
     title: string;
     description: string;
-    caseCta: string;
     media: readonly WorkMedia[];
   };
   services: {
@@ -180,7 +192,6 @@ export const homeContent = {
     title: "Работа, которую можно проверить.",
     description:
       "Показываем не только интерфейс. Для каждого проекта объясняем контекст, принятые решения и подтверждённый результат.",
-    caseCta: "Смотреть кейс",
     media: [
       {
         src: "/images/work/aura-reference.jpg",
@@ -188,7 +199,10 @@ export const homeContent = {
         caption: "Опубликованный проект в сфере загородной недвижимости",
         width: 1272,
         height: 716,
+        status: "published",
         isTemporary: false,
+        href: "https://aura-developer.vercel.app/",
+        cta: "Открыть опубликованный проект",
       },
       {
         src: "/images/work/concept-01.jpg",
@@ -196,6 +210,7 @@ export const homeContent = {
         caption: "Концепт",
         width: 1600,
         height: 1000,
+        status: "concept",
         isTemporary: true,
       },
       {
@@ -204,6 +219,7 @@ export const homeContent = {
         caption: "Концепт",
         width: 1600,
         height: 1000,
+        status: "concept",
         isTemporary: true,
       },
     ],

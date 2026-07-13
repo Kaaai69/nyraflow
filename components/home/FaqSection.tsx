@@ -16,7 +16,7 @@ export default function FaqSection() {
             >
               {items.map((item) => (
                 <details key={item.id} className="group border-b border-line">
-                  <summary className="cursor-pointer py-7 pr-4 text-lg font-semibold leading-snug marker:text-blue focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue/25 md:text-xl">
+                  <summary className="cursor-pointer py-7 pr-4 text-lg font-semibold leading-snug marker:text-blue md:text-xl">
                     {item.question}
                   </summary>
                   <p className="max-w-[65ch] pb-7 pr-6 text-base leading-relaxed text-text-secondary">

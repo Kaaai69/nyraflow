@@ -31,6 +31,19 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+:where(
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  summary,
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 3px solid var(--color-blue-deep);
+  outline-offset: 3px;
+}
+
 .site-main > :first-child {
   display: block;
   width: 100%;
@@ -50,21 +63,16 @@ body {
     line-height: 1.25;
     text-decoration: none;
     white-space: nowrap;
-    transition: transform 220ms ease, opacity 220ms ease;
+    transition: transform 220ms ease;
   }
 
   .button-primary:hover {
-    opacity: 0.9;
+    background: var(--color-blue-deep);
     transform: translateY(-1px);
   }
 
   .button-primary:active {
     transform: scale(0.98);
-  }
-
-  .button-primary:focus-visible {
-    outline: 3px solid rgb(36 87 255 / 25%);
-    outline-offset: 3px;
   }
 
   .form-label {
@@ -88,8 +96,12 @@ body {
 
   .form-field:focus {
     border-color: var(--color-blue);
-    outline: 3px solid rgb(36 87 255 / 20%);
-    outline-offset: 1px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .service-row:hover .service-title {
+    transform: translateX(0.25rem);
   }
 }
 

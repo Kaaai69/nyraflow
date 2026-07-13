@@ -20,9 +20,9 @@ export default function ServicesSection() {
           {content.items.map((item) => (
             <article
               key={item.id}
-              className="group grid gap-7 border-b border-line py-10 md:py-12 lg:grid-cols-12 lg:gap-6"
+              className="service-row grid gap-7 border-b border-line py-10 md:py-12 lg:grid-cols-12 lg:gap-6"
             >
-              <h3 className="text-2xl font-semibold tracking-[-0.02em] transition-transform duration-300 ease-out group-hover:translate-x-1 md:text-[1.75rem] lg:col-span-3 lg:pr-5">
+              <h3 className="service-title text-2xl font-semibold tracking-[-0.02em] transition-transform duration-300 ease-out md:text-[1.75rem] lg:col-span-3 lg:pr-5">
                 {item.title}
               </h3>
               <div className="grid gap-7 md:grid-cols-3 lg:col-span-9">

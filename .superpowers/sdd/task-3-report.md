@@ -60,3 +60,32 @@
 - Для опубликованного проекта показан только нейтральный подтверждаемый контекст и live URL. Contribution и results не добавлены без подтверждения.
 - Неподтверждённые team roles, direct contact, privacy notice, legal links и публичный wordmark не показаны. Это следует правилам фактов в `docs/CONTENT.md`.
 - Форма намеренно не отправляет данные до появления подтверждённого endpoint и legal copy.
+
+## Дополнение после внешнего review
+
+Выполнен отдельный RED/GREEN цикл для binding findings:
+
+- `app/page.tsx` теперь рендерит `HomeSections` внутри `main`, а `SiteFooter` после закрывающего тега `main`. `LockedSplineHero` остаётся первым meaningful child внутри `main`.
+- AST regression test проверяет эту реальную структуру `app/page.tsx` и отсутствие footer в `HomeSections`.
+- Rendering test проверяет утверждённые заголовки как точные `h2` и `h3`, а вопросы FAQ как native `summary`.
+- Все keyboard focus indicators унифицированы одним solid `blue-deep` outline толщиной 3 px. Прозрачные rings и локальное отключение outline удалены.
+- Hover сдвиг service title работает только внутри `@media (hover: hover) and (pointer: fine)`.
+- Primary CTA на hover использует `blue-deep` без opacity fade.
+- `WorkMedia` стал discriminated union со статусами `published` и `concept`.
+- Published media хранит собственные `href` и `cta`; `WorkSection` читает их из данных и больше не содержит URL или CTA string literal.
+- Concept media не содержат `href` или `cta`, поэтому не могут случайно получить published link.
+
+Ожидаемый RED:
+
+- 4 failures для footer placement, focus и hover policy, concept status и published destination;
+- отдельный hardcode regression упал на URL внутри `WorkSection`.
+
+GREEN после fixes:
+
+- `npm test -- tests/home-page.test.ts tests/home-content.test.ts`: 2 files passed, 18 tests passed;
+- `npm run typecheck`: exit 0;
+- `npm test`: 3 files passed, 25 tests passed;
+- `npm run build`: exit 0, `/` статически prerendered;
+- protected hero diff пуст, SHA-256 сохранён.
+
+Статический current year в footer оставлен как документированное minor limitation. Отдельный client component только ради года не добавлялся.
