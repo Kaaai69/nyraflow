@@ -17,6 +17,62 @@ const approvedHeadings = [
 
 test.use({ viewport: { width: 1440, height: 900 } });
 
+test("wheel bridge restores document scrolling when a canvas captures wheel", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "load" });
+
+  await page.evaluate(async () => {
+    const main = document.querySelector("main");
+    if (!(main instanceof HTMLElement)) throw new Error("main is missing");
+
+    const canvas = document.createElement("canvas");
+    canvas.dataset.testid = "wheel-capturing-canvas";
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    Object.assign(canvas.style, {
+      position: "fixed",
+      inset: "0",
+      width: "100vw",
+      height: "100vh",
+      zIndex: "2147483647",
+      pointerEvents: "auto",
+    });
+    canvas.addEventListener(
+      "wheel",
+      (event) => {
+        canvas.dataset.wheelCaptured = "true";
+        event.preventDefault();
+      },
+      { passive: false },
+    );
+    main.prepend(canvas);
+    window.scrollTo(0, 0);
+
+    await new Promise<void>((resolve) => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => resolve());
+      });
+    });
+  });
+
+  const canvas = page.getByTestId("wheel-capturing-canvas");
+  await expect(canvas).toBeVisible();
+  await expect(page.locator("main canvas").first()).toHaveAttribute(
+    "data-testid",
+    "wheel-capturing-canvas",
+  );
+  await page.mouse.move(720, 450);
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+
+  await page.mouse.wheel(0, 700);
+
+  await expect(canvas).toHaveAttribute("data-wheel-captured", "true");
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBeGreaterThan(0);
+});
+
 test("desktop home page keeps its published content and interactions intact", async ({
   page,
 }, testInfo) => {
