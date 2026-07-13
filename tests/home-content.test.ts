@@ -141,6 +141,23 @@ describe("home content assets", () => {
     }
   });
 
+  it("keeps the published real media entry neutral and non-temporary", async () => {
+    const { homeContent } = await loadHomeModule();
+    const publishedMedia = homeContent.work.media.find(
+      (media) => media.src === "/images/work/aura-reference.jpg",
+    );
+
+    expect(publishedMedia).toBeDefined();
+    expect(publishedMedia?.isTemporary).toBe(false);
+
+    const publicStrings = Object.entries(publishedMedia ?? {})
+      .filter(([key, value]) => key !== "src" && typeof value === "string")
+      .map(([, value]) => value)
+      .join(" ");
+
+    expect(publicStrings).not.toMatch(/AURA|МЕЗОНИН/i);
+  });
+
   it("labels temporary project media honestly", async () => {
     const { homeContent } = await loadHomeModule();
     const temporaryMedia = homeContent.work.media.filter(

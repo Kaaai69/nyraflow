@@ -184,8 +184,8 @@ export const homeContent = {
     media: [
       {
         src: "/images/work/aura-reference.jpg",
-        alt: "Скриншот интерфейса AURA",
-        caption: "Скриншот AURA",
+        alt: "Скриншот опубликованного проекта в сфере загородной недвижимости",
+        caption: "Опубликованный проект в сфере загородной недвижимости",
         width: 1272,
         height: 716,
         isTemporary: false,
