@@ -17,7 +17,26 @@ test.use({ viewport: { width: 1440, height: 900 } });
 test("wheel bridge restores document scrolling when a canvas captures wheel", async ({
   page,
 }) => {
+  const severeBrowserErrors: string[] = [];
+
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      severeBrowserErrors.push(`console.error: ${message.text()}`);
+    }
+  });
+  page.on("pageerror", (error) => {
+    severeBrowserErrors.push(`pageerror: ${error.message}`);
+  });
+
   await page.goto("/", { waitUntil: "load" });
+  await page.waitForFunction(() => {
+    const splineCanvas = document.querySelector("main > div > canvas");
+
+    return (
+      splineCanvas instanceof HTMLCanvasElement &&
+      Object.keys(splineCanvas).some((key) => key.startsWith("__reactFiber$"))
+    );
+  });
 
   await page.evaluate(async () => {
     const main = document.querySelector("main");
@@ -68,6 +87,7 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
   await expect
     .poll(() => page.evaluate(() => window.scrollY))
     .toBeGreaterThan(0);
+  expect(severeBrowserErrors).toEqual([]);
 });
 
 test("desktop home page keeps its published content and interactions intact", async ({
