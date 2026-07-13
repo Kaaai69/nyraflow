@@ -8,3 +8,4 @@ artifacts/ignored/
 .env*
 !.env.example
 .superpowers/
+.vercel
