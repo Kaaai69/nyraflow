@@ -62,9 +62,9 @@ Exit 0: 2 files passed, 19 tests passed.
 - Typecheck: route types generated, `tsc --noEmit` passed.
 - Production build: compiled, typed and statically prerendered `/` successfully.
 
-## Concern
+## Follow-up resolution
 
-Дополнительный Playwright smoke был запущен после обновления устаревших portfolio/team ожиданий, но не завершился зелёным из-за существующих ошибок загрузки Spline hero (`Failed to fetch`, async Client Component) и был остановлен после многократного повторения. Task 3 не меняет защищённый hero; targeted/full/typecheck/build остаются зелёными. Отдельный browser smoke portfolio следует повторить после стабилизации Spline runtime или с изолированным hero fixture.
+Проблема browser smoke закрыта последующим исправлением клиентской точки входа Spline. Полный Playwright E2E проходит 2/2; исходная сцена, её URL и изолированная граница hero сохранены.
 
 ## Review fix: семантика `figcaption`
 
@@ -91,4 +91,4 @@ Exit 1: 1 failed, 9 passed. Контракт обнаружил 0 из 10 ожи
 - Typecheck: route types generated, `tsc --noEmit` passed.
 - `git diff --check`: clean.
 
-Review-fix concerns: новых нет. Исходный Spline browser-smoke concern выше остаётся вне scope этого семантического исправления.
+Review-fix concerns: новых нет. Последующий полный Spline/browser smoke прошёл успешно.
