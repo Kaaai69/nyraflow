@@ -1,5 +1,6 @@
 import LockedSplineHero from "@/components/LockedSplineHero";
 import HomeSections from "@/components/HomeSections";
+import SplineWheelBridge from "@/components/SplineWheelBridge";
 import SiteFooter from "@/components/home/SiteFooter";
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
         <LockedSplineHero />
         <HomeSections />
       </main>
+      <SplineWheelBridge />
       <SiteFooter />
     </>
   );
