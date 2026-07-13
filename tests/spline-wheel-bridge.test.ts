@@ -115,9 +115,8 @@ describe("Spline wheel bridge", () => {
       "https://prod.spline.design/xOl5brZcGdsZ7KV4/scene.splinecode",
     );
     expect(attributeNames.sort()).toEqual([
-      "onPointerLeave",
+      "onLoad",
       "onPointerUp",
-      "onSplineMouseHover",
       "scene",
     ]);
     expect(lockedHero).not.toMatch(

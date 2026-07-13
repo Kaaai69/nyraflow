@@ -1,32 +1,26 @@
 "use client";
 
-import { useRef } from "react";
-import type { SplineEvent } from "@splinetool/react-spline";
+import { useRef, type ComponentProps } from "react";
 import Spline from "@splinetool/react-spline/next";
 import {
-  nextSplineHoverTarget,
+  getCurrentSplineTarget,
   resolveSplineTarget,
   scrollToSection,
 } from "@/lib/spline-navigation";
 
+type SplineOnLoad = NonNullable<ComponentProps<typeof Spline>["onLoad"]>;
+type SplineApplication = Parameters<SplineOnLoad>[0];
+
 export default function LockedSplineHero() {
-  const activeTarget = useRef<string | null>(null);
+  const appRef = useRef<SplineApplication | null>(null);
 
-  const handleSplineHover = (event: SplineEvent) => {
-    activeTarget.current = nextSplineHoverTarget(
-      activeTarget.current,
-      event.target.name,
-    );
-  };
-
-  const clearActiveTarget = () => {
-    activeTarget.current = null;
+  const handleLoad: SplineOnLoad = (application) => {
+    appRef.current = application;
   };
 
   const handlePointerUp = () => {
-    const id = activeTarget.current
-      ? resolveSplineTarget(activeTarget.current)
-      : null;
+    const target = getCurrentSplineTarget(appRef.current);
+    const id = target ? resolveSplineTarget(target) : null;
 
     if (id) scrollToSection(id);
   };
@@ -34,8 +28,7 @@ export default function LockedSplineHero() {
   return (
     <Spline
       scene="https://prod.spline.design/xOl5brZcGdsZ7KV4/scene.splinecode"
-      onSplineMouseHover={handleSplineHover}
-      onPointerLeave={clearActiveTarget}
+      onLoad={handleLoad}
       onPointerUp={handlePointerUp}
     />
   );

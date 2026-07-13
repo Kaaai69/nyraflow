@@ -9,13 +9,34 @@ export function resolveSplineTarget(name: string) {
   return splineTargets.get(name) ?? null;
 }
 
-export function nextSplineHoverTarget(
-  current: string | null,
-  eventName: string,
-) {
-  if (!eventName) return null;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
 
-  return current === eventName ? null : eventName;
+export function getCurrentSplineTarget(application: unknown): string | null {
+  if (!isRecord(application)) return null;
+
+  const eventManager = application.eventManager;
+
+  if (!isRecord(eventManager)) return null;
+
+  const handlers = eventManager.handlers;
+
+  if (!isRecord(handlers)) return null;
+
+  const mouseHover = handlers.MouseHover;
+
+  if (!isRecord(mouseHover) || !Array.isArray(mouseHover._prevObjects)) {
+    return null;
+  }
+
+  for (const object of mouseHover._prevObjects) {
+    if (!isRecord(object) || typeof object.name !== "string") continue;
+
+    if (resolveSplineTarget(object.name)) return object.name;
+  }
+
+  return null;
 }
 
 export function scrollToSection(id: HeroSectionId) {

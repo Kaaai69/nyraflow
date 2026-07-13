@@ -43,40 +43,126 @@ describe("Spline hero navigation", () => {
     expect(resolveSplineTarget("__proto__")).toBeNull();
   });
 
-  it("toggles the same runtime hover target from enter to leave", async () => {
-    const { nextSplineHoverTarget } = await loadNavigationAdapter();
+  it("reads the current confirmed target from the runtime snapshot", async () => {
+    const { getCurrentSplineTarget } = await loadNavigationAdapter();
 
-    expect(nextSplineHoverTarget).toBeTypeOf("function");
-
-    const active = nextSplineHoverTarget(null, "Rectangle 4");
-
-    expect(active).toBe("Rectangle 4");
-    expect(nextSplineHoverTarget(active, "Rectangle 4")).toBeNull();
+    expect(getCurrentSplineTarget).toBeTypeOf("function");
+    expect(
+      getCurrentSplineTarget({
+        eventManager: {
+          handlers: {
+            MouseHover: { _prevObjects: [{ name: "Rectangle 4" }] },
+          },
+        },
+      }),
+    ).toBe("Rectangle 4");
+    expect(
+      getCurrentSplineTarget({
+        eventManager: {
+          handlers: {
+            MouseHover: { _prevObjects: [{ name: "get" }] },
+          },
+        },
+      }),
+    ).toBe("get");
   });
 
-  it("activates target B after runtime reports target A leaving", async () => {
-    const { nextSplineHoverTarget } = await loadNavigationAdapter();
+  it("returns the first routable name in the current snapshot", async () => {
+    const { getCurrentSplineTarget } = await loadNavigationAdapter();
 
-    expect(nextSplineHoverTarget).toBeTypeOf("function");
-
-    const afterALeave = nextSplineHoverTarget("Rectangle 4", "Rectangle 4");
-
-    expect(afterALeave).toBeNull();
-    expect(nextSplineHoverTarget(afterALeave, "get")).toBe("get");
+    expect(getCurrentSplineTarget).toBeTypeOf("function");
+    expect(
+      getCurrentSplineTarget({
+        eventManager: {
+          handlers: {
+            MouseHover: {
+              _prevObjects: [
+                { name: "Camera" },
+                null,
+                { name: 42 },
+                { name: "get" },
+                { name: "Rectangle 4" },
+              ],
+            },
+          },
+        },
+      }),
+    ).toBe("get");
   });
 
-  it("clears empty names and leaves unknown names safely unroutable", async () => {
-    const { nextSplineHoverTarget, resolveSplineTarget } =
-      await loadNavigationAdapter();
+  it("returns null for empty and unknown current snapshots", async () => {
+    const { getCurrentSplineTarget } = await loadNavigationAdapter();
 
-    expect(nextSplineHoverTarget).toBeTypeOf("function");
+    expect(getCurrentSplineTarget).toBeTypeOf("function");
+    expect(
+      getCurrentSplineTarget({
+        eventManager: {
+          handlers: { MouseHover: { _prevObjects: [] } },
+        },
+      }),
+    ).toBeNull();
+    expect(
+      getCurrentSplineTarget({
+        eventManager: {
+          handlers: {
+            MouseHover: {
+              _prevObjects: [{ name: "" }, { name: "Camera" }],
+            },
+          },
+        },
+      }),
+    ).toBeNull();
+  });
 
-    const unknown = nextSplineHoverTarget(null, "Camera");
+  it("fails closed for malformed runtime snapshots", async () => {
+    const { getCurrentSplineTarget } = await loadNavigationAdapter();
 
-    expect(unknown).toBe("Camera");
-    expect(resolveSplineTarget(unknown ?? "")).toBeNull();
-    expect(nextSplineHoverTarget("Rectangle 4", "")).toBeNull();
-    expect(nextSplineHoverTarget(null, "")).toBeNull();
+    expect(getCurrentSplineTarget).toBeTypeOf("function");
+
+    const malformedSnapshots = [
+      null,
+      undefined,
+      "runtime",
+      42,
+      {},
+      { eventManager: null },
+      { eventManager: { handlers: null } },
+      { eventManager: { handlers: { MouseHover: null } } },
+      {
+        eventManager: {
+          handlers: { MouseHover: { _prevObjects: { name: "get" } } },
+        },
+      },
+      {
+        eventManager: {
+          handlers: { MouseHover: { _prevObjects: [null, {}, { name: 42 }] } },
+        },
+      },
+    ];
+
+    for (const snapshot of malformedSnapshots) {
+      expect(getCurrentSplineTarget(snapshot)).toBeNull();
+    }
+  });
+
+  it("does not persist a target after the runtime snapshot is cleared", async () => {
+    const { getCurrentSplineTarget } = await loadNavigationAdapter();
+
+    expect(getCurrentSplineTarget).toBeTypeOf("function");
+
+    const application = {
+      eventManager: {
+        handlers: {
+          MouseHover: { _prevObjects: [{ name: "Rectangle 4" }] },
+        },
+      },
+    };
+
+    expect(getCurrentSplineTarget(application)).toBe("Rectangle 4");
+
+    application.eventManager.handlers.MouseHover._prevObjects = [];
+
+    expect(getCurrentSplineTarget(application)).toBeNull();
   });
 
   it("smoothly scrolls to an existing section and updates the hash", async () => {
@@ -147,7 +233,7 @@ describe("Spline hero navigation", () => {
     expect(heroSource).not.toMatch(/<button|<a\b/);
   });
 
-  it("toggles runtime hover events and keeps pointer-leave as a reset", () => {
+  it("stores the loaded application and reads its current snapshot on pointer-up", () => {
     const heroSource = readFileSync(
       resolve(projectRoot, "components/LockedSplineHero.tsx"),
       "utf8",
@@ -169,13 +255,17 @@ describe("Spline hero navigation", () => {
     const declarations = defaultExport?.body?.statements
       .filter(ts.isVariableStatement)
       .flatMap((statement) => statement.declarationList.declarations);
-    const clearTarget = declarations?.find(
+    const appRef = declarations?.find(
       (declaration) =>
-        declaration.name.getText(sourceFile) === "clearActiveTarget",
+        declaration.name.getText(sourceFile) === "appRef",
     );
-    const hoverTarget = declarations?.find(
+    const loadHandler = declarations?.find(
       (declaration) =>
-        declaration.name.getText(sourceFile) === "handleSplineHover",
+        declaration.name.getText(sourceFile) === "handleLoad",
+    );
+    const pointerUpHandler = declarations?.find(
+      (declaration) =>
+        declaration.name.getText(sourceFile) === "handlePointerUp",
     );
     let splineElement: ts.JsxSelfClosingElement | undefined;
 
@@ -211,25 +301,33 @@ describe("Spline hero navigation", () => {
       return attribute.initializer.expression.getText(sourceFile);
     }
 
-    if (!clearTarget?.initializer) {
-      expect.fail("clearActiveTarget handler must exist");
+    if (!appRef?.initializer) {
+      expect.fail("appRef must exist");
     }
 
-    if (!hoverTarget?.initializer) {
-      expect.fail("handleSplineHover handler must exist");
+    if (!loadHandler?.initializer) {
+      expect.fail("handleLoad handler must exist");
     }
 
-    expect(clearTarget.initializer.getText(sourceFile)).toContain(
-      "activeTarget.current = null",
+    if (!pointerUpHandler?.initializer) {
+      expect.fail("handlePointerUp handler must exist");
+    }
+
+    expect(appRef.initializer.getText(sourceFile)).toContain("useRef");
+    expect(loadHandler.initializer.getText(sourceFile)).toContain(
+      "appRef.current = application",
     );
-    const hoverHandlerSource = hoverTarget.initializer
+    const pointerUpSource = pointerUpHandler.initializer
       .getText(sourceFile)
       .replace(/\s+/g, " ");
 
-    expect(hoverHandlerSource).toMatch(
-      /nextSplineHoverTarget\(\s*activeTarget\.current,\s*event\.target\.name,?\s*\)/,
+    expect(pointerUpSource).toMatch(
+      /getCurrentSplineTarget\(\s*appRef\.current\s*\)/,
     );
-    expect(eventHandler("onPointerLeave")).toBe("clearActiveTarget");
-    expect(eventHandler("onSplineMouseHover")).toBe("handleSplineHover");
+    expect(eventHandler("onLoad")).toBe("handleLoad");
+    expect(eventHandler("onPointerUp")).toBe("handlePointerUp");
+    expect(heroSource).not.toMatch(
+      /nextSplineHoverTarget|onSplineMouseHover|onPointerMoveCapture/,
+    );
   });
 });
