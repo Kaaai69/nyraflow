@@ -1,7 +1,7 @@
-import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
+import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
 const projectRoot = resolve(import.meta.dirname, "..");
@@ -48,9 +48,31 @@ describe("Spline wheel bridge", () => {
     expect(existsSync(bridgePath), "wheel bridge should exist").toBe(true);
     const bridge = readFileSync(bridgePath, "utf8");
     const lockedHero = readProjectFile("components/LockedSplineHero.tsx");
-    const lockedHeroHash = createHash("sha256")
-      .update(lockedHero)
-      .digest("hex");
+    const sourceFile = ts.createSourceFile(
+      "components/LockedSplineHero.tsx",
+      lockedHero,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    );
+    const defaultExport = sourceFile.statements.find(
+      (statement): statement is ts.FunctionDeclaration =>
+        ts.isFunctionDeclaration(statement) &&
+        statement.modifiers?.some(
+          (modifier) => modifier.kind === ts.SyntaxKind.DefaultKeyword,
+        ) === true,
+    );
+    const returnStatement = defaultExport?.body?.statements.find(
+      ts.isReturnStatement,
+    );
+    let renderedExpression = returnStatement?.expression;
+
+    while (
+      renderedExpression &&
+      ts.isParenthesizedExpression(renderedExpression)
+    ) {
+      renderedExpression = renderedExpression.expression;
+    }
 
     expect(bridge).toContain('window.addEventListener("wheel"');
     expect(bridge).toContain("capture: true");
@@ -60,8 +82,34 @@ describe("Spline wheel bridge", () => {
     expect(bridge).toContain("event.composedPath()");
     expect(bridge).toContain("requestAnimationFrame");
     expect(bridge).toContain("cancelAnimationFrame");
-    expect(lockedHeroHash).toBe(
-      "d9cac33cee550ebfa7382a0f7ba0ea69a020af16fee7704382624a33a6fa1208",
+
+    if (
+      !renderedExpression ||
+      !ts.isJsxSelfClosingElement(renderedExpression)
+    ) {
+      expect.fail("locked hero must directly return Spline without a wrapper");
+    }
+
+    expect(renderedExpression.tagName.getText(sourceFile)).toBe("Spline");
+
+    const sceneAttribute = renderedExpression.attributes.properties.find(
+      (property): property is ts.JsxAttribute =>
+        ts.isJsxAttribute(property) &&
+        property.name.getText(sourceFile) === "scene",
+    );
+
+    if (
+      !sceneAttribute?.initializer ||
+      !ts.isStringLiteral(sceneAttribute.initializer)
+    ) {
+      expect.fail("locked hero scene must be an exact string literal");
+    }
+
+    expect(sceneAttribute.initializer.text).toBe(
+      "https://prod.spline.design/xOl5brZcGdsZ7KV4/scene.splinecode",
+    );
+    expect(lockedHero).not.toMatch(
+      /<button|<a\b|className=|style=|position\s*:|z-index|animation/,
     );
   });
 });

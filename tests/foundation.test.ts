@@ -139,13 +139,23 @@ describe("locked Spline hero", () => {
 
     expect(renderedExpression.tagName.getText(sourceFile)).toBe(importedName);
 
-    const sceneAttribute = renderedExpression.attributes.properties.find(
+    const splineAttributes = renderedExpression.attributes.properties;
+    const sceneAttribute = splineAttributes.find(
       (property): property is ts.JsxAttribute =>
         ts.isJsxAttribute(property) &&
         property.name.getText(sourceFile) === "scene",
     );
+    const attributeNames = splineAttributes.map((property) =>
+      ts.isJsxAttribute(property)
+        ? property.name.getText(sourceFile)
+        : `...${property.expression.getText(sourceFile)}`,
+    );
 
-    expect(renderedExpression.attributes.properties).toHaveLength(1);
+    expect(attributeNames.sort()).toEqual([
+      "onPointerUp",
+      "onSplineMouseHover",
+      "scene",
+    ]);
     expect(sceneAttribute).toBeDefined();
 
     if (
@@ -162,11 +172,27 @@ describe("locked Spline hero", () => {
 
   it("keeps the hero isolated without an HTML or CSS overlay", () => {
     const hero = readProjectFile("components/LockedSplineHero.tsx");
-    const jsxTags = [...hero.matchAll(/<\/?([A-Za-z][\w.]*)\b/g)].map(
-      ([, tag]) => tag,
+    const sourceFile = ts.createSourceFile(
+      "components/LockedSplineHero.tsx",
+      hero,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
     );
+    const jsxTags: string[] = [];
+
+    function visit(node: ts.Node) {
+      if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+        jsxTags.push(node.tagName.getText(sourceFile));
+      }
+
+      ts.forEachChild(node, visit);
+    }
+
+    visit(sourceFile);
 
     expect([...new Set(jsxTags)]).toEqual(["Spline"]);
+    expect(hero).not.toMatch(/<button|<a\b/);
     expect(hero).not.toMatch(/className=|style=|position\s*:|z-index|animation/);
   });
 
