@@ -4,7 +4,7 @@
 
 **Goal:** Сделать фон, текст и стрелки обеих CTA, а также три пункта верхнего меню Spline hero кликабельными и направить их к подтверждённым целям.
 
-**Architecture:** Исходная Spline-сцена и прямой `Spline`-компонент остаются неизменными. Изолированный адаптер навигации сопоставляет точные имена существующих Spline-объектов с целями `home`, `team`, `work`, `contact`; компонент hero только передаёт найденную цель в функцию навигации.
+**Architecture:** Исходная Spline-сцена и прямой `Spline`-компонент остаются неизменными. Изолированный адаптер навигации сопоставляет точные имена существующих Spline-объектов с целями `home`, `team`, `work`, `contact`; сначала читает штатный hover snapshot, а для верхнего меню без hover-событий выполняет raycast по нативному pointer-событию. Компонент hero только передаёт найденную цель в функцию навигации.
 
 **Tech Stack:** Next.js 16, React, TypeScript, `@splinetool/react-spline`, Vitest, Playwright.
 
@@ -15,6 +15,7 @@
 - Не менять Spline-анимации, hover-состояния и внутренние события.
 - Сохранить `prefers-reduced-motion`.
 - Не менять секции ниже hero.
+- Любая ошибка приватного runtime raycast должна безопасно вернуть `null`, не ломая страницу.
 - Реализовать через RED, GREEN и полный регрессионный прогон.
 
 ---
@@ -38,9 +39,10 @@ const expectedTargets = [
   ["Text 5", "home"],
   ["Text 6", "team"],
   ["Text 7", "contact"],
-  ["Rectangle 3", "contact"],
+  ["Rectangle 2", "contact"],
   ["Text 4", "contact"],
   ["get", "contact"],
+  ["Rectangle 3", "work"],
   ["Rectangle 4", "work"],
   ["Text 3", "work"],
   ["dis", "work"],
@@ -96,9 +98,10 @@ const splineTargets: ReadonlyMap<string, HeroNavigationTarget> = new Map([
   ["Text 5", "home"],
   ["Text 6", "team"],
   ["Text 7", "contact"],
-  ["Rectangle 3", "contact"],
+  ["Rectangle 2", "contact"],
   ["Text 4", "contact"],
   ["get", "contact"],
+  ["Rectangle 3", "work"],
   ["Rectangle 4", "work"],
   ["Text 3", "work"],
   ["dis", "work"],
@@ -135,10 +138,10 @@ export function navigateToHeroTarget(target: HeroNavigationTarget) {
 
 - [ ] **Step 3: Подключить функцию в locked hero**
 
-`LockedSplineHero` сохраняет прямой `<Spline>` и исходный URL. В `handlePointerUp` заменить только вызов:
+`LockedSplineHero` сохраняет прямой `<Spline>` и исходный URL. В `handlePointerUp` передать нативное pointer-событие, чтобы адаптер мог выполнить raycast для объектов верхнего меню без hover-событий:
 
 ```ts
-const target = getCurrentSplineTarget(appRef.current);
+const target = getCurrentSplineTarget(appRef.current, event.nativeEvent);
 const destination = target ? resolveSplineTarget(target) : null;
 
 if (destination) navigateToHeroTarget(destination);
