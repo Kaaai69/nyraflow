@@ -10,6 +10,9 @@ import {
 
 type SplineOnLoad = NonNullable<ComponentProps<typeof Spline>["onLoad"]>;
 type SplineApplication = Parameters<SplineOnLoad>[0];
+type SplinePointerUp = NonNullable<
+  ComponentProps<typeof Spline>["onPointerUp"]
+>;
 
 export default function LockedSplineHero() {
   const appRef = useRef<SplineApplication | null>(null);
@@ -18,8 +21,11 @@ export default function LockedSplineHero() {
     appRef.current = application;
   };
 
-  const handlePointerUp = () => {
-    const target = getCurrentSplineTarget(appRef.current);
+  const handlePointerUp: SplinePointerUp = (event) => {
+    const target = getCurrentSplineTarget(
+      appRef.current,
+      event.nativeEvent,
+    );
     const destination = target ? resolveSplineTarget(target) : null;
 
     if (destination) navigateToHeroTarget(destination);

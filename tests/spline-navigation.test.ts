@@ -27,9 +27,10 @@ describe("Spline hero navigation", () => {
       ["Text 5", "home"],
       ["Text 6", "team"],
       ["Text 7", "contact"],
-      ["Rectangle 3", "contact"],
+      ["Rectangle 2", "contact"],
       ["Text 4", "contact"],
       ["get", "contact"],
+      ["Rectangle 3", "work"],
       ["Rectangle 4", "work"],
       ["Text 3", "work"],
       ["dis", "work"],
@@ -44,6 +45,7 @@ describe("Spline hero navigation", () => {
     const { resolveSplineTarget } = await loadNavigationAdapter();
 
     expect(resolveSplineTarget("Camera")).toBeNull();
+    expect(resolveSplineTarget("rectangle 2")).toBeNull();
     expect(resolveSplineTarget("rectangle 4")).toBeNull();
     expect(resolveSplineTarget("rectangle 3")).toBeNull();
     expect(resolveSplineTarget("text 3")).toBeNull();
@@ -114,6 +116,62 @@ describe("Spline hero navigation", () => {
         },
       }),
     ).toBe("get");
+  });
+
+  it("falls back to the current runtime raycast for objects without hover events", async () => {
+    const { getCurrentSplineTarget } = await loadNavigationAdapter();
+    const pointerEvent = { clientX: 621, clientY: 24 };
+    const pageChildren = [{ name: "Scene content" }];
+    const updateRaycaster = vi.fn();
+    const intersectObjects = vi.fn(() => [
+      { object: { name: "Background" } },
+      { object: { name: "Text 6" } },
+    ]);
+
+    expect(
+      getCurrentSplineTarget(
+        {
+          eventManager: {
+            handlers: {
+              MouseHover: { _prevObjects: [] },
+            },
+            eventContext: {
+              page: { children: pageChildren },
+              raycaster: { intersectObjects },
+              updateRaycaster,
+            },
+          },
+        },
+        pointerEvent,
+      ),
+    ).toBe("Text 6");
+    expect(updateRaycaster).toHaveBeenCalledWith(pointerEvent);
+    expect(intersectObjects).toHaveBeenCalledWith(pageChildren, true);
+  });
+
+  it("fails closed when the private runtime raycast is unavailable", async () => {
+    const { getCurrentSplineTarget } = await loadNavigationAdapter();
+    const application = {
+      eventManager: {
+        handlers: { MouseHover: { _prevObjects: [] } },
+        eventContext: {
+          page: { children: [] },
+          raycaster: {
+            intersectObjects: vi.fn(() => {
+              throw new Error("runtime changed");
+            }),
+          },
+          updateRaycaster: vi.fn(),
+        },
+      },
+    };
+
+    expect(() =>
+      getCurrentSplineTarget(application, { clientX: 0, clientY: 0 }),
+    ).not.toThrow();
+    expect(
+      getCurrentSplineTarget(application, { clientX: 0, clientY: 0 }),
+    ).toBeNull();
   });
 
   it("returns null for empty and unknown current snapshots", async () => {
@@ -371,10 +429,10 @@ describe("Spline hero navigation", () => {
       .getText(sourceFile)
       .replace(/\s+/g, " ");
 
-    expect(pointerUpSource).toMatch(
-      /getCurrentSplineTarget\(\s*appRef\.current\s*\)/,
-    );
     expect(pointerUpSource).toContain("navigateToHeroTarget");
+    expect(pointerUpSource).toMatch(
+      /getCurrentSplineTarget\(\s*appRef\.current\s*,\s*event\.nativeEvent\s*,?\s*\)/,
+    );
     expect(eventHandler("onLoad")).toBe("handleLoad");
     expect(eventHandler("onPointerUp")).toBe("handlePointerUp");
     expect(heroSource).not.toMatch(

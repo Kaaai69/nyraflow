@@ -4,9 +4,10 @@ const splineTargets: ReadonlyMap<string, HeroNavigationTarget> = new Map([
   ["Text 5", "home"],
   ["Text 6", "team"],
   ["Text 7", "contact"],
-  ["Rectangle 3", "contact"],
+  ["Rectangle 2", "contact"],
   ["Text 4", "contact"],
   ["get", "contact"],
+  ["Rectangle 3", "work"],
   ["Rectangle 4", "work"],
   ["Text 3", "work"],
   ["dis", "work"],
@@ -20,7 +21,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-export function getCurrentSplineTarget(application: unknown): string | null {
+export function getCurrentSplineTarget(
+  application: unknown,
+  pointerEvent?: unknown,
+): string | null {
   if (!isRecord(application)) return null;
 
   const eventManager = application.eventManager;
@@ -29,18 +33,61 @@ export function getCurrentSplineTarget(application: unknown): string | null {
 
   const handlers = eventManager.handlers;
 
-  if (!isRecord(handlers)) return null;
+  if (isRecord(handlers)) {
+    const mouseHover = handlers.MouseHover;
 
-  const mouseHover = handlers.MouseHover;
+    if (isRecord(mouseHover) && Array.isArray(mouseHover._prevObjects)) {
+      for (const object of mouseHover._prevObjects) {
+        if (!isRecord(object) || typeof object.name !== "string") continue;
 
-  if (!isRecord(mouseHover) || !Array.isArray(mouseHover._prevObjects)) {
+        if (resolveSplineTarget(object.name)) return object.name;
+      }
+    }
+  }
+
+  const eventContext = eventManager.eventContext;
+
+  if (!isRecord(eventContext)) return null;
+
+  const page = eventContext.page;
+  const raycaster = eventContext.raycaster;
+
+  if (
+    !isRecord(page) ||
+    !Array.isArray(page.children) ||
+    !isRecord(raycaster) ||
+    typeof raycaster.intersectObjects !== "function"
+  ) {
     return null;
   }
 
-  for (const object of mouseHover._prevObjects) {
-    if (!isRecord(object) || typeof object.name !== "string") continue;
+  let intersections: unknown;
 
-    if (resolveSplineTarget(object.name)) return object.name;
+  try {
+    if (
+      pointerEvent !== undefined &&
+      typeof eventContext.updateRaycaster === "function"
+    ) {
+      eventContext.updateRaycaster.call(eventContext, pointerEvent);
+    }
+
+    intersections = raycaster.intersectObjects.call(
+      raycaster,
+      page.children,
+      true,
+    );
+  } catch {
+    return null;
+  }
+
+  if (!Array.isArray(intersections)) return null;
+
+  for (const intersection of intersections) {
+    if (!isRecord(intersection) || !isRecord(intersection.object)) continue;
+
+    const name = intersection.object.name;
+
+    if (typeof name === "string" && resolveSplineTarget(name)) return name;
   }
 
   return null;
