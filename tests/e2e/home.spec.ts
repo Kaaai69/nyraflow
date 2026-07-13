@@ -156,6 +156,17 @@ test("desktop home page keeps its published content and interactions intact", as
       .toBe(true);
   }
 
+  const teamHeading = page.getByRole("heading", {
+    name: "Три человека. Одна ответственность за результат.",
+    exact: true,
+  });
+  await teamHeading.scrollIntoViewIfNeeded();
+  expect(
+    await teamHeading.evaluate(
+      (element) => element.scrollWidth <= element.clientWidth,
+    ),
+  ).toBe(true);
+
   const faqDetails = page.locator("#faq details");
   await expect(faqDetails).toHaveCount(6);
   const firstQuestion = page.getByText(

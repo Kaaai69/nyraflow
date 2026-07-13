@@ -35,6 +35,10 @@
   --text-title-compact--line-height: 1.02;
   --text-title-compact--letter-spacing: -0.035em;
   --text-title-compact--font-weight: 600;
+  --text-team: clamp(2.375rem, 3.5vw, 3.25rem);
+  --text-team--line-height: 1.02;
+  --text-team--letter-spacing: -0.035em;
+  --text-team--font-weight: 600;
   --text-subtitle: 1.75rem;
   --duration-fast: 180ms;
   --duration-base: 220ms;

@@ -24,6 +24,7 @@ describe("Spline hero navigation", () => {
     const { resolveSplineTarget } = await loadNavigationAdapter();
 
     expect(resolveSplineTarget("Rectangle 4")).toBe("contact");
+    expect(resolveSplineTarget("Text 3")).toBe("contact");
     expect(resolveSplineTarget("get")).toBe("work");
   });
 
@@ -32,6 +33,8 @@ describe("Spline hero navigation", () => {
 
     expect(resolveSplineTarget("Camera")).toBeNull();
     expect(resolveSplineTarget("rectangle 4")).toBeNull();
+    expect(resolveSplineTarget("text 3")).toBeNull();
+    expect(resolveSplineTarget("Text 4")).toBeNull();
     expect(resolveSplineTarget("Get")).toBeNull();
   });
 
@@ -56,6 +59,15 @@ describe("Spline hero navigation", () => {
         },
       }),
     ).toBe("Rectangle 4");
+    expect(
+      getCurrentSplineTarget({
+        eventManager: {
+          handlers: {
+            MouseHover: { _prevObjects: [{ name: "Text 3" }] },
+          },
+        },
+      }),
+    ).toBe("Text 3");
     expect(
       getCurrentSplineTarget({
         eventManager: {

@@ -10,8 +10,8 @@ export default function TeamSection() {
   return (
     <section id="team" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
       <SectionContainer className="grid gap-14 lg:grid-cols-12 lg:gap-6">
-        <header className="lg:col-span-4 lg:pr-10">
-          <h2 className="text-title-compact text-balance">
+        <header className="min-w-0 lg:col-span-5 lg:pr-10">
+          <h2 className="text-team text-balance">
             {content.title}
           </h2>
           <p className="mt-7 text-lg leading-relaxed text-text-secondary md:text-xl">
@@ -19,7 +19,7 @@ export default function TeamSection() {
           </p>
         </header>
 
-        <div className="grid min-w-0 gap-8 md:grid-cols-2 lg:col-span-8 xl:grid-cols-3 xl:gap-5">
+        <div className="grid min-w-0 gap-8 md:grid-cols-2 lg:col-span-7 xl:grid-cols-3 xl:gap-5">
           {content.items.map((member) => (
             <article key={member.id} className="min-w-0">
               <div className="aspect-[4/5] overflow-hidden rounded-media bg-surface-blue">

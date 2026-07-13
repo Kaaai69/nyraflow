@@ -2,6 +2,7 @@ export type HeroSectionId = "work" | "contact";
 
 const splineTargets: ReadonlyMap<string, HeroSectionId> = new Map([
   ["Rectangle 4", "contact"],
+  ["Text 3", "contact"],
   ["get", "work"],
 ]);
 

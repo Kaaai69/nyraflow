@@ -198,7 +198,7 @@ describe("home page sections", () => {
     expect(teamMarkup).not.toContain("sm:mt-20");
     expect(teamMarkup).not.toContain("md:mt-20");
     expect(teamSection).toContain(
-      "grid min-w-0 gap-8 md:grid-cols-2 lg:col-span-8 xl:grid-cols-3 xl:gap-5",
+      "grid min-w-0 gap-8 md:grid-cols-2 lg:col-span-7 xl:grid-cols-3 xl:gap-5",
     );
     expect(teamMarkup.match(/<article class="min-w-0"/g)).toHaveLength(3);
   });
@@ -298,6 +298,7 @@ describe("home page sections", () => {
       "--shadow-card:",
       "--text-display:",
       "--text-title:",
+      "--text-team:",
       "--duration-fast:",
       "--duration-base:",
       "--duration-slow:",
@@ -319,6 +320,7 @@ describe("home page sections", () => {
       "shadow-card",
       "text-display",
       "text-title",
+      "text-team",
       "duration-slow",
       "ease-premium",
     ]) {
