@@ -19,36 +19,28 @@ export default function TeamSection() {
           </p>
         </header>
 
-        <div className="grid gap-10 md:grid-cols-2 lg:col-span-8 lg:gap-6">
-          {content.items.map((member, index) => (
-            <article key={member.id} className={index === 1 ? "md:mt-20" : ""}>
-              <div
-                className={`overflow-hidden rounded-media bg-surface-blue ${
-                  index === 0 ? "aspect-[4/3]" : "aspect-[4/5]"
-                }`}
-              >
+        <div className="grid min-w-0 gap-8 md:grid-cols-2 lg:col-span-8 xl:grid-cols-3 xl:gap-5">
+          {content.items.map((member) => (
+            <article key={member.id} className="min-w-0">
+              <div className="aspect-[4/5] overflow-hidden rounded-media bg-surface-blue">
                 <Image
-                  src={member.photo.src}
-                  alt={member.photo.alt}
-                  width={member.photo.width}
-                  height={member.photo.height}
+                  {...member.photo}
                   sizes="(max-width: 767px) 100vw, (max-width: 1024px) 50vw, 34vw"
-                  className="h-full w-full object-cover saturate-[0.82] contrast-[1.02]"
+                  className="h-full w-full object-cover"
                 />
               </div>
-              <h3 className="mt-5 text-2xl font-semibold tracking-[-0.02em]">
-                {member.name}
+              <h3 className="mt-5 text-xl font-semibold leading-snug tracking-[-0.02em]">
+                {`${member.name}, ${member.role}`}
               </h3>
-              {member.isRoleConfirmed ? (
-                <>
-                  <p className="mt-2 font-medium text-blue-deep">{member.role}</p>
-                  <p className="mt-4 text-base leading-relaxed text-text-secondary">
-                    {member.description}
-                  </p>
-                </>
-              ) : null}
             </article>
           ))}
+          <article className="min-w-0" aria-label="Место для третьего фото">
+            <div className="flex aspect-[4/5] items-end rounded-media border border-line bg-surface-blue p-6">
+              <p className="text-sm font-semibold text-blue-deep">
+                Место для третьего фото
+              </p>
+            </div>
+          </article>
         </div>
       </SectionContainer>
     </section>

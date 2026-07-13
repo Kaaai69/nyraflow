@@ -45,7 +45,7 @@ describe("home page sections", () => {
       "Красивого интерфейса недостаточно.",
       "Работа, которую можно проверить.",
       "Собираем продукт вокруг бизнес-задачи.",
-      "Два человека. Одна ответственность за результат.",
+      "Три человека. Одна ответственность за результат.",
       "Сначала смысл. Потом система. Затем запуск.",
       "Обсудим, какой продукт нужен вашему бизнесу.",
     ];
@@ -56,8 +56,6 @@ describe("home page sections", () => {
       "Конверсионные сайты",
       "Веб-сервисы",
       "AI-автоматизации",
-      "Арсений",
-      "Артём",
       "Разобраться",
       "Спроектировать",
       "Собрать",
@@ -166,12 +164,28 @@ describe("home page sections", () => {
     }
   });
 
-  it("keeps the team collage sequential below the 768px breakpoint", async () => {
+  it("renders two verified team members and one neutral responsive slot", async () => {
     const markup = await renderPageAfterHero();
+    const teamMarkup = markup.slice(
+      markup.indexOf('<section id="team"'),
+      markup.indexOf('<section id="process"'),
+    );
+    const teamSection = readProjectFile("components/home/TeamSection.tsx");
 
-    expect(markup).toContain("md:grid-cols-2");
-    expect(markup).not.toContain("sm:grid-cols-2");
-    expect(markup).not.toContain("sm:mt-20");
+    expect(markup).toContain("Три человека. Одна ответственность за результат.");
+    expect(markup).toContain("Арсений, Backend &amp; Automation Engineer");
+    expect(markup).toContain("Артём, Frontend &amp; Product Developer");
+    expect(markup).toContain("Место для третьего фото");
+    expect(teamMarkup.match(/aspect-\[4\/5\]/g)).toHaveLength(3);
+    expect(teamMarkup).toContain("md:grid-cols-2");
+    expect(teamMarkup).toContain("xl:grid-cols-3");
+    expect(teamMarkup).not.toContain("sm:grid-cols-2");
+    expect(teamMarkup).not.toContain("sm:mt-20");
+    expect(teamMarkup).not.toContain("md:mt-20");
+    expect(teamSection).toContain(
+      "grid min-w-0 gap-8 md:grid-cols-2 lg:col-span-8 xl:grid-cols-3 xl:gap-5",
+    );
+    expect(teamMarkup.match(/<article class="min-w-0"/g)).toHaveLength(3);
   });
 
   it("keeps HomeSections inside main and SiteFooter after main in app/page", () => {

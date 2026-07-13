@@ -52,8 +52,6 @@ type TeamMember = {
   id: string;
   name: string;
   role: string;
-  description: string;
-  isRoleConfirmed: boolean;
   photo: ImageAsset;
 };
 
@@ -265,17 +263,14 @@ export const homeContent = {
   },
   team: {
     id: "team",
-    title: "Два человека. Одна ответственность за результат.",
+    title: "Три человека. Одна ответственность за результат.",
     description:
       "Работаем небольшой командой, чтобы сохранять контекст, быстро принимать решения и отвечать за продукт целиком.",
     items: [
       {
         id: "arseniy",
         name: "Арсений",
-        role: "Стратегия и дизайн",
-        description:
-          "Отвечает за исследование, структуру и визуальную систему. Помогает превратить разрозненные идеи в продукт, который ясно объясняет ценность.",
-        isRoleConfirmed: false,
+        role: "Backend & Automation Engineer",
         photo: {
           src: "/images/team/arseniy.jpg",
           alt: "Арсений",
@@ -286,10 +281,7 @@ export const homeContent = {
       {
         id: "artem",
         name: "Артём",
-        role: "Разработка и автоматизация",
-        description:
-          "Отвечает за техническую архитектуру, интеграции и запуск. Собирает устойчивую основу и связывает продукт с процессами бизнеса.",
-        isRoleConfirmed: false,
+        role: "Frontend & Product Developer",
         photo: {
           src: "/images/team/artem.jpg",
           alt: "Артём",

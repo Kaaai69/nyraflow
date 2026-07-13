@@ -28,7 +28,10 @@ type HomeModule = {
     process: { items: readonly unknown[] };
     faq: { items: readonly unknown[] };
     work: { media: readonly WorkMedia[] };
-    team: { items: readonly { photo: ImageAsset }[] };
+    team: {
+      title: string;
+      items: readonly { name: string; role: string; photo: ImageAsset }[];
+    };
   };
 };
 
@@ -42,7 +45,7 @@ async function loadHomeModule(): Promise<HomeModule> {
         process: { items: [] },
         faq: { items: [] },
         work: { media: [] },
-        team: { items: [] },
+        team: { title: "", items: [] },
       },
     };
   }
@@ -123,6 +126,20 @@ describe("home content contract", () => {
 });
 
 describe("home content assets", () => {
+  it("defines the approved team heading and two verified members", async () => {
+    const { homeContent } = await loadHomeModule();
+
+    expect(homeContent.team.title).toBe(
+      "Три человека. Одна ответственность за результат.",
+    );
+    expect(
+      homeContent.team.items.map(({ name, role }) => ({ name, role })),
+    ).toEqual([
+      { name: "Арсений", role: "Backend & Automation Engineer" },
+      { name: "Артём", role: "Frontend & Product Developer" },
+    ]);
+  });
+
   it("references local JPEG media with matching dimensions", async () => {
     const { homeContent } = await loadHomeModule();
     const assets = [
