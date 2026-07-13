@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ComponentProps } from "react";
-import Spline from "@splinetool/react-spline/next";
+import Spline from "@splinetool/react-spline";
 import {
   getCurrentSplineTarget,
   resolveSplineTarget,

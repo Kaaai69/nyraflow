@@ -59,7 +59,7 @@ describe("application foundation", () => {
 });
 
 describe("locked Spline hero", () => {
-  it("renders the exact scene through the protected default import", () => {
+  it("renders the interactive client scene through the synchronous default import", () => {
     const hero = readProjectFile("components/LockedSplineHero.tsx");
     const sourceFile = ts.createSourceFile(
       "components/LockedSplineHero.tsx",
@@ -68,11 +68,16 @@ describe("locked Spline hero", () => {
       true,
       ts.ScriptKind.TSX,
     );
-    const splineImport = sourceFile.statements.find(
+    const splineImports = sourceFile.statements.filter(
       (statement): statement is ts.ImportDeclaration =>
         ts.isImportDeclaration(statement) &&
         ts.isStringLiteral(statement.moduleSpecifier) &&
-        statement.moduleSpecifier.text === "@splinetool/react-spline/next",
+        statement.moduleSpecifier.text.startsWith("@splinetool/react-spline"),
+    );
+    const splineImport = splineImports.find(
+      (statement) =>
+        (statement.moduleSpecifier as ts.StringLiteral).text ===
+        "@splinetool/react-spline",
     );
     const importedName = splineImport?.importClause?.name?.text;
     const defaultExport = sourceFile.statements.find(
@@ -126,6 +131,19 @@ describe("locked Spline hero", () => {
       renderedExpression = renderedExpression.expression;
     }
 
+    expect(sourceFile.statements[0]).toSatisfy(
+      (statement: ts.Statement) =>
+        ts.isExpressionStatement(statement) &&
+        ts.isStringLiteral(statement.expression) &&
+        statement.expression.text === "use client",
+    );
+    expect(
+      splineImports.map(
+        (statement) => (statement.moduleSpecifier as ts.StringLiteral).text,
+      ),
+    ).toEqual(["@splinetool/react-spline"]);
+    expect(splineImport?.importClause?.isTypeOnly).toBe(false);
+    expect(splineImport?.importClause?.namedBindings).toBeUndefined();
     expect(importedName).toBe("Spline");
     expect(defaultExport).toBeDefined();
     expect(shadowingDeclarations).toEqual([]);
