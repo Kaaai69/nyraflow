@@ -119,6 +119,31 @@ describe("home page sections", () => {
     expect(form).toContain("Коротко о задаче");
   });
 
+  it("presents the unavailable contact form as disabled and explains why", async () => {
+    const markup = await renderPageAfterHero();
+    const form = markup.match(/<form[^>]*>[\s\S]*?<\/form>/)?.[0] ?? "";
+
+    expect(form).toMatch(
+      /<button[^>]*disabled=""[^>]*aria-describedby="contact-form-status"[^>]*>/,
+    );
+    expect(form).toContain(
+      'id="contact-form-status"',
+    );
+    expect(form).toContain(
+      "Отправка будет доступна после подключения защищённого канала перед публикацией.",
+    );
+    expect(form).toContain("Обсудить проект");
+
+    const styles = readProjectFile("app/globals.css");
+    const disabledRule = styles.match(
+      /\.button-primary:disabled\s*{[^}]*}/,
+    )?.[0];
+
+    expect(disabledRule).toContain("background: var(--color-line);");
+    expect(disabledRule).toContain("color: var(--color-text-primary);");
+    expect(disabledRule).not.toContain("opacity:");
+  });
+
   it("exposes portfolio truth labels, team images, and footer anchors", async () => {
     const markup = await renderPageAfterHero();
     const workSection = readProjectFile("components/home/WorkSection.tsx");
@@ -207,10 +232,76 @@ describe("home page sections", () => {
     expect(styles).toContain("outline: 3px solid var(--color-blue-deep);");
     expect(styles).toContain("@media (hover: hover) and (pointer: fine)");
     expect(styles).toMatch(
-      /\.button-primary:hover\s*{[^}]*background:\s*var\(--color-blue-deep\)/,
+      /\.button-primary:not\(:disabled\):hover\s*{[^}]*background:\s*var\(--color-blue-deep\)/,
     );
-    expect(styles).not.toMatch(/\.button-primary:hover\s*{[^}]*opacity:/);
+    expect(styles).not.toMatch(
+      /\.button-primary:not\(:disabled\):hover\s*{[^}]*opacity:/,
+    );
     expect(interactiveSources).not.toMatch(/focus-visible:outline-none|ring-blue\//);
     expect(services).not.toContain("group-hover:");
+  });
+
+  it("defines and uses semantic layout, type, shape, elevation, and motion tokens", () => {
+    const styles = readProjectFile("app/globals.css");
+    const sources = [
+      readProjectFile("components/home/Layout.tsx"),
+      readProjectFile("components/home/CredibilitySection.tsx"),
+      readProjectFile("components/home/ProblemSection.tsx"),
+      readProjectFile("components/home/WorkSection.tsx"),
+      readProjectFile("components/home/ServicesSection.tsx"),
+      readProjectFile("components/home/TeamSection.tsx"),
+      readProjectFile("components/home/ProcessSection.tsx"),
+      readProjectFile("components/home/FaqSection.tsx"),
+      readProjectFile("components/home/ContactSection.tsx"),
+      readProjectFile("components/home/SiteFooter.tsx"),
+    ].join("\n");
+
+    for (const token of [
+      "--container-site:",
+      "--spacing-gutter-mobile:",
+      "--spacing-gutter-tablet:",
+      "--spacing-gutter-desktop:",
+      "--spacing-section-mobile:",
+      "--spacing-section-desktop:",
+      "--spacing-section-wide:",
+      "--radius-card:",
+      "--radius-media:",
+      "--shadow-card:",
+      "--text-display:",
+      "--text-title:",
+      "--duration-fast:",
+      "--duration-base:",
+      "--duration-slow:",
+      "--ease-premium:",
+    ]) {
+      expect(styles, `${token} should be declared in @theme`).toContain(token);
+    }
+
+    for (const utility of [
+      "max-w-site",
+      "px-gutter-mobile",
+      "md:px-gutter-tablet",
+      "xl:px-gutter-desktop",
+      "py-section-mobile",
+      "md:py-section-desktop",
+      "xl:py-section-wide",
+      "rounded-card",
+      "rounded-media",
+      "shadow-card",
+      "text-display",
+      "text-title",
+      "duration-slow",
+      "ease-premium",
+    ]) {
+      expect(sources, `${utility} should consume a semantic token`).toContain(
+        utility,
+      );
+    }
+
+    expect(sources).not.toMatch(/text-\[clamp\(/);
+    expect(sources).not.toMatch(/rounded-\[(20|28)px\]/);
+    expect(sources).not.toContain(
+      "shadow-[0_18px_50px_rgba(36,87,255,0.08)]",
+    );
   });
 });

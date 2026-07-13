@@ -12,7 +12,7 @@ export default function ServicesSection() {
   const content = homeContent.services;
 
   return (
-    <section id="services" className="py-20 md:py-32 xl:py-36">
+    <section id="services" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
 
@@ -22,7 +22,7 @@ export default function ServicesSection() {
               key={item.id}
               className="service-row grid gap-7 border-b border-line py-10 md:py-12 lg:grid-cols-12 lg:gap-6"
             >
-              <h3 className="service-title text-2xl font-semibold tracking-[-0.02em] transition-transform duration-300 ease-out md:text-[1.75rem] lg:col-span-3 lg:pr-5">
+              <h3 className="service-title text-2xl font-semibold tracking-[-0.02em] transition-transform duration-slow ease-premium md:text-subtitle lg:col-span-3 lg:pr-5">
                 {item.title}
               </h3>
               <div className="grid gap-7 md:grid-cols-3 lg:col-span-9">

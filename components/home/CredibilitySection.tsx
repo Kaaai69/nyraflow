@@ -4,13 +4,13 @@ import { SectionContainer } from "./Layout";
 
 export default function CredibilitySection() {
   return (
-    <section id="credibility" aria-label="Почему нам доверяют" className="py-20 md:py-24">
+    <section id="credibility" aria-label="Почему нам доверяют" className="py-section-mobile md:py-section-credibility">
       <SectionContainer>
         <div className="grid gap-4 md:grid-cols-3 md:gap-5">
           {homeContent.credibility.items.map((item) => (
             <article
               key={item.id}
-              className="rounded-[20px] border border-line bg-surface p-7 shadow-[0_18px_50px_rgba(36,87,255,0.08)] md:p-8"
+              className="rounded-card border border-line bg-surface p-7 shadow-card md:p-8"
             >
               <h2 className="text-2xl font-semibold leading-tight tracking-[-0.02em]">
                 {item.title}

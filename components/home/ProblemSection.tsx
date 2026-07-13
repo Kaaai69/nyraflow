@@ -6,10 +6,10 @@ export default function ProblemSection() {
   const content = homeContent.problem;
 
   return (
-    <section id="problem" className="py-20 md:py-32 xl:py-36">
+    <section id="problem" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
       <SectionContainer className="grid gap-12 lg:grid-cols-12 lg:gap-6">
         <header className="lg:col-span-5 lg:pr-10">
-          <h2 className="text-balance text-[clamp(2.375rem,4.7vw,4.25rem)] font-semibold leading-[1.02] tracking-[-0.035em]">
+          <h2 className="text-title text-balance">
             {content.title}
           </h2>
           <p className="mt-7 text-lg leading-relaxed text-text-secondary md:text-xl">
@@ -21,7 +21,7 @@ export default function ProblemSection() {
           <div className="space-y-10">
             {content.items.map((item) => (
               <article key={item.id} className="max-w-2xl">
-                <h3 className="text-2xl font-semibold tracking-[-0.02em] md:text-[1.75rem]">
+                <h3 className="text-2xl font-semibold tracking-[-0.02em] md:text-subtitle">
                   {item.title}
                 </h3>
                 <p className="mt-4 text-base leading-relaxed text-text-secondary md:text-lg">

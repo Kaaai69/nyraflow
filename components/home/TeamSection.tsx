@@ -8,10 +8,10 @@ export default function TeamSection() {
   const content = homeContent.team;
 
   return (
-    <section id="team" className="py-20 md:py-32 xl:py-36">
+    <section id="team" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
       <SectionContainer className="grid gap-14 lg:grid-cols-12 lg:gap-6">
         <header className="lg:col-span-4 lg:pr-10">
-          <h2 className="text-balance text-[clamp(2.375rem,4.5vw,4rem)] font-semibold leading-[1.02] tracking-[-0.035em]">
+          <h2 className="text-title-compact text-balance">
             {content.title}
           </h2>
           <p className="mt-7 text-lg leading-relaxed text-text-secondary md:text-xl">
@@ -23,7 +23,7 @@ export default function TeamSection() {
           {content.items.map((member, index) => (
             <article key={member.id} className={index === 1 ? "md:mt-20" : ""}>
               <div
-                className={`overflow-hidden rounded-[28px] bg-surface-blue ${
+                className={`overflow-hidden rounded-media bg-surface-blue ${
                   index === 0 ? "aspect-[4/3]" : "aspect-[4/5]"
                 }`}
               >

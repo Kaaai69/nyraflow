@@ -6,7 +6,7 @@ export default function FaqSection() {
   const columns = [homeContent.faq.items.slice(0, 3), homeContent.faq.items.slice(3)];
 
   return (
-    <section id="faq" aria-label="Частые вопросы" className="py-20 md:py-32 xl:py-36">
+    <section id="faq" aria-label="Частые вопросы" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
       <SectionContainer>
         <div className="grid gap-x-16 lg:grid-cols-2">
           {columns.map((items, columnIndex) => (

@@ -11,7 +11,7 @@ export function SectionContainer({
 }: SectionContainerProps) {
   return (
     <div
-      className={`mx-auto w-full max-w-[1240px] px-6 md:px-10 xl:px-16 ${className}`}
+      className={`mx-auto w-full max-w-site px-gutter-mobile md:px-gutter-tablet xl:px-gutter-desktop ${className}`}
     >
       {children}
     </div>
@@ -30,7 +30,7 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <header className={`max-w-4xl ${className}`}>
-      <h2 className="text-balance text-[clamp(2.375rem,5vw,4.5rem)] font-semibold leading-[1.02] tracking-[-0.035em]">
+      <h2 className="text-display text-balance">
         {title}
       </h2>
       <p className="mt-6 max-w-[65ch] text-lg leading-relaxed text-text-secondary md:text-xl">

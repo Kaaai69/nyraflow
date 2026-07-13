@@ -11,6 +11,35 @@
   --color-blue-deep: #1539b8;
   --color-cyan: #43b9f2;
   --font-sans: "Onest Variable", Arial, Helvetica, sans-serif;
+  --container-site: 77.5rem;
+  --spacing-gutter-mobile: 1.5rem;
+  --spacing-gutter-tablet: 2.5rem;
+  --spacing-gutter-desktop: 4rem;
+  --spacing-section-mobile: 5rem;
+  --spacing-section-credibility: 6rem;
+  --spacing-section-contact: 7rem;
+  --spacing-section-desktop: 8rem;
+  --spacing-section-wide: 9rem;
+  --radius-card: 1.25rem;
+  --radius-media: 1.75rem;
+  --shadow-card: 0 18px 50px rgb(36 87 255 / 0.08);
+  --text-display: clamp(2.375rem, 5vw, 4.5rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.035em;
+  --text-display--font-weight: 600;
+  --text-title: clamp(2.375rem, 4.7vw, 4.25rem);
+  --text-title--line-height: 1.02;
+  --text-title--letter-spacing: -0.035em;
+  --text-title--font-weight: 600;
+  --text-title-compact: clamp(2.375rem, 4.5vw, 4rem);
+  --text-title-compact--line-height: 1.02;
+  --text-title-compact--letter-spacing: -0.035em;
+  --text-title-compact--font-weight: 600;
+  --text-subtitle: 1.75rem;
+  --duration-fast: 180ms;
+  --duration-base: 220ms;
+  --duration-slow: 300ms;
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root {
@@ -63,16 +92,23 @@ body {
     line-height: 1.25;
     text-decoration: none;
     white-space: nowrap;
-    transition: transform 220ms ease;
+    transition: transform var(--duration-base) var(--ease-premium),
+      background-color var(--duration-base) var(--ease-premium);
   }
 
-  .button-primary:hover {
+  .button-primary:not(:disabled):hover {
     background: var(--color-blue-deep);
     transform: translateY(-1px);
   }
 
-  .button-primary:active {
+  .button-primary:not(:disabled):active {
     transform: scale(0.98);
+  }
+
+  .button-primary:disabled {
+    background: var(--color-line);
+    color: var(--color-text-primary);
+    cursor: not-allowed;
   }
 
   .form-label {
@@ -91,7 +127,7 @@ body {
     background: var(--color-canvas);
     padding: 0.75rem 0.875rem;
     color: var(--color-text-primary);
-    transition: opacity 180ms ease;
+    transition: opacity var(--duration-fast) var(--ease-premium);
   }
 
   .form-field:focus {

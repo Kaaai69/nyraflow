@@ -10,14 +10,14 @@ export default function WorkSection() {
   const concepts = content.media.filter((media) => media.status === "concept");
 
   return (
-    <section id="work" className="py-20 md:py-32 xl:py-36">
+    <section id="work" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
 
         <div className="mt-14 md:mt-20">
           {published ? (
             <figure>
-              <div className="overflow-hidden rounded-[28px] bg-surface">
+              <div className="overflow-hidden rounded-media bg-surface">
                 <Image
                   src={published.src}
                   alt={published.alt}
@@ -31,7 +31,7 @@ export default function WorkSection() {
                 <span>{published.caption}</span>
                 <a
                   href={published.href}
-                  className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-blue px-5 font-semibold whitespace-nowrap text-blue-deep transition-transform duration-200 hover:-translate-y-px"
+                  className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-blue px-5 font-semibold whitespace-nowrap text-blue-deep transition-transform duration-base ease-premium hover:-translate-y-px"
                 >
                   {published.cta}
                 </a>
@@ -46,7 +46,7 @@ export default function WorkSection() {
                 className={index === 0 ? "md:col-span-7" : "md:col-span-5 md:mt-24"}
               >
                 <div
-                  className={`overflow-hidden rounded-[28px] bg-surface ${
+                  className={`overflow-hidden rounded-media bg-surface ${
                     index === 0 ? "aspect-[8/5]" : "aspect-[4/5]"
                   }`}
                 >
