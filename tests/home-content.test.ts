@@ -25,6 +25,37 @@ type HomeModule = {
   homeSectionOrder: readonly string[];
   homeContent: {
     credibility: { items: readonly unknown[] };
+    problem: { title: string };
+    metrics: {
+      items: readonly {
+        id: string;
+        value: string;
+        title: string;
+        description: string;
+      }[];
+    };
+    starter: {
+      title: string;
+      price: string;
+      items: readonly {
+        id: string;
+        title: string;
+        description: string;
+        icon: string;
+      }[];
+    };
+    pricing: {
+      title: string;
+      cta: string;
+      items: readonly {
+        id: string;
+        title: string;
+        price: string;
+        description: string;
+        included: readonly string[];
+        optional?: readonly string[];
+      }[];
+    };
     services: { items: readonly unknown[] };
     process: { items: readonly unknown[] };
     faq: { items: readonly unknown[] };
@@ -42,6 +73,10 @@ async function loadHomeModule(): Promise<HomeModule> {
       homeSectionOrder: [],
       homeContent: {
         credibility: { items: [] },
+        problem: { title: "" },
+        metrics: { items: [] },
+        starter: { title: "", price: "", items: [] },
+        pricing: { title: "", cta: "", items: [] },
         services: { items: [] },
         process: { items: [] },
         faq: { items: [] },
@@ -98,12 +133,49 @@ describe("home content contract", () => {
       "hero",
       "credibility",
       "problem",
+      "metrics",
       "work",
+      "starter",
+      "pricing",
       "services",
       "team",
       "process",
       "faq",
       "contact",
+    ]);
+  });
+
+  it("defines the commercial offer content", async () => {
+    const { homeContent } = await loadHomeModule();
+
+    expect(homeContent.problem.title).toBe(
+      "Разрабатываем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
+    );
+    expect(homeContent.metrics.items.map((item) => item.value)).toEqual([
+      "2+",
+      "20+",
+      "100%",
+    ]);
+    expect(homeContent.starter.price).toBe("от 20 000 ₽");
+    expect(homeContent.starter.items).toHaveLength(4);
+    expect(
+      homeContent.pricing.items.map(({ title, price }) => ({ title, price })),
+    ).toEqual([
+      { title: "Лендинг", price: "от 20 000 ₽" },
+      { title: "Веб-сервис / Telegram Mini App", price: "от 60 000 ₽" },
+      { title: "Сайт + AI-автоматизация", price: "от 120 000 ₽" },
+    ]);
+    expect(homeContent.pricing.cta).toBe("Обсудить проект");
+    expect(homeContent.pricing.items[0]?.included).toEqual([
+      "Маркетинговая упаковка",
+      "Адаптация под мобильные устройства",
+      "Базовая SEO-настройка",
+      "Форма заявки в Telegram",
+    ]);
+    expect(homeContent.pricing.items[0]?.optional).toEqual([
+      "Индивидуальный или анимированный дизайн",
+      "Расширенное количество секций",
+      "Углублённая SEO-настройка",
     ]);
   });
 

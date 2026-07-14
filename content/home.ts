@@ -2,7 +2,10 @@ export type HomeSectionId =
   | "hero"
   | "credibility"
   | "problem"
+  | "metrics"
   | "work"
+  | "starter"
+  | "pricing"
   | "services"
   | "team"
   | "process"
@@ -32,6 +35,30 @@ type TextItem = {
   id: string;
   title: string;
   description: string;
+};
+
+type MetricItem = TextItem & {
+  value: string;
+};
+
+export type StarterIconName =
+  | "structure"
+  | "copy"
+  | "analytics"
+  | "automation";
+
+type StarterItem = TextItem & {
+  icon: StarterIconName;
+};
+
+export type PricingItem = {
+  id: string;
+  title: string;
+  price: string;
+  description: string;
+  included: readonly string[];
+  optional?: readonly string[];
+  featured?: boolean;
 };
 
 type ServiceItem = {
@@ -71,11 +98,28 @@ export type HomeContent = {
     items: readonly TextItem[];
     conclusion: string;
   };
+  metrics: {
+    id: "metrics";
+    items: readonly MetricItem[];
+  };
   work: {
     id: "work";
     title: string;
     description: string;
     media: readonly WorkMedia[];
+  };
+  starter: {
+    id: "starter";
+    title: string;
+    price: string;
+    items: readonly StarterItem[];
+  };
+  pricing: {
+    id: "pricing";
+    title: string;
+    description: string;
+    cta: string;
+    items: readonly PricingItem[];
   };
   services: {
     id: "services";
@@ -115,7 +159,10 @@ export const homeSectionOrder = [
   "hero",
   "credibility",
   "problem",
+  "metrics",
   "work",
+  "starter",
+  "pricing",
   "services",
   "team",
   "process",
@@ -153,7 +200,8 @@ export const homeContent = {
   },
   problem: {
     id: "problem",
-    title: "Красивого интерфейса недостаточно.",
+    title:
+      "Разрабатываем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
     description:
       "Digital-продукт приносит результат, когда предложение, сценарий, интерфейс и техническая часть усиливают друг друга.",
     items: [
@@ -178,6 +226,32 @@ export const homeContent = {
     ],
     conclusion:
       "Мы проектируем не отдельный экран, а связанный путь от первого контакта до рабочего процесса внутри бизнеса.",
+  },
+  metrics: {
+    id: "metrics",
+    items: [
+      {
+        id: "experience",
+        value: "2+",
+        title: "года опыта разработки",
+        description:
+          "Проектируем и собираем сайты под конкретные задачи бизнеса, а не ради набора красивых экранов.",
+      },
+      {
+        id: "completed-projects",
+        value: "20+",
+        title: "выполненных проектов",
+        description:
+          "Лендинги, сервисные сайты, каталоги, формы и интеграции для разных ниш.",
+      },
+      {
+        id: "contract-deadlines",
+        value: "100%",
+        title: "дедлайны по договору",
+        description:
+          "Сроки, объём работ и ожидаемый результат фиксируются до начала разработки.",
+      },
+    ],
   },
   work: {
     id: "work",
@@ -304,6 +378,96 @@ export const homeContent = {
         status: "published",
         href: "https://groom-woad.vercel.app",
         cta: "Открыть проект",
+      },
+    ],
+  },
+  starter: {
+    id: "starter",
+    title: "Быстрый старт",
+    price: "от 20 000 ₽",
+    items: [
+      {
+        id: "selling-structure",
+        icon: "structure",
+        title: "Продающая структура",
+        description:
+          "Оффер, блоки доверия и понятный путь к заявке собираются вокруг одной бизнес-задачи.",
+      },
+      {
+        id: "copy-and-packaging",
+        icon: "copy",
+        title: "Тексты и упаковка",
+        description:
+          "Формулируем ценность продукта и аргументы для клиента, даже если подробного ТЗ пока нет.",
+      },
+      {
+        id: "integrations-and-analytics",
+        icon: "analytics",
+        title: "Интеграции и аналитика",
+        description:
+          "Подключаем формы, Telegram и базовые события, чтобы видеть обращения и ключевые действия.",
+      },
+      {
+        id: "automation-ready",
+        icon: "automation",
+        title: "Готовность к автоматизации",
+        description:
+          "Закладываем структуру, к которой позже можно подключить CRM, ботов и новые сценарии.",
+      },
+    ],
+  },
+  pricing: {
+    id: "pricing",
+    title: "Форматы работы и стоимость",
+    description:
+      "Выберите подходящий уровень продукта. Точный состав работ фиксируем после короткого разбора задачи.",
+    cta: "Обсудить проект",
+    items: [
+      {
+        id: "landing",
+        title: "Лендинг",
+        price: "от 20 000 ₽",
+        description: "Для запуска продукта, услуги или проверки новой ниши.",
+        included: [
+          "Маркетинговая упаковка",
+          "Адаптация под мобильные устройства",
+          "Базовая SEO-настройка",
+          "Форма заявки в Telegram",
+        ],
+        optional: [
+          "Индивидуальный или анимированный дизайн",
+          "Расширенное количество секций",
+          "Углублённая SEO-настройка",
+        ],
+      },
+      {
+        id: "web-service-mini-app",
+        title: "Веб-сервис / Telegram Mini App",
+        price: "от 60 000 ₽",
+        description:
+          "Для личных кабинетов, каталогов, бронирования, расчётов и внутренних инструментов.",
+        included: [
+          "Проектирование пользовательских сценариев",
+          "Интерфейс, роли и состояния",
+          "Работа с данными",
+          "Необходимые интеграции",
+          "Адаптация под веб или Telegram Mini App",
+        ],
+        featured: true,
+      },
+      {
+        id: "site-ai-automation",
+        title: "Сайт + AI-автоматизация",
+        price: "от 120 000 ₽",
+        description:
+          "Для системы, которая принимает заявки и помогает обрабатывать их без лишней ручной работы.",
+        included: [
+          "Сайт или веб-сервис",
+          "AI-бот для первичной обработки",
+          "Интеграции с CRM, Make или n8n",
+          "Автоматизация повторяющихся процессов",
+          "Передача заявок в работу",
+        ],
       },
     ],
   },
