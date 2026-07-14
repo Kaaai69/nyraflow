@@ -16,7 +16,7 @@ function ProjectCard({ project, featured = false, className }: ProjectCardProps)
       href={project.href}
       target="_blank"
       rel="noreferrer noopener"
-      className={`block ${className ?? ""}`}
+      className={`project-card block overflow-hidden rounded-media border border-line-strong bg-surface p-3 shadow-card md:p-4 ${className ?? ""}`}
     >
       <figure>
         <div className="aspect-[8/5] overflow-hidden rounded-media bg-surface">
@@ -30,10 +30,10 @@ function ProjectCard({ project, featured = false, className }: ProjectCardProps)
                 ? "(max-width: 1240px) 100vw, 1112px"
                 : "(max-width: 768px) 100vw, 58vw"
             }
-            className="h-full w-full object-cover"
+            className="project-card-image h-full w-full object-cover"
           />
         </div>
-        <figcaption className="mt-4 flex items-start justify-between gap-4">
+        <figcaption className="mt-4 flex items-start justify-between gap-4 px-2 pb-2">
           <span>
             <span className="block text-lg font-semibold text-text-primary">
               {project.title}

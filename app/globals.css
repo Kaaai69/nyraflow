@@ -148,6 +148,20 @@ body {
       var(--shadow-card-strong);
   }
 
+  .project-card {
+    transition: transform var(--duration-slow) var(--ease-premium),
+      border-color var(--duration-slow) var(--ease-premium),
+      box-shadow var(--duration-slow) var(--ease-premium);
+  }
+
+  .project-card-image {
+    transition: transform var(--duration-slow) var(--ease-premium);
+  }
+
+  .project-card:active {
+    transform: scale(0.995);
+  }
+
   .form-label {
     display: block;
     color: var(--color-text-primary);
@@ -173,6 +187,16 @@ body {
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .project-card:hover {
+    border-color: color-mix(in srgb, var(--color-blue) 30%, var(--color-line));
+    box-shadow: var(--shadow-card-strong);
+    transform: translateY(-4px);
+  }
+
+  .project-card:hover .project-card-image {
+    transform: scale(1.015);
+  }
+
   .service-row:hover .service-title {
     transform: translateX(0.25rem);
   }

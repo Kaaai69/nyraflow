@@ -178,9 +178,13 @@ describe("home page sections", () => {
   it("renders ten secure published project links, team images, and footer anchors", async () => {
     const markup = await renderPageAfterHero();
     const workSection = readProjectFile("components/home/WorkSection.tsx");
+    const styles = readProjectFile("app/globals.css");
     const workMarkup = markup.slice(
       markup.indexOf('<section id="work"'),
       markup.indexOf('<section id="services"'),
+    );
+    const workClassNames = [...workMarkup.matchAll(/class="([^"]*)"/g)].map(
+      ([, className]) => className,
     );
 
     expect(markup).not.toContain("Концепт");
@@ -193,6 +197,19 @@ describe("home page sections", () => {
     ).toHaveLength(10);
     expect(workMarkup.match(/<\/figcaption><\/figure><\/a>/g) ?? []).toHaveLength(10);
     expect(workMarkup).not.toMatch(/<figure[^>]*><a\b/);
+    expect(
+      workClassNames.filter((className) =>
+        className.split(/\s+/).includes("project-card"),
+      ),
+    ).toHaveLength(10);
+    expect(
+      workClassNames.filter((className) =>
+        className.split(/\s+/).includes("project-card-image"),
+      ),
+    ).toHaveLength(10);
+    expect(styles).toMatch(/\.project-card\s*{/);
+    expect(styles).toMatch(/\.project-card:hover\s*{/);
+    expect(styles).toMatch(/\.project-card:hover \.project-card-image\s*{/);
     const markupWithReadableImagePaths = markup.replaceAll("%2F", "/");
 
     expect(markupWithReadableImagePaths).toContain(
