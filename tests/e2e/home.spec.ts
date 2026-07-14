@@ -227,6 +227,36 @@ test("ordinary contact actions preserve the contact anchor", async ({ page }) =>
   await expect(page.locator("#contact")).toBeInViewport();
 });
 
+test("component motion contracts survive the global interaction defaults", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  const transitionProperties = await page.evaluate(() => {
+    const readTransitionProperty = (selector: string) => {
+      const element = document.querySelector(selector);
+
+      if (!(element instanceof HTMLElement)) {
+        throw new Error(`${selector} is missing`);
+      }
+
+      return window.getComputedStyle(element).transitionProperty;
+    };
+
+    return {
+      button: readTransitionProperty(".button-primary"),
+      project: readTransitionProperty(".project-card"),
+      faq: readTransitionProperty(".faq-trigger"),
+    };
+  });
+
+  expect(transitionProperties).toEqual({
+    button: "transform, background-color",
+    project: "transform, border-color, box-shadow",
+    faq: "color",
+  });
+});
+
 test("desktop home page keeps its published content and interactions intact", async ({
   page,
 }) => {

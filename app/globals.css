@@ -71,13 +71,15 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-:where(a, button, summary) {
-  transition: color var(--duration-base) var(--ease-premium),
-    background-color var(--duration-base) var(--ease-premium),
-    border-color var(--duration-base) var(--ease-premium),
-    box-shadow var(--duration-base) var(--ease-premium),
-    opacity var(--duration-base) var(--ease-premium),
-    transform var(--duration-base) var(--ease-premium);
+@layer base {
+  :where(a, button, summary) {
+    transition: color var(--duration-base) var(--ease-premium),
+      background-color var(--duration-base) var(--ease-premium),
+      border-color var(--duration-base) var(--ease-premium),
+      box-shadow var(--duration-base) var(--ease-premium),
+      opacity var(--duration-base) var(--ease-premium),
+      transform var(--duration-base) var(--ease-premium);
+  }
 }
 
 :where(
