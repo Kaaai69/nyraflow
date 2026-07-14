@@ -168,20 +168,14 @@ test.describe("Spline hero navigation", () => {
   });
 });
 
-test("FAQ supports Space, multiple-open state, and hides closed answers from assistive technology", async ({
+test("native FAQ supports Space, multiple-open state, and accessible regions with JavaScript", async ({
   page,
 }) => {
   await page.goto("/#faq", { waitUntil: "load" });
-  await expect(page.locator("#faq .faq-enhanced")).toBeVisible();
-  await expect(page.locator("#faq .faq-no-js")).toHaveCount(0);
   const firstQuestion = "С чего начать, если у нас нет подробного ТЗ?";
   const secondQuestion = "Как формируются сроки и бюджет?";
-  const firstTrigger = page.getByRole("button", {
-    name: firstQuestion,
-  });
-  const secondTrigger = page.getByRole("button", {
-    name: secondQuestion,
-  });
+  const firstTrigger = page.locator("#faq summary").filter({ hasText: firstQuestion });
+  const secondTrigger = page.locator("#faq summary").filter({ hasText: secondQuestion });
   const firstPanel = page.locator("#faq-panel-no-specification");
   const secondPanel = page.locator("#faq-panel-time-and-budget");
   const firstAccessiblePanel = page.getByRole("region", {
@@ -190,38 +184,37 @@ test("FAQ supports Space, multiple-open state, and hides closed answers from ass
   const secondAccessiblePanel = page.getByRole("region", {
     name: secondQuestion,
   });
+  const firstDetails = firstTrigger.locator("xpath=ancestor::details");
+  const secondDetails = secondTrigger.locator("xpath=ancestor::details");
 
-  await expect(firstTrigger).toHaveAttribute("aria-expanded", "false");
-  await expect(firstPanel).toHaveAttribute("aria-hidden", "true");
+  await expect(page.locator("#faq details")).toHaveCount(6);
+  await expect(page.getByRole("group", { name: firstQuestion })).toHaveCount(1);
+  await expect(firstDetails).not.toHaveAttribute("open", "");
   await expect(firstAccessiblePanel).toHaveCount(0);
 
   await firstTrigger.focus();
   await page.keyboard.press("Space");
-  await expect(firstTrigger).toHaveAttribute("aria-expanded", "true");
-  await expect(firstPanel).toHaveAttribute("aria-hidden", "false");
+  await expect(firstDetails).toHaveAttribute("open", "");
   await expect(firstAccessiblePanel).toHaveCount(1);
   await expect(firstPanel).toContainText("Достаточно описать задачу");
-  await expect(firstPanel).toHaveCSS("grid-template-rows", /.+/);
+  await expect(firstPanel).toBeVisible();
 
   await secondTrigger.focus();
   await page.keyboard.press("Space");
-  await expect(firstTrigger).toHaveAttribute("aria-expanded", "true");
-  await expect(secondTrigger).toHaveAttribute("aria-expanded", "true");
-  await expect(secondPanel).toHaveAttribute("aria-hidden", "false");
+  await expect(firstDetails).toHaveAttribute("open", "");
+  await expect(secondDetails).toHaveAttribute("open", "");
   await expect(firstAccessiblePanel).toHaveCount(1);
   await expect(secondAccessiblePanel).toHaveCount(1);
 
   await firstTrigger.focus();
   await page.keyboard.press("Space");
-  await expect(firstTrigger).toHaveAttribute("aria-expanded", "false");
-  await expect(firstPanel).toHaveAttribute("aria-hidden", "true");
+  await expect(firstDetails).not.toHaveAttribute("open", "");
   await expect(firstAccessiblePanel).toHaveCount(0);
-  await expect(secondTrigger).toHaveAttribute("aria-expanded", "true");
-  await expect(secondPanel).toHaveAttribute("aria-hidden", "false");
+  await expect(secondDetails).toHaveAttribute("open", "");
   await expect(secondAccessiblePanel).toHaveCount(1);
 });
 
-test("FAQ answers remain readable and accessible when JavaScript is disabled", async ({
+test("native FAQ remains interactive and multiple-open when JavaScript is disabled", async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -234,18 +227,42 @@ test("FAQ answers remain readable and accessible when JavaScript is disabled", a
     const response = await page.goto("/#faq", { waitUntil: "load" });
 
     expect(response?.ok()).toBe(true);
-    await expect(page.locator("#faq .faq-enhanced")).toBeHidden();
-    const fallback = page.locator("#faq .faq-no-js");
-    await expect(fallback).toBeVisible();
-    const answers = fallback.locator("article");
-    await expect(answers).toHaveCount(6);
-    for (let index = 0; index < 6; index += 1) {
-      await expect(answers.nth(index)).toBeVisible();
-      expect((await answers.nth(index).innerText()).trim().length).toBeGreaterThan(20);
-    }
+    const details = page.locator("#faq details");
+    const summaries = details.locator("summary");
+    await expect(details).toHaveCount(6);
+    await summaries.nth(0).focus();
+    await page.keyboard.press("Space");
+    await summaries.nth(1).focus();
+    await page.keyboard.press("Enter");
+    await expect(details.nth(0)).toHaveAttribute("open", "");
+    await expect(details.nth(1)).toHaveAttribute("open", "");
+    await expect(details.nth(0).locator('[role="region"]')).toBeVisible();
+    await expect(details.nth(1).locator('[role="region"]')).toBeVisible();
   } finally {
     await context.close();
   }
+});
+
+test("native FAQ remains interactive when client JavaScript chunks are blocked", async ({
+  page,
+}) => {
+  let blockedChunks = 0;
+  await page.route(/\/_next\/static\/chunks\/.*\.js(?:\?.*)?$/, async (route) => {
+    blockedChunks += 1;
+    await route.abort();
+  });
+
+  const response = await page.goto("/#faq", { waitUntil: "domcontentloaded" });
+  expect(response?.ok()).toBe(true);
+  await expect.poll(() => blockedChunks).toBeGreaterThan(0);
+
+  const details = page.locator("#faq details");
+  const summaries = details.locator("summary");
+  await expect(details).toHaveCount(6);
+  await summaries.nth(0).click();
+  await summaries.nth(1).click();
+  await expect(details.nth(0)).toHaveAttribute("open", "");
+  await expect(details.nth(1)).toHaveAttribute("open", "");
 });
 
 test("ordinary contact actions preserve the contact anchor", async ({ page }) => {
@@ -333,6 +350,7 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
       "#starter article",
       "#pricing article",
       "#work .project-card",
+      "#services article",
       "#team article",
     ]) {
       const items = page.locator(selector);
@@ -359,17 +377,15 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
       ),
     ).toBe(true);
 
-    const faqTrigger = page.getByRole("button", {
-      name: "С чего начать, если у нас нет подробного ТЗ?",
+    const faqTrigger = page.locator("#faq summary").filter({
+      hasText: "С чего начать, если у нас нет подробного ТЗ?",
     });
+    const faqDetails = faqTrigger.locator("xpath=ancestor::details");
     await faqTrigger.scrollIntoViewIfNeeded();
-    await expect(faqTrigger).toHaveAttribute("aria-expanded", "false");
+    await expect(faqDetails).not.toHaveAttribute("open", "");
     await faqTrigger.tap();
-    await expect(faqTrigger).toHaveAttribute("aria-expanded", "true");
-    await expect(page.locator("#faq-panel-no-specification")).toHaveAttribute(
-      "aria-hidden",
-      "false",
-    );
+    await expect(faqDetails).toHaveAttribute("open", "");
+    await expect(page.locator("#faq-panel-no-specification")).toBeVisible();
 
     expect(
       await page.evaluate(() => ({

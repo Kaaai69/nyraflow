@@ -131,21 +131,23 @@ describe("home page sections", () => {
     expect(services).toContain('href="#contact"');
   });
 
-  it("renders a no-JavaScript FAQ fallback while the enhanced accordion starts closed", async () => {
+  it("renders a native FAQ baseline without client state or duplicate fallback markup", async () => {
     const markup = await renderPageAfterHero();
     const faqMarkup = markup.slice(
       markup.indexOf('<section id="faq"'),
       markup.indexOf('<section id="contact"'),
     );
+    const faqSource = readProjectFile("components/home/FaqAccordion.tsx");
 
-    expect(faqMarkup.match(/class="[^"]*faq-trigger[^"]*"/g)).toHaveLength(6);
-    expect(faqMarkup.match(/aria-expanded="false"/g)).toHaveLength(6);
-    expect(faqMarkup.match(/aria-controls="faq-panel-/g)).toHaveLength(6);
+    expect(faqMarkup.match(/<details/g)).toHaveLength(6);
+    expect(faqMarkup.match(/<details[^>]*aria-labelledby="faq-trigger-/g)).toHaveLength(6);
+    expect(faqMarkup.match(/<summary/g)).toHaveLength(6);
     expect(faqMarkup.match(/role="region"/g)).toHaveLength(6);
-    expect(faqMarkup.match(/aria-hidden="true" class="faq-panel/g)).toHaveLength(6);
-    expect(faqMarkup).toContain("<noscript>");
-    expect(faqMarkup).toContain('class="faq-no-js');
-    expect(faqMarkup.match(/<article/g)).toHaveLength(6);
+    expect(faqMarkup).not.toContain("<noscript>");
+    expect(faqMarkup).not.toContain("faq-no-js");
+    expect(faqSource).not.toContain('"use client"');
+    expect(faqSource).not.toContain("useState");
+    expect(faqSource).toContain('@phosphor-icons/react/ssr');
     expect(faqMarkup).toContain("С чего начать, если у нас нет подробного ТЗ?");
     expect(faqMarkup).toContain("Что происходит после запуска?");
   });

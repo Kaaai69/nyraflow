@@ -181,28 +181,41 @@ body {
   }
 
   .faq-trigger {
+    cursor: pointer;
+    list-style: none;
     transition: color var(--duration-base) var(--ease-premium);
+  }
+
+  .faq-trigger::-webkit-details-marker {
+    display: none;
   }
 
   .faq-indicator {
     transition: transform var(--duration-base) var(--ease-premium);
   }
 
-  .faq-trigger[aria-expanded="true"] .faq-indicator {
+  .faq-details {
+    interpolate-size: allow-keywords;
+  }
+
+  .faq-details[open] .faq-indicator {
     transform: rotate(180deg);
   }
 
-  .faq-panel {
-    grid-template-rows: 0fr;
+  .faq-details::details-content {
+    block-size: 0;
     opacity: 0;
+    overflow: clip;
     transform: translateY(-0.25rem);
-    transition: grid-template-rows var(--duration-slow) var(--ease-premium),
+    transition: block-size var(--duration-slow) var(--ease-premium),
+      content-visibility var(--duration-slow) allow-discrete,
       opacity var(--duration-base) var(--ease-premium),
       transform var(--duration-base) var(--ease-premium);
+    transition-behavior: allow-discrete;
   }
 
-  .faq-panel.is-open {
-    grid-template-rows: 1fr;
+  .faq-details[open]::details-content {
+    block-size: auto;
     opacity: 1;
     transform: translateY(0);
   }
