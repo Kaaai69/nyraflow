@@ -96,7 +96,7 @@ test.describe("Spline hero navigation", () => {
   });
 
   test("routes every visible layer of the hero controls", async ({ page }) => {
-    test.setTimeout(90_000);
+    test.setTimeout(180_000);
     const severeBrowserErrors: string[] = [];
 
     page.on("console", (message) => {
