@@ -110,6 +110,7 @@ describe("home page sections", () => {
     expect(metrics).toContain("100%");
     expect(starter.match(/<article/g)).toHaveLength(4);
     expect(starter).toContain("от 20 000 ₽");
+    expect(starter).toMatch(/<h2[^>]*text-blue[^>]*>Быстрый старт<\/h2>/);
     expect(pricing.match(/<article/g)).toHaveLength(3);
     expect(pricing).toContain("от 120 000 ₽");
     expect(pricing.match(/href="#contact"/g)).toHaveLength(3);

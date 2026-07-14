@@ -22,7 +22,7 @@ export default function StarterSection() {
     <section id="starter" className="py-section-mobile md:py-section-desktop">
       <SectionContainer>
         <header>
-          <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-cyan">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-blue">
             {content.title}
           </h2>
           <p className="mt-3 text-title-compact">{content.price}</p>
