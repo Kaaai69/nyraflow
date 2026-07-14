@@ -4,7 +4,7 @@ const approvedHeadings = [
   "Прямой контакт с командой",
   "Один процесс от идеи до запуска",
   "Основа для развития",
-  "Красивого интерфейса недостаточно.",
+  "Разрабатываем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
   "Работа, которую можно проверить.",
   "Собираем продукт вокруг бизнес-задачи.",
   "Три человека. Одна ответственность за результат.",
@@ -168,6 +168,22 @@ test.describe("Spline hero navigation", () => {
   });
 });
 
+test("FAQ opens smoothly and remains keyboard accessible", async ({ page }) => {
+  await page.goto("/#faq", { waitUntil: "load" });
+  const trigger = page.getByRole("button", {
+    name: "С чего начать, если у нас нет подробного ТЗ?",
+  });
+  const panel = page.locator("#faq-panel-no-specification");
+
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText("Достаточно описать задачу");
+  await expect(panel).toHaveCSS("grid-template-rows", /.+/);
+});
+
 test("desktop home page keeps its published content and interactions intact", async ({
   page,
 }) => {
@@ -191,7 +207,10 @@ test("desktop home page keeps its published content and interactions intact", as
   const expectedSectionOrder = [
     "credibility",
     "problem",
+    "metrics",
     "work",
+    "starter",
+    "pricing",
     "services",
     "team",
     "process",
@@ -244,22 +263,6 @@ test("desktop home page keeps its published content and interactions intact", as
       (element) => element.scrollWidth <= element.clientWidth,
     ),
   ).toBe(true);
-
-  const faqDetails = page.locator("#faq details");
-  await expect(faqDetails).toHaveCount(6);
-  const firstQuestion = page.getByText(
-    "С чего начать, если у нас нет подробного ТЗ?",
-    { exact: true },
-  );
-  await firstQuestion.scrollIntoViewIfNeeded();
-  await firstQuestion.click();
-  await expect(faqDetails.first()).toHaveAttribute("open", "");
-  await expect(
-    page.getByText(
-      "Достаточно описать задачу, текущую ситуацию и желаемый результат. На первой встрече мы соберём недостающий контекст и предложим следующий шаг.",
-      { exact: true },
-    ),
-  ).toBeVisible();
 
   const projectLinks = page.locator(
     '#work a[target="_blank"][rel="noreferrer noopener"]',

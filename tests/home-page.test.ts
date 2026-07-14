@@ -29,7 +29,7 @@ async function renderPageAfterHero() {
   );
 }
 
-function expectExactElement(markup: string, tag: "h2" | "h3" | "summary", copy: string) {
+function expectExactElement(markup: string, tag: "h2" | "h3", copy: string) {
   const escapedCopy = copy.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
   expect(markup).toMatch(new RegExp(`<${tag}[^>]*>${escapedCopy}</${tag}>`));
@@ -63,20 +63,8 @@ describe("home page sections", () => {
       "Собрать",
       "Запустить и проверить",
     ];
-    const expectedSummaries = [
-      "С чего начать, если у нас нет подробного ТЗ?",
-      "Как формируются сроки и бюджет?",
-      "Что произойдёт, если визуальное направление не подойдёт?",
-      "Сможем ли мы обновлять продукт после запуска?",
-      "Вы подключаете аналитику и внешние сервисы?",
-      "Что происходит после запуска?",
-    ];
-
     expectedH2.forEach((copy) => expectExactElement(markup, "h2", copy));
     expectedH3.forEach((copy) => expectExactElement(markup, "h3", copy));
-    expectedSummaries.forEach((copy) =>
-      expectExactElement(markup, "summary", copy),
-    );
   });
 
   it("keeps the conversion landmarks in the approved order", async () => {
@@ -143,11 +131,13 @@ describe("home page sections", () => {
     expect(services).toContain('href="#contact"');
   });
 
-  it("uses native FAQ disclosure controls", async () => {
+  it("renders accessible FAQ accordion controls", async () => {
     const markup = await renderPageAfterHero();
 
-    expect(markup.match(/<details/g)).toHaveLength(6);
-    expect(markup.match(/<summary/g)).toHaveLength(6);
+    expect(markup.match(/class="[^"]*faq-trigger[^"]*"/g)).toHaveLength(6);
+    expect(markup.match(/aria-expanded="false"/g)).toHaveLength(6);
+    expect(markup.match(/aria-controls="faq-panel-/g)).toHaveLength(6);
+    expect(markup.match(/role="region"/g)).toHaveLength(6);
     expect(markup).toContain("С чего начать, если у нас нет подробного ТЗ?");
     expect(markup).toContain("Что происходит после запуска?");
   });

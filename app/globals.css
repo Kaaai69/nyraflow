@@ -164,6 +164,33 @@ body {
       box-shadow var(--duration-slow) var(--ease-premium);
   }
 
+  .faq-trigger {
+    transition: color var(--duration-base) var(--ease-premium);
+  }
+
+  .faq-indicator {
+    transition: transform var(--duration-base) var(--ease-premium);
+  }
+
+  .faq-trigger[aria-expanded="true"] .faq-indicator {
+    transform: rotate(180deg);
+  }
+
+  .faq-panel {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateY(-0.25rem);
+    transition: grid-template-rows var(--duration-slow) var(--ease-premium),
+      opacity var(--duration-base) var(--ease-premium),
+      transform var(--duration-base) var(--ease-premium);
+  }
+
+  .faq-panel.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   .project-card:active {
     transform: scale(0.995);
   }
