@@ -43,7 +43,9 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
   const realCanvasBox = await realCanvas.boundingBox();
   if (!realCanvasBox) throw new Error("Spline canvas box is missing");
 
-  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.evaluate(() =>
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
+  );
   await page.mouse.move(
     realCanvasBox.x + realCanvasBox.width / 2,
     realCanvasBox.y + Math.min(realCanvasBox.height / 2, 700),
@@ -76,7 +78,7 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
       { passive: false },
     );
     main.prepend(canvas);
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 
     await new Promise<void>((resolve) => {
       window.requestAnimationFrame(() => {
@@ -101,6 +103,69 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
     .poll(() => page.evaluate(() => window.scrollY))
     .toBeGreaterThan(0);
   expect(severeBrowserErrors).toEqual([]);
+});
+
+test("trackpad bursts scroll immediately over a wheel-capturing canvas", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForFunction(() => {
+    const splineCanvas = document.querySelector("main > div > canvas");
+
+    return (
+      splineCanvas instanceof HTMLCanvasElement &&
+      Object.keys(splineCanvas).some((key) => key.startsWith("__reactFiber$"))
+    );
+  });
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => resolve());
+        });
+      }),
+  );
+
+  const result = await page.evaluate(async () => {
+    const main = document.querySelector("main");
+    if (!(main instanceof HTMLElement)) throw new Error("main is missing");
+
+    const canvas = document.createElement("canvas");
+    Object.assign(canvas.style, {
+      position: "fixed",
+      inset: "0",
+      width: "100vw",
+      height: "100vh",
+      zIndex: "2147483647",
+    });
+    main.prepend(canvas);
+    window.scrollTo({ top: 0, behavior: "instant" });
+
+    let defaultPrevented = false;
+
+    for (let index = 0; index < 10; index += 1) {
+      const wheelEvent = new WheelEvent("wheel", {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+        deltaY: 12,
+      });
+      canvas.dispatchEvent(wheelEvent);
+      defaultPrevented ||= wheelEvent.defaultPrevented;
+    }
+
+    await new Promise<void>((resolve) => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => resolve());
+      });
+    });
+
+    return { defaultPrevented, scrollY: window.scrollY };
+  });
+
+  expect(result.defaultPrevented).toBe(true);
+  expect(result.scrollY).toBe(120);
 });
 
 test.describe("Spline hero navigation", () => {

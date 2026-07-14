@@ -52,7 +52,7 @@ export default function SplineWheelBridge() {
         animationFrame = null;
         const delta = pendingDelta;
         pendingDelta = 0;
-        window.scrollBy({ top: delta, left: 0, behavior: "auto" });
+        window.scrollBy({ top: delta, left: 0, behavior: "instant" });
       });
     };
 

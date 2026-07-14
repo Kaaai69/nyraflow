@@ -81,7 +81,7 @@ describe("Spline wheel bridge", () => {
     expect(bridge).not.toContain("scrollYBeforeWheel");
     expect(bridge).toContain("pendingDelta += normalizeWheelDelta");
     expect(bridge).toContain(
-      'window.scrollBy({ top: delta, left: 0, behavior: "auto" })',
+      'window.scrollBy({ top: delta, left: 0, behavior: "instant" })',
     );
     expect(bridge).toContain('window.removeEventListener("wheel"');
     expect(bridge).not.toContain('addEventListener("scroll"');
