@@ -56,6 +56,7 @@ export default function FaqAccordion({
                   id={panelId}
                   role="region"
                   aria-labelledby={triggerId}
+                  aria-hidden={!isOpen}
                   className={`faq-panel grid ${isOpen ? "is-open" : ""}`}
                 >
                   <div className="faq-panel-inner overflow-hidden">

@@ -168,20 +168,55 @@ test.describe("Spline hero navigation", () => {
   });
 });
 
-test("FAQ opens smoothly and remains keyboard accessible", async ({ page }) => {
+test("FAQ supports Space, multiple-open state, and hides closed answers from assistive technology", async ({
+  page,
+}) => {
   await page.goto("/#faq", { waitUntil: "load" });
-  const trigger = page.getByRole("button", {
-    name: "С чего начать, если у нас нет подробного ТЗ?",
+  const firstQuestion = "С чего начать, если у нас нет подробного ТЗ?";
+  const secondQuestion = "Как формируются сроки и бюджет?";
+  const firstTrigger = page.getByRole("button", {
+    name: firstQuestion,
   });
-  const panel = page.locator("#faq-panel-no-specification");
+  const secondTrigger = page.getByRole("button", {
+    name: secondQuestion,
+  });
+  const firstPanel = page.locator("#faq-panel-no-specification");
+  const secondPanel = page.locator("#faq-panel-time-and-budget");
+  const firstAccessiblePanel = page.getByRole("region", {
+    name: firstQuestion,
+  });
+  const secondAccessiblePanel = page.getByRole("region", {
+    name: secondQuestion,
+  });
 
-  await expect(trigger).toHaveAttribute("aria-expanded", "false");
-  await trigger.focus();
-  await page.keyboard.press("Enter");
-  await expect(trigger).toHaveAttribute("aria-expanded", "true");
-  await expect(panel).toBeVisible();
-  await expect(panel).toContainText("Достаточно описать задачу");
-  await expect(panel).toHaveCSS("grid-template-rows", /.+/);
+  await expect(firstTrigger).toHaveAttribute("aria-expanded", "false");
+  await expect(firstPanel).toHaveAttribute("aria-hidden", "true");
+  await expect(firstAccessiblePanel).toHaveCount(0);
+
+  await firstTrigger.focus();
+  await page.keyboard.press("Space");
+  await expect(firstTrigger).toHaveAttribute("aria-expanded", "true");
+  await expect(firstPanel).toHaveAttribute("aria-hidden", "false");
+  await expect(firstAccessiblePanel).toHaveCount(1);
+  await expect(firstPanel).toContainText("Достаточно описать задачу");
+  await expect(firstPanel).toHaveCSS("grid-template-rows", /.+/);
+
+  await secondTrigger.focus();
+  await page.keyboard.press("Space");
+  await expect(firstTrigger).toHaveAttribute("aria-expanded", "true");
+  await expect(secondTrigger).toHaveAttribute("aria-expanded", "true");
+  await expect(secondPanel).toHaveAttribute("aria-hidden", "false");
+  await expect(firstAccessiblePanel).toHaveCount(1);
+  await expect(secondAccessiblePanel).toHaveCount(1);
+
+  await firstTrigger.focus();
+  await page.keyboard.press("Space");
+  await expect(firstTrigger).toHaveAttribute("aria-expanded", "false");
+  await expect(firstPanel).toHaveAttribute("aria-hidden", "true");
+  await expect(firstAccessiblePanel).toHaveCount(0);
+  await expect(secondTrigger).toHaveAttribute("aria-expanded", "true");
+  await expect(secondPanel).toHaveAttribute("aria-hidden", "false");
+  await expect(secondAccessiblePanel).toHaveCount(1);
 });
 
 test("desktop home page keeps its published content and interactions intact", async ({
