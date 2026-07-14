@@ -38,6 +38,19 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
     );
   });
 
+  const realCanvas = page.locator("main > div > canvas");
+  await expect(realCanvas).toBeVisible();
+  const realCanvasBox = await realCanvas.boundingBox();
+  if (!realCanvasBox) throw new Error("Spline canvas box is missing");
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.mouse.move(
+    realCanvasBox.x + realCanvasBox.width / 2,
+    realCanvasBox.y + Math.min(realCanvasBox.height / 2, 700),
+  );
+  await page.mouse.wheel(0, 700);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+
   await page.evaluate(async () => {
     const main = document.querySelector("main");
     if (!(main instanceof HTMLElement)) throw new Error("main is missing");
