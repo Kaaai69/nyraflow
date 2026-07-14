@@ -42,8 +42,10 @@ describe("home page sections", () => {
       "Прямой контакт с командой",
       "Один процесс от идеи до запуска",
       "Основа для развития",
-      "Красивого интерфейса недостаточно.",
+      "Разрабатываем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
       "Работа, которую можно проверить.",
+      "Быстрый старт",
+      "Форматы работы и стоимость",
       "Собираем продукт вокруг бизнес-задачи.",
       "Три человека. Одна ответственность за результат.",
       "Сначала смысл. Потом система. Затем запуск.",
@@ -82,7 +84,10 @@ describe("home page sections", () => {
     const ids = [
       "credibility",
       "problem",
+      "metrics",
       "work",
+      "starter",
+      "pricing",
       "services",
       "team",
       "process",
@@ -94,6 +99,34 @@ describe("home page sections", () => {
     expect(positions.every((position) => position >= 0)).toBe(true);
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
     expect(markup.indexOf("<footer")).toBeGreaterThan(positions.at(-1) ?? -1);
+  });
+
+  it("renders commercial cards and their contact actions", async () => {
+    const markup = await renderPageAfterHero();
+    const metrics = markup.slice(
+      markup.indexOf('<section id="metrics"'),
+      markup.indexOf('<section id="work"'),
+    );
+    const starter = markup.slice(
+      markup.indexOf('<section id="starter"'),
+      markup.indexOf('<section id="pricing"'),
+    );
+    const pricing = markup.slice(
+      markup.indexOf('<section id="pricing"'),
+      markup.indexOf('<section id="services"'),
+    );
+
+    expect(metrics.match(/<article/g)).toHaveLength(3);
+    expect(metrics).toContain("2+");
+    expect(metrics).toContain("20+");
+    expect(metrics).toContain("100%");
+    expect(starter.match(/<article/g)).toHaveLength(4);
+    expect(starter).toContain("от 20 000 ₽");
+    expect(pricing.match(/<article/g)).toHaveLength(3);
+    expect(pricing).toContain("от 120 000 ₽");
+    expect(pricing.match(/href="#contact"/g)).toHaveLength(3);
+    expect(pricing.match(/>Обсудить проект</g)).toHaveLength(3);
+    expect(markup).not.toContain("Калькулятор стоимости проекта");
   });
 
   it("uses native FAQ disclosure controls", async () => {
@@ -160,12 +193,14 @@ describe("home page sections", () => {
     ).toHaveLength(10);
     expect(workMarkup.match(/<\/figcaption><\/figure><\/a>/g) ?? []).toHaveLength(10);
     expect(workMarkup).not.toMatch(/<figure[^>]*><a\b/);
-    const decodedMarkup = decodeURIComponent(markup);
+    const markupWithReadableImagePaths = markup.replaceAll("%2F", "/");
 
-    expect(decodedMarkup).toContain("/images/work/atelier-kitchens.jpg");
-    expect(decodedMarkup).toContain("/images/work/groom.jpg");
-    expect(decodedMarkup).toContain("/images/team/arseniy.jpg");
-    expect(decodedMarkup).toContain("/images/team/artem.jpg");
+    expect(markupWithReadableImagePaths).toContain(
+      "/images/work/atelier-kitchens.jpg",
+    );
+    expect(markupWithReadableImagePaths).toContain("/images/work/groom.jpg");
+    expect(markupWithReadableImagePaths).toContain("/images/team/arseniy.jpg");
+    expect(markupWithReadableImagePaths).toContain("/images/team/artem.jpg");
     expect(markup).toContain('href="https://atelier-kitchens.vercel.app"');
     expect(markup).toContain('href="https://groom-woad.vercel.app"');
     expect(markup.match(/>Открыть проект</g)).toHaveLength(10);
