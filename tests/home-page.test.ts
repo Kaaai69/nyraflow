@@ -42,7 +42,7 @@ describe("home page sections", () => {
       "Прямой контакт с командой",
       "Один процесс от идеи до запуска",
       "Основа для развития",
-      "Разрабатываем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
+      "Создаем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
       "Работа, которую можно проверить.",
       "Быстрый старт",
       "Форматы работы и стоимость",
@@ -65,6 +65,20 @@ describe("home page sections", () => {
     ];
     expectedH2.forEach((copy) => expectExactElement(markup, "h2", copy));
     expectedH3.forEach((copy) => expectExactElement(markup, "h3", copy));
+  });
+
+  it("uses the credibility surface for metrics and starter cards", () => {
+    const styles = readProjectFile("app/globals.css");
+    const commercialCardRule =
+      styles.match(/\.commercial-card\s*{[^}]*}/)?.[0] ?? "";
+
+    expect(commercialCardRule).toContain(
+      "border: 1px solid var(--color-line);",
+    );
+    expect(commercialCardRule).toContain("background: var(--color-surface);");
+    expect(commercialCardRule).toContain("box-shadow: var(--shadow-card);");
+    expect(commercialCardRule).not.toContain("linear-gradient");
+    expect(commercialCardRule).not.toContain("inset");
   });
 
   it("keeps the conversion landmarks in the approved order", async () => {

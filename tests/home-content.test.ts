@@ -149,7 +149,7 @@ describe("home content contract", () => {
     const { homeContent } = await loadHomeModule();
 
     expect(homeContent.problem.title).toBe(
-      "Разрабатываем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
+      "Создаем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
     );
     expect(homeContent.metrics.items.map((item) => item.value)).toEqual([
       "2+",
