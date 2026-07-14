@@ -287,4 +287,8 @@ body {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+
+  .faq-details::details-content {
+    transition-duration: 0.01ms !important;
+  }
 }

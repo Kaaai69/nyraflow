@@ -303,6 +303,26 @@ test("component motion contracts survive the global interaction defaults", async
   });
 });
 
+test("reduced motion shortens the native FAQ details-content transition", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#faq", { waitUntil: "domcontentloaded" });
+
+  const transitionDurations = await page.locator(".faq-details").first().evaluate(
+    (details) =>
+      getComputedStyle(details, "::details-content")
+        .transitionDuration.split(",")
+        .map((duration) => {
+          const value = Number.parseFloat(duration);
+          return duration.trim().endsWith("ms") ? value : value * 1_000;
+        }),
+  );
+
+  expect(transitionDurations.length).toBeGreaterThan(0);
+  expect(transitionDurations.every((duration) => duration <= 0.01)).toBe(true);
+});
+
 test("project card active state overrides hover on a fine pointer", async ({
   page,
 }) => {
