@@ -129,6 +129,20 @@ describe("home page sections", () => {
     expect(markup).not.toContain("Калькулятор стоимости проекта");
   });
 
+  it("renders three visually separated service panels without changing service copy", async () => {
+    const markup = await renderPageAfterHero();
+    const services = markup.slice(
+      markup.indexOf('<section id="services"'),
+      markup.indexOf('<section id="team"'),
+    );
+
+    expect(services.match(/class="[^"]*service-panel[^"]*"/g)).toHaveLength(3);
+    expect(services.match(/>Когда нужны</g)).toHaveLength(3);
+    expect(services.match(/>Что делаем</g)).toHaveLength(3);
+    expect(services.match(/>Что получает бизнес</g)).toHaveLength(3);
+    expect(services).toContain('href="#contact"');
+  });
+
   it("uses native FAQ disclosure controls", async () => {
     const markup = await renderPageAfterHero();
 
@@ -318,6 +332,13 @@ describe("home page sections", () => {
     expect(styles).not.toMatch(
       /\.button-primary:not\(:disabled\):hover\s*{[^}]*opacity:/,
     );
+    const pointerHoverStyles = styles.slice(
+      styles.indexOf("@media (hover: hover) and (pointer: fine)"),
+      styles.indexOf("@media (prefers-reduced-motion: reduce)"),
+    );
+
+    expect(pointerHoverStyles).toMatch(/\.service-panel:hover\s*{/);
+    expect(styles.match(/\.service-panel:hover\s*{/g)).toHaveLength(1);
     expect(interactiveSources).not.toMatch(/focus-visible:outline-none|ring-blue\//);
     expect(services).not.toContain("group-hover:");
   });

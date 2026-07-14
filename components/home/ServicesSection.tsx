@@ -16,11 +16,11 @@ export default function ServicesSection() {
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
 
-        <div className="mt-14 border-t border-line md:mt-20">
+        <div className="mt-14 grid gap-5 md:mt-20">
           {content.items.map((item) => (
             <article
               key={item.id}
-              className="service-row grid gap-7 border-b border-line py-10 md:py-12 lg:grid-cols-12 lg:gap-6"
+              className="service-panel grid gap-8 rounded-media border border-line-strong bg-surface p-7 shadow-card md:p-9 lg:grid-cols-12 lg:gap-6"
             >
               <h3 className="service-title text-2xl font-semibold tracking-[-0.02em] transition-transform duration-slow ease-premium md:text-subtitle lg:col-span-3 lg:pr-5">
                 {item.title}
@@ -28,7 +28,14 @@ export default function ServicesSection() {
               <div className="grid gap-7 md:grid-cols-3 lg:col-span-9">
                 {(Object.keys(serviceLabels) as Array<keyof typeof serviceLabels>).map(
                   (key) => (
-                    <div key={key}>
+                    <div
+                      key={key}
+                      className={
+                        key === "businessOutcome"
+                          ? "service-outcome rounded-card bg-surface-blue p-5"
+                          : "p-5"
+                      }
+                    >
                       <p className="text-sm font-semibold text-blue-deep">
                         {serviceLabels[key]}
                       </p>

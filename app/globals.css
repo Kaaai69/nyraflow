@@ -158,6 +158,12 @@ body {
     transition: transform var(--duration-slow) var(--ease-premium);
   }
 
+  .service-panel {
+    transition: transform var(--duration-slow) var(--ease-premium),
+      border-color var(--duration-slow) var(--ease-premium),
+      box-shadow var(--duration-slow) var(--ease-premium);
+  }
+
   .project-card:active {
     transform: scale(0.995);
   }
@@ -197,7 +203,13 @@ body {
     transform: scale(1.015);
   }
 
-  .service-row:hover .service-title {
+  .service-panel:hover {
+    border-color: color-mix(in srgb, var(--color-blue) 24%, var(--color-line));
+    box-shadow: var(--shadow-card-strong);
+    transform: translateY(-2px);
+  }
+
+  .service-panel:hover .service-title {
     transform: translateX(0.25rem);
   }
 }
