@@ -219,6 +219,14 @@ test("FAQ supports Space, multiple-open state, and hides closed answers from ass
   await expect(secondAccessiblePanel).toHaveCount(1);
 });
 
+test("ordinary contact actions preserve the contact anchor", async ({ page }) => {
+  await page.goto("/", { waitUntil: "load" });
+  await page.locator("#pricing").scrollIntoViewIfNeeded();
+  await page.locator('#pricing a[href="#contact"]').first().click();
+  await expect(page).toHaveURL(/#contact$/);
+  await expect(page.locator("#contact")).toBeInViewport();
+});
+
 test("desktop home page keeps its published content and interactions intact", async ({
   page,
 }) => {

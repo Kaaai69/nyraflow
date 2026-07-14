@@ -333,6 +333,18 @@ describe("home page sections", () => {
     expect(services).not.toContain("group-hover:");
   });
 
+  it("defines smooth anchors and a reduced-motion fallback", () => {
+    const styles = readProjectFile("app/globals.css");
+
+    expect(styles).toMatch(/html\s*{[^}]*scroll-behavior:\s*smooth/);
+    expect(styles).toMatch(
+      /:where\(\s*a,\s*button,\s*summary\s*\)[^{]*{[^}]*transition:/,
+    );
+    expect(styles).toMatch(
+      /@media \(prefers-reduced-motion: reduce\)[\s\S]*html\s*{[^}]*scroll-behavior:\s*auto/,
+    );
+  });
+
   it("defines and uses semantic layout, type, shape, elevation, and motion tokens", () => {
     const styles = readProjectFile("app/globals.css");
     const sources = [

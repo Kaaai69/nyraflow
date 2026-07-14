@@ -53,6 +53,11 @@
   background: #f7f6f2;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 1.5rem;
+}
+
 html,
 body {
   min-height: 100%;
@@ -64,6 +69,15 @@ body {
   color: #17191d;
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
+}
+
+:where(a, button, summary) {
+  transition: color var(--duration-base) var(--ease-premium),
+    background-color var(--duration-base) var(--ease-premium),
+    border-color var(--duration-base) var(--ease-premium),
+    box-shadow var(--duration-base) var(--ease-premium),
+    opacity var(--duration-base) var(--ease-premium),
+    transform var(--duration-base) var(--ease-premium);
 }
 
 :where(
@@ -242,9 +256,16 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
 }
