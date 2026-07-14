@@ -172,6 +172,8 @@ test("FAQ supports Space, multiple-open state, and hides closed answers from ass
   page,
 }) => {
   await page.goto("/#faq", { waitUntil: "load" });
+  await expect(page.locator("#faq .faq-enhanced")).toBeVisible();
+  await expect(page.locator("#faq .faq-no-js")).toHaveCount(0);
   const firstQuestion = "С чего начать, если у нас нет подробного ТЗ?";
   const secondQuestion = "Как формируются сроки и бюджет?";
   const firstTrigger = page.getByRole("button", {
@@ -219,6 +221,33 @@ test("FAQ supports Space, multiple-open state, and hides closed answers from ass
   await expect(secondAccessiblePanel).toHaveCount(1);
 });
 
+test("FAQ answers remain readable and accessible when JavaScript is disabled", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: { width: 1440, height: 900 },
+  });
+  const page = await context.newPage();
+
+  try {
+    const response = await page.goto("/#faq", { waitUntil: "load" });
+
+    expect(response?.ok()).toBe(true);
+    await expect(page.locator("#faq .faq-enhanced")).toBeHidden();
+    const fallback = page.locator("#faq .faq-no-js");
+    await expect(fallback).toBeVisible();
+    const answers = fallback.locator("article");
+    await expect(answers).toHaveCount(6);
+    for (let index = 0; index < 6; index += 1) {
+      await expect(answers.nth(index)).toBeVisible();
+      expect((await answers.nth(index).innerText()).trim().length).toBeGreaterThan(20);
+    }
+  } finally {
+    await context.close();
+  }
+});
+
 test("ordinary contact actions preserve the contact anchor", async ({ page }) => {
   await page.goto("/", { waitUntil: "load" });
   await page.locator("#pricing").scrollIntoViewIfNeeded();
@@ -255,6 +284,104 @@ test("component motion contracts survive the global interaction defaults", async
     project: "transform, border-color, box-shadow",
     faq: "color",
   });
+});
+
+test("project card active state overrides hover on a fine pointer", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#work", { waitUntil: "domcontentloaded" });
+  const card = page.locator(".project-card").first();
+
+  await card.scrollIntoViewIfNeeded();
+  await card.hover();
+  await expect
+    .poll(() => card.evaluate((element) => getComputedStyle(element).transform))
+    .toContain("-4");
+
+  const box = await card.boundingBox();
+  if (!box) throw new Error("project card has no bounding box");
+
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+
+  try {
+    await expect
+      .poll(() => card.evaluate((element) => getComputedStyle(element).transform))
+      .toMatch(/^matrix\(0\.995, 0, 0, 0\.995, 0, 0\)$/);
+  } finally {
+    await page.mouse.up();
+  }
+});
+
+test("mobile layout stays single-column, overflow-free, and touch accessible", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+
+  try {
+    const response = await page.goto("/", { waitUntil: "domcontentloaded" });
+    expect(response?.ok()).toBe(true);
+
+    for (const selector of [
+      "#metrics article",
+      "#starter article",
+      "#pricing article",
+      "#work .project-card",
+      "#team article",
+    ]) {
+      const items = page.locator(selector);
+      expect(await items.count()).toBeGreaterThan(1);
+      const first = await items.nth(0).boundingBox();
+      const second = await items.nth(1).boundingBox();
+
+      expect(first, `${selector}: first item`).not.toBeNull();
+      expect(second, `${selector}: second item`).not.toBeNull();
+      expect(second!.y).toBeGreaterThanOrEqual(first!.y + first!.height);
+    }
+
+    const pricingActions = page.locator("#pricing .button-primary");
+    await expect(pricingActions).toHaveCount(3);
+    expect(
+      await pricingActions.evaluateAll((actions) =>
+        actions.every((action) => {
+          const element = action as HTMLElement;
+          return (
+            getComputedStyle(element).whiteSpace === "nowrap" &&
+            element.scrollWidth <= element.clientWidth
+          );
+        }),
+      ),
+    ).toBe(true);
+
+    const faqTrigger = page.getByRole("button", {
+      name: "С чего начать, если у нас нет подробного ТЗ?",
+    });
+    await faqTrigger.scrollIntoViewIfNeeded();
+    await expect(faqTrigger).toHaveAttribute("aria-expanded", "false");
+    await faqTrigger.tap();
+    await expect(faqTrigger).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator("#faq-panel-no-specification")).toHaveAttribute(
+      "aria-hidden",
+      "false",
+    );
+
+    expect(
+      await page.evaluate(() => ({
+        body: document.body.scrollWidth - document.body.clientWidth,
+        document:
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      })),
+    ).toEqual({ body: 0, document: 0 });
+  } finally {
+    await context.close();
+  }
 });
 
 test("desktop home page keeps its published content and interactions intact", async ({

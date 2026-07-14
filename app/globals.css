@@ -246,6 +246,10 @@ body {
     transform: scale(1.015);
   }
 
+  .project-card:active {
+    transform: scale(0.995);
+  }
+
   .service-panel:hover {
     border-color: color-mix(in srgb, var(--color-blue) 24%, var(--color-line));
     box-shadow: var(--shadow-card-strong);

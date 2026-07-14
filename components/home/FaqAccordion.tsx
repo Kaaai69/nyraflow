@@ -26,7 +26,7 @@ export default function FaqAccordion({
   }
 
   return (
-    <div className="grid gap-x-16 lg:grid-cols-2">
+    <div className="faq-enhanced grid gap-x-16 lg:grid-cols-2">
       {[items.slice(0, 3), items.slice(3)].map((column, columnIndex) => (
         <div key={columnIndex} className="border-t border-line">
           {column.map((item) => {

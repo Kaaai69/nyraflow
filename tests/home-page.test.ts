@@ -131,15 +131,23 @@ describe("home page sections", () => {
     expect(services).toContain('href="#contact"');
   });
 
-  it("renders accessible FAQ accordion controls", async () => {
+  it("renders a no-JavaScript FAQ fallback while the enhanced accordion starts closed", async () => {
     const markup = await renderPageAfterHero();
+    const faqMarkup = markup.slice(
+      markup.indexOf('<section id="faq"'),
+      markup.indexOf('<section id="contact"'),
+    );
 
-    expect(markup.match(/class="[^"]*faq-trigger[^"]*"/g)).toHaveLength(6);
-    expect(markup.match(/aria-expanded="false"/g)).toHaveLength(6);
-    expect(markup.match(/aria-controls="faq-panel-/g)).toHaveLength(6);
-    expect(markup.match(/role="region"/g)).toHaveLength(6);
-    expect(markup).toContain("С чего начать, если у нас нет подробного ТЗ?");
-    expect(markup).toContain("Что происходит после запуска?");
+    expect(faqMarkup.match(/class="[^"]*faq-trigger[^"]*"/g)).toHaveLength(6);
+    expect(faqMarkup.match(/aria-expanded="false"/g)).toHaveLength(6);
+    expect(faqMarkup.match(/aria-controls="faq-panel-/g)).toHaveLength(6);
+    expect(faqMarkup.match(/role="region"/g)).toHaveLength(6);
+    expect(faqMarkup.match(/aria-hidden="true" class="faq-panel/g)).toHaveLength(6);
+    expect(faqMarkup).toContain("<noscript>");
+    expect(faqMarkup).toContain('class="faq-no-js');
+    expect(faqMarkup.match(/<article/g)).toHaveLength(6);
+    expect(faqMarkup).toContain("С чего начать, если у нас нет подробного ТЗ?");
+    expect(faqMarkup).toContain("Что происходит после запуска?");
   });
 
   it("renders an inert form foundation without transmitting data", async () => {
