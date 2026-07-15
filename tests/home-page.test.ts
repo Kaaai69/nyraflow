@@ -177,6 +177,9 @@ describe("home page sections", () => {
     expect(form).toMatch(/auto[Cc]omplete="name"/);
     expect(form).toMatch(/auto[Cc]omplete="email"/);
     expect(form).toContain("Коротко о задаче");
+    expect(form).toContain('href="/terms"');
+    expect(form).toContain('href="/privacy"');
+    expect(form).toContain("персональных данных");
   });
 
   it("presents the unavailable contact form as disabled and explains why", async () => {
@@ -217,8 +220,8 @@ describe("home page sections", () => {
     );
 
     expect(markup).not.toContain("Концепт");
-    expect(markup.match(/target="_blank"/g)).toHaveLength(10);
-    expect(markup.match(/rel="noreferrer noopener"/g)).toHaveLength(10);
+    expect(markup.match(/target="_blank"/g)).toHaveLength(11);
+    expect(markup.match(/rel="noreferrer noopener"/g)).toHaveLength(11);
     expect(
       workMarkup.match(
         /<a\b[^>]*target="_blank"[^>]*rel="noreferrer noopener"[^>]*><figure(?:\s|>)/g,
@@ -254,8 +257,16 @@ describe("home page sections", () => {
     expect(workSection).not.toContain("groom-woad.vercel.app");
     expect(workSection).toContain("project.href");
     expect(workSection).toContain("project.cta");
+    expect(markup).toContain("nyraflow");
+    expect(markup).toContain("Все права защищены");
+    expect(markup).toContain('href="mailto:nyraflow@yandex.ru"');
+    expect(markup).toContain('href="tel:+79045246108"');
+    expect(markup).toContain('href="https://t.me/nyraflow"');
+    expect(markup).toContain('href="/terms"');
+    expect(markup).toContain('href="/privacy"');
+    expect(markup).toContain("ИНН 463309989306");
 
-    for (const href of ["#work", "#services", "#team", "#faq", "#contact"]) {
+    for (const href of ["/#work", "/#services", "/#team", "/#faq", "/#contact"]) {
       expect(markup).toContain(`href="${href}"`);
     }
   });
