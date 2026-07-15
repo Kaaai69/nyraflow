@@ -51,6 +51,19 @@ export default function LegalDocumentPage({
           </p>
         </header>
 
+        {document.introduction ? (
+          <div className="mx-auto w-full max-w-site px-gutter-mobile pb-4 md:px-gutter-tablet xl:px-gutter-desktop">
+            {document.introduction.map((paragraph, index) => (
+              <p
+                key={`introduction-${index}`}
+                className="max-w-[72ch] text-base leading-7 text-text-secondary"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        ) : null}
+
         <div className="legal-layout mx-auto w-full max-w-site px-gutter-mobile pb-section-mobile md:px-gutter-tablet md:pb-section-desktop xl:px-gutter-desktop">
           <nav
             className="legal-toc legal-print-hidden border-t border-line pt-6"

@@ -11,6 +11,16 @@ const styles = readFileSync(
   "utf8",
 );
 
+const getRuleBody = (source: string, selector: string) => {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = source.match(
+    new RegExp(`(?:^|[{}])\\s*${escapedSelector}\\s*\\{([^}]*)\\}`),
+  );
+
+  expect(match, `Expected ${selector} rule`).not.toBeNull();
+  return match?.[1] ?? "";
+};
+
 describe("legal pages", () => {
   it("renders the offer as fourteen addressable sections", () => {
     const markup = renderToStaticMarkup(createElement(TermsPage));
@@ -20,6 +30,16 @@ describe("legal pages", () => {
     expect(markup).toContain("Сведения и реквизиты Исполнителя");
     expect(markup).toContain("ИНН: 463309989306");
     expect(markup).toContain('href="/privacy"');
+
+    const introductionIndex = markup.indexOf(
+      "Физическое лицо Шевцов Федор Дмитриевич, ИНН 463309989306",
+    );
+    const contentsIndex = markup.indexOf('aria-label="Содержание документа"');
+    const firstSectionIndex = markup.indexOf('<section id="section-1"');
+
+    expect(introductionIndex).toBeGreaterThan(-1);
+    expect(introductionIndex).toBeLessThan(contentsIndex);
+    expect(introductionIndex).toBeLessThan(firstSectionIndex);
   });
 
   it("renders the self-employed privacy policy", () => {
@@ -40,10 +60,32 @@ describe("legal pages", () => {
   });
 
   it("defines the responsive and print-safe legal page style contract", () => {
-    expect(styles).toMatch(/\.legal-layout\s*{/);
-    expect(styles).toMatch(/\.legal-document\s*{/);
-    expect(styles).toMatch(/\.legal-section\s*{/);
-    expect(styles).toMatch(/@media print[\s\S]*\.legal-print-hidden/);
+    const desktopStart = styles.indexOf("@media (min-width: 64rem)");
+    const printStart = styles.indexOf("@media print", desktopStart);
+    const desktopStyles = styles.slice(desktopStart, printStart);
+    const printStyles = styles.slice(printStart);
+
+    expect(desktopStart).toBeGreaterThan(-1);
+    expect(printStart).toBeGreaterThan(desktopStart);
+    expect(getRuleBody(desktopStyles, ".legal-layout")).toContain(
+      "grid-template-columns: minmax(13rem, 0.32fr) minmax(0, 1fr);",
+    );
+
+    const desktopToc = getRuleBody(desktopStyles, ".legal-toc");
+    expect(desktopToc).toContain("position: sticky;");
+    expect(desktopToc).toContain("top: 2rem;");
+    expect(desktopToc).toContain("max-height: calc(100vh - 4rem);");
+    expect(desktopToc).toContain("overflow-y: auto;");
+
+    expect(getRuleBody(printStyles, ".legal-print-hidden")).toContain(
+      "display: none !important;",
+    );
+    expect(getRuleBody(printStyles, ".legal-layout")).toContain(
+      "display: block;",
+    );
+    expect(getRuleBody(printStyles, ".legal-section")).toContain(
+      "break-inside: avoid;",
+    );
     expect(styles).toContain("var(--color-canvas)");
     expect(styles).toContain("var(--color-blue)");
   });

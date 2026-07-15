@@ -1,4 +1,23 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+const expectNoHorizontalOverflow = async (
+  page: Page,
+  viewport: { width: number },
+) => {
+  await expect
+    .poll(() =>
+      page.evaluate(() => ({
+        clientWidth: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+      })),
+    )
+    .toEqual(
+      expect.objectContaining({
+        clientWidth: viewport.width,
+        scrollWidth: viewport.width,
+      }),
+    );
+};
 
 for (const viewport of [
   { name: "desktop", width: 1440, height: 900 },
@@ -13,7 +32,7 @@ for (const viewport of [
         page.getByRole("heading", { level: 1, name: "Договор-оферта" }),
       ).toBeVisible();
       await expect(page.locator("main section[id^='section-']")).toHaveCount(14);
-      await expect(page.locator("body")).not.toHaveCSS("overflow-x", "scroll");
+      await expectNoHorizontalOverflow(page, viewport);
 
       await page
         .getByRole("link", {
@@ -28,6 +47,7 @@ for (const viewport of [
           name: "Политика обработки персональных данных",
         }),
       ).toBeVisible();
+      await expectNoHorizontalOverflow(page, viewport);
     });
   });
 }
