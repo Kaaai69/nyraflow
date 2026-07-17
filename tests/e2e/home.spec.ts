@@ -452,6 +452,7 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
     const hero = page.getByTestId("mobile-hero");
     await expect(hero).toBeVisible();
     await expect(page.locator("main canvas")).toHaveCount(0);
+    expect(splineRequests).toEqual([]);
     await expect(page.getByRole("heading", {
       name: "Создаём digital-продукты, которые двигают бизнес вперёд",
       exact: true,
@@ -478,25 +479,6 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
     expect(heroMetrics.height).toBeGreaterThanOrEqual(heroMetrics.viewportHeight);
     expect(heroMetrics.backgroundImage).not.toBe("none");
     expect(heroMetrics.overflowX).toBe(0);
-
-    const cdp = await context.newCDPSession(page);
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-    await cdp.send("Input.dispatchTouchEvent", {
-      type: "touchStart",
-      touchPoints: [{ x: 195, y: 650, radiusX: 2, radiusY: 2, force: 1 }],
-    });
-    for (const y of [600, 550, 500, 450, 400, 350]) {
-      await cdp.send("Input.dispatchTouchEvent", {
-        type: "touchMove",
-        touchPoints: [{ x: 195, y, radiusX: 2, radiusY: 2, force: 1 }],
-      });
-    }
-    await cdp.send("Input.dispatchTouchEvent", {
-      type: "touchEnd",
-      touchPoints: [],
-    });
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
-    expect(splineRequests).toEqual([]);
 
     for (const selector of [
       "#metrics article",
@@ -548,6 +530,24 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
           document.documentElement.clientWidth,
       })),
     ).toEqual({ body: 0, document: 0 });
+
+    const cdp = await context.newCDPSession(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x: 195, y: 650, radiusX: 2, radiusY: 2, force: 1 }],
+    });
+    for (const y of [600, 550, 500, 450, 400, 350]) {
+      await cdp.send("Input.dispatchTouchEvent", {
+        type: "touchMove",
+        touchPoints: [{ x: 195, y, radiusX: 2, radiusY: 2, force: 1 }],
+      });
+    }
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
   } finally {
     await context.close();
   }
