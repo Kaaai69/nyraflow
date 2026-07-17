@@ -548,6 +548,7 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
       touchPoints: [],
     });
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+    expect(splineRequests).toEqual([]);
   } finally {
     await context.close();
   }
