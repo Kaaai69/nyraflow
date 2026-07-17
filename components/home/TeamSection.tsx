@@ -34,13 +34,6 @@ export default function TeamSection() {
               </h3>
             </article>
           ))}
-          <article className="min-w-0" aria-label="Место для третьего фото">
-            <div className="flex aspect-[4/5] items-end rounded-media border border-line bg-surface-blue p-6">
-              <p className="text-sm font-semibold text-blue-deep">
-                Место для третьего фото
-              </p>
-            </div>
-          </article>
         </div>
       </SectionContainer>
     </section>

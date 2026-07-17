@@ -231,6 +231,7 @@ describe("home page sections", () => {
       "/images/work/atelier-kitchens.jpg",
     );
     expect(markupWithReadableImagePaths).toContain("/images/work/groom.jpg");
+    expect(markupWithReadableImagePaths).toContain("/images/team/fedor.webp");
     expect(markupWithReadableImagePaths).toContain("/images/team/arseniy.jpg");
     expect(markupWithReadableImagePaths).toContain("/images/team/artem.jpg");
     expect(markup).toContain('href="https://atelier-kitchens.vercel.app"');
@@ -246,7 +247,7 @@ describe("home page sections", () => {
     }
   });
 
-  it("renders two verified team members and one neutral responsive slot", async () => {
+  it("renders three verified team members in approved responsive cards", async () => {
     const markup = await renderPageAfterHero();
     const teamMarkup = markup.slice(
       markup.indexOf('<section id="team"'),
@@ -255,9 +256,11 @@ describe("home page sections", () => {
     const teamSection = readProjectFile("components/home/TeamSection.tsx");
 
     expect(markup).toContain("Три человека. Одна ответственность за результат.");
-    expect(markup).toContain("Арсений, Backend &amp; Automation Engineer");
-    expect(markup).toContain("Артём, Frontend &amp; Product Developer");
-    expect(markup).toContain("Место для третьего фото");
+    expect(teamMarkup).toContain("Федор, Founder &amp; Creative director");
+    expect(teamMarkup).toContain("Арсений, Backend &amp; Automation Engineer");
+    expect(teamMarkup).toContain("Артём, Frontend &amp; Product Developer");
+    expect(teamMarkup.indexOf("Федор")).toBeLessThan(teamMarkup.indexOf("Арсений"));
+    expect(teamMarkup).not.toContain("Место для третьего фото");
     expect(teamMarkup.match(/aspect-\[4\/5\]/g)).toHaveLength(3);
     expect(teamMarkup).toContain("md:grid-cols-2");
     expect(teamMarkup).toContain("xl:grid-cols-3");
