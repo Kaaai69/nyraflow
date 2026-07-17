@@ -39,7 +39,7 @@ test("real Spline hero canvas preserves document wheel scrolling", async ({
     .toBeGreaterThan(0);
 });
 
-test("wheel bridge preempts canvas capture and restores document scrolling", async ({
+test("wheel bridge forwards scrolling while the canvas receives wheel input", async ({
   page,
 }) => {
   const severeBrowserErrors: string[] = [];
@@ -108,7 +108,7 @@ test("wheel bridge preempts canvas capture and restores document scrolling", asy
 
   await page.mouse.wheel(0, 700);
 
-  await expect(canvas).not.toHaveAttribute("data-wheel-captured", "true");
+  await expect(canvas).toHaveAttribute("data-wheel-captured", "true");
   await expect
     .poll(() => page.evaluate(() => window.scrollY))
     .toBeGreaterThan(0);

@@ -39,7 +39,6 @@ export default function SplineWheelBridge() {
       if (!canvasIntersectsViewport) return;
 
       event.preventDefault();
-      event.stopPropagation();
 
       pendingDelta += normalizeWheelDelta(
         event.deltaY,
