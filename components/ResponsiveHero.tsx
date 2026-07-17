@@ -7,6 +7,7 @@ import MobileHero from "./MobileHero";
 
 const DesktopSplineHero = dynamic(() => import("./LockedSplineHero"), {
   ssr: false,
+  loading: () => <div className="desktop-hero-reservation" aria-hidden />,
 });
 
 export default function ResponsiveHero() {
@@ -21,5 +22,12 @@ export default function ResponsiveHero() {
     return () => media.removeEventListener("change", update);
   }, []);
 
-  return isDesktop ? <DesktopSplineHero /> : <MobileHero />;
+  return isDesktop ? (
+    <DesktopSplineHero />
+  ) : (
+    <>
+      <MobileHero />
+      <div className="desktop-hero-reservation" aria-hidden />
+    </>
+  );
 }

@@ -95,11 +95,18 @@ body {
   outline-offset: 3px;
 }
 
-.site-main > div:first-child {
-  display: block;
-  width: 100%;
-  height: 100dvh;
-  min-height: 100dvh;
+.desktop-hero-reservation {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .site-main > div:first-child,
+  .desktop-hero-reservation {
+    display: block;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+  }
 }
 
 .mobile-hero {

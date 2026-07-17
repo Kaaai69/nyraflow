@@ -64,4 +64,25 @@ describe("mobile hero", () => {
       'scene="https://prod.spline.design/xOl5brZcGdsZ7KV4/scene.splinecode"',
     );
   });
+
+  it("reserves the desktop hero height while the mobile branch hydrates", () => {
+    const responsive = readFileSync(
+      resolve(projectRoot, "components/ResponsiveHero.tsx"),
+      "utf8",
+    );
+    const styles = readFileSync(resolve(projectRoot, "app/globals.css"), "utf8");
+
+    expect(responsive).toContain("<>\n      <MobileHero />");
+    expect(responsive).toContain('className="desktop-hero-reservation"');
+    expect(responsive).toContain("aria-hidden");
+    expect(responsive).toContain(
+      'loading: () => <div className="desktop-hero-reservation" aria-hidden />',
+    );
+    expect(styles).toMatch(
+      /\.desktop-hero-reservation\s*\{\s*display:\s*none;/,
+    );
+    expect(styles).toMatch(
+      /@media \(min-width: 768px\)[\s\S]*?\.desktop-hero-reservation\s*\{[\s\S]*?display:\s*block;[\s\S]*?height:\s*100dvh;[\s\S]*?min-height:\s*100dvh;/,
+    );
+  });
 });
