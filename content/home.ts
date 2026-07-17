@@ -517,6 +517,17 @@ export const homeContent = {
       "Работаем небольшой командой, чтобы сохранять контекст, быстро принимать решения и отвечать за продукт целиком.",
     items: [
       {
+        id: "fedor",
+        name: "Федор",
+        role: "Founder & Creative director",
+        photo: {
+          src: "/images/team/fedor.webp",
+          alt: "Федор",
+          width: 2316,
+          height: 3088,
+        },
+      },
+      {
         id: "arseniy",
         name: "Арсений",
         role: "Backend & Automation Engineer",
