@@ -438,10 +438,65 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
     isMobile: true,
   });
   const page = await context.newPage();
+  const splineRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("prod.spline.design")) {
+      splineRequests.push(request.url());
+    }
+  });
 
   try {
     const response = await page.goto("/", { waitUntil: "domcontentloaded" });
     expect(response?.ok()).toBe(true);
+
+    const hero = page.getByTestId("mobile-hero");
+    await expect(hero).toBeVisible();
+    await expect(page.locator("main canvas")).toHaveCount(0);
+    await expect(page.getByRole("heading", {
+      name: "Создаём digital-продукты, которые двигают бизнес вперёд",
+      exact: true,
+    })).toBeVisible();
+    await expect(hero.getByRole("link", { name: "Обсудить проект" })).toHaveAttribute(
+      "href",
+      "#contact",
+    );
+    await expect(hero.getByRole("link", { name: "Узнать больше" })).toHaveAttribute(
+      "href",
+      "#work",
+    );
+
+    const heroMetrics = await hero.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return {
+        height: rect.height,
+        viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+        backgroundImage: style.backgroundImage,
+        overflowX: element.scrollWidth - element.clientWidth,
+      };
+    });
+    expect(heroMetrics.height).toBeGreaterThanOrEqual(heroMetrics.viewportHeight);
+    expect(heroMetrics.backgroundImage).not.toBe("none");
+    expect(heroMetrics.overflowX).toBe(0);
+
+    const cdp = await context.newCDPSession(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x: 195, y: 650, radiusX: 2, radiusY: 2, force: 1 }],
+    });
+    for (const y of [600, 550, 500, 450, 400, 350]) {
+      await cdp.send("Input.dispatchTouchEvent", {
+        type: "touchMove",
+        touchPoints: [{ x: 195, y, radiusX: 2, radiusY: 2, force: 1 }],
+      });
+    }
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+    expect(splineRequests).toEqual([]);
 
     for (const selector of [
       "#metrics article",

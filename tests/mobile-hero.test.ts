@@ -1,0 +1,67 @@
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+
+const projectRoot = resolve(import.meta.dirname, "..");
+
+describe("mobile hero", () => {
+  it("renders approved semantic content and links", async () => {
+    const { default: MobileHero } = await import("../components/MobileHero");
+    const markup = renderToStaticMarkup(createElement(MobileHero));
+
+    expect(markup).toContain('id="top"');
+    expect(markup).toContain('data-testid="mobile-hero"');
+    expect(markup).toContain("Создаём digital-продукты, которые двигают бизнес вперёд");
+    expect(markup).toContain(
+      "Сайты, веб-сервисы и AI-автоматизация, которые превращают трафик в заявки, а сложные процессы — в понятную систему.",
+    );
+    expect(markup.match(/<h1/g)).toHaveLength(1);
+    expect(markup).toContain('aria-label="Навигация первого экрана"');
+    expect(markup).toContain('href="#top"');
+    expect(markup).toContain('href="#team"');
+    expect(markup).toContain('href="#contact"');
+    expect(markup).toContain('href="#work"');
+    expect(markup).toContain("Обсудить проект");
+    expect(markup).toContain("Узнать больше");
+  });
+
+  it("uses an optimized decorative WebP that cannot capture touch input", async () => {
+    const { default: MobileHero } = await import("../components/MobileHero");
+    const markup = decodeURIComponent(
+      renderToStaticMarkup(createElement(MobileHero)),
+    );
+    const assetPath = resolve(
+      projectRoot,
+      "public/images/hero/mobile-cubes.webp",
+    );
+
+    expect(existsSync(assetPath)).toBe(true);
+    const asset = readFileSync(assetPath);
+    expect(asset.subarray(0, 4).toString("ascii")).toBe("RIFF");
+    expect(asset.subarray(8, 12).toString("ascii")).toBe("WEBP");
+    expect(markup).toContain("/images/hero/mobile-cubes.webp");
+    expect(markup).toContain('alt=""');
+    expect(markup).toContain("pointer-events-none");
+  });
+
+  it("keeps the desktop Spline implementation lazy and unchanged", () => {
+    const responsive = readFileSync(
+      resolve(projectRoot, "components/ResponsiveHero.tsx"),
+      "utf8",
+    );
+    const locked = readFileSync(
+      resolve(projectRoot, "components/LockedSplineHero.tsx"),
+      "utf8",
+    );
+
+    expect(responsive).toContain('matchMedia("(min-width: 768px)")');
+    expect(responsive).toContain('dynamic(() => import("./LockedSplineHero")');
+    expect(responsive).toContain("<MobileHero />");
+    expect(responsive).toContain("<DesktopSplineHero />");
+    expect(locked).toContain(
+      'scene="https://prod.spline.design/xOl5brZcGdsZ7KV4/scene.splinecode"',
+    );
+  });
+});

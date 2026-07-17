@@ -27,13 +27,16 @@ describe("Spline wheel bridge", () => {
     const page = readProjectFile("app/page.tsx");
     const mainStart = page.indexOf("<main");
     const mainEnd = page.indexOf("</main>");
-    const hero = page.indexOf("<LockedSplineHero />");
+    const hero = page.indexOf("<ResponsiveHero />");
     const sections = page.indexOf("<HomeSections />");
     const bridge = page.indexOf("<SplineWheelBridge />");
     const footer = page.indexOf("<SiteFooter />");
 
     expect(page).toContain(
       'import SplineWheelBridge from "@/components/SplineWheelBridge";',
+    );
+    expect(page).toContain(
+      'import ResponsiveHero from "@/components/ResponsiveHero";',
     );
     expect(mainStart).toBeGreaterThan(-1);
     expect(hero).toBeGreaterThan(mainStart);

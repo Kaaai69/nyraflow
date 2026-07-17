@@ -335,7 +335,8 @@ describe("home page sections", () => {
       .map((child) => child.getText(sourceFile));
 
     expect(page).toContain('import SiteFooter from "@/components/home/SiteFooter";');
-    expect(mainChildren).toEqual(["<LockedSplineHero />", "<HomeSections />"]);
+    expect(page).toContain('import ResponsiveHero from "@/components/ResponsiveHero";');
+    expect(mainChildren).toEqual(["<ResponsiveHero />", "<HomeSections />"]);
     expect(footerNode).toBeDefined();
     expect(main && footerNode && main.end < footerNode.pos).toBe(true);
     expect(readProjectFile("components/HomeSections.tsx")).not.toContain(
