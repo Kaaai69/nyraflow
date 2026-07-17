@@ -18,7 +18,6 @@ export default function SplineWheelBridge() {
   useEffect(() => {
     let animationFrame: number | null = null;
     let pendingDelta = 0;
-    let scrollYBeforeWheel = 0;
 
     const handleWheel = (event: WheelEvent) => {
       const splineCanvas = document.querySelector("main canvas");
@@ -39,9 +38,8 @@ export default function SplineWheelBridge() {
 
       if (!canvasIntersectsViewport) return;
 
-      if (animationFrame === null) {
-        scrollYBeforeWheel = window.scrollY;
-      }
+      event.preventDefault();
+      event.stopPropagation();
 
       pendingDelta += normalizeWheelDelta(
         event.deltaY,
@@ -56,15 +54,13 @@ export default function SplineWheelBridge() {
         const delta = pendingDelta;
         pendingDelta = 0;
 
-        if (window.scrollY === scrollYBeforeWheel) {
-          window.scrollBy({ top: delta, left: 0, behavior: "auto" });
-        }
+        window.scrollBy({ top: delta, left: 0, behavior: "auto" });
       });
     };
 
     const listenerOptions: AddEventListenerOptions = {
       capture: true,
-      passive: true,
+      passive: false,
     };
 
     window.addEventListener("wheel", handleWheel, listenerOptions);

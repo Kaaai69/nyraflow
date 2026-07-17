@@ -44,7 +44,7 @@ describe("Spline wheel bridge", () => {
     expect(page.slice(mainStart, mainEnd)).not.toContain("SplineWheelBridge");
   });
 
-  it("uses only a passive capture wheel listener and preserves the locked hero", () => {
+  it("owns canvas wheel input in capture phase and preserves the locked hero", () => {
     expect(existsSync(bridgePath), "wheel bridge should exist").toBe(true);
     const bridge = readFileSync(bridgePath, "utf8");
     const lockedHero = readProjectFile("components/LockedSplineHero.tsx");
@@ -76,7 +76,9 @@ describe("Spline wheel bridge", () => {
 
     expect(bridge).toContain('window.addEventListener("wheel"');
     expect(bridge).toContain("capture: true");
-    expect(bridge).toContain("passive: true");
+    expect(bridge).toContain("passive: false");
+    expect(bridge).toContain("event.preventDefault()");
+    expect(bridge).toContain("event.stopPropagation()");
     expect(bridge).toContain('window.removeEventListener("wheel"');
     expect(bridge).not.toContain('addEventListener("scroll"');
     expect(bridge).toContain("event.composedPath()");

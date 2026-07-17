@@ -14,7 +14,32 @@ const approvedHeadings = [
 
 test.use({ viewport: { width: 1440, height: 900 } });
 
-test("wheel bridge restores document scrolling when a canvas captures wheel", async ({
+test("real Spline hero canvas preserves document wheel scrolling", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForFunction(() => {
+    const splineCanvas = document.querySelector("main > div > canvas");
+
+    return (
+      splineCanvas instanceof HTMLCanvasElement &&
+      splineCanvas.width > 0 &&
+      splineCanvas.height > 0 &&
+      Object.keys(splineCanvas).some((key) => key.startsWith("__reactFiber$"))
+    );
+  });
+  await page.waitForTimeout(2_500);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.mouse.move(720, 450);
+
+  await page.mouse.wheel(0, 700);
+
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBeGreaterThan(0);
+});
+
+test("wheel bridge preempts canvas capture and restores document scrolling", async ({
   page,
 }) => {
   const severeBrowserErrors: string[] = [];
@@ -83,7 +108,7 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
 
   await page.mouse.wheel(0, 700);
 
-  await expect(canvas).toHaveAttribute("data-wheel-captured", "true");
+  await expect(canvas).not.toHaveAttribute("data-wheel-captured", "true");
   await expect
     .poll(() => page.evaluate(() => window.scrollY))
     .toBeGreaterThan(0);
