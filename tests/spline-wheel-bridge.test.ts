@@ -27,13 +27,16 @@ describe("Spline wheel bridge", () => {
     const page = readProjectFile("app/page.tsx");
     const mainStart = page.indexOf("<main");
     const mainEnd = page.indexOf("</main>");
-    const hero = page.indexOf("<LockedSplineHero />");
+    const hero = page.indexOf("<ResponsiveHero />");
     const sections = page.indexOf("<HomeSections />");
     const bridge = page.indexOf("<SplineWheelBridge />");
     const footer = page.indexOf("<SiteFooter />");
 
     expect(page).toContain(
       'import SplineWheelBridge from "@/components/SplineWheelBridge";',
+    );
+    expect(page).toContain(
+      'import ResponsiveHero from "@/components/ResponsiveHero";',
     );
     expect(mainStart).toBeGreaterThan(-1);
     expect(hero).toBeGreaterThan(mainStart);
@@ -44,7 +47,7 @@ describe("Spline wheel bridge", () => {
     expect(page.slice(mainStart, mainEnd)).not.toContain("SplineWheelBridge");
   });
 
-  it("uses only a passive capture wheel listener and preserves the locked hero", () => {
+  it("uses a non-passive capture wheel listener and preserves the locked hero", () => {
     expect(existsSync(bridgePath), "wheel bridge should exist").toBe(true);
     const bridge = readFileSync(bridgePath, "utf8");
     const lockedHero = readProjectFile("components/LockedSplineHero.tsx");
@@ -76,7 +79,13 @@ describe("Spline wheel bridge", () => {
 
     expect(bridge).toContain('window.addEventListener("wheel"');
     expect(bridge).toContain("capture: true");
-    expect(bridge).toContain("passive: true");
+    expect(bridge).toContain("passive: false");
+    expect(bridge).toContain("event.preventDefault()");
+    expect(bridge).not.toContain("scrollYBeforeWheel");
+    expect(bridge).toContain("pendingDelta += normalizeWheelDelta");
+    expect(bridge).toContain(
+      'window.scrollBy({ top: delta, left: 0, behavior: "instant" })',
+    );
     expect(bridge).toContain('window.removeEventListener("wheel"');
     expect(bridge).not.toContain('addEventListener("scroll"');
     expect(bridge).toContain("event.composedPath()");

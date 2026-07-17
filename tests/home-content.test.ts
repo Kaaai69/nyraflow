@@ -62,7 +62,12 @@ type HomeModule = {
     work: { media: readonly WorkMedia[] };
     team: {
       title: string;
-      items: readonly { name: string; role: string; photo: ImageAsset }[];
+      items: readonly {
+        id: string;
+        name: string;
+        role: string;
+        photo: ImageAsset;
+      }[];
     };
   };
 };
@@ -149,7 +154,7 @@ describe("home content contract", () => {
     const { homeContent } = await loadHomeModule();
 
     expect(homeContent.problem.title).toBe(
-      "Разрабатываем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
+      "Создаем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
     );
     expect(homeContent.metrics.items.map((item) => item.value)).toEqual([
       "2+",
@@ -199,21 +204,22 @@ describe("home content contract", () => {
 });
 
 describe("home content assets", () => {
-  it("defines the approved team heading and two verified members", async () => {
+  it("defines the approved team heading and three verified members", async () => {
     const { homeContent } = await loadHomeModule();
 
     expect(homeContent.team.title).toBe(
       "Три человека. Одна ответственность за результат.",
     );
     expect(
-      homeContent.team.items.map(({ name, role }) => ({ name, role })),
+      homeContent.team.items.map(({ id, name, role }) => ({ id, name, role })),
     ).toEqual([
-      { name: "Арсений", role: "Backend & Automation Engineer" },
-      { name: "Артём", role: "Frontend & Product Developer" },
+      { id: "fedor", name: "Федор", role: "Founder & Creative director" },
+      { id: "arseniy", name: "Арсений", role: "Backend & Automation Engineer" },
+      { id: "artem", name: "Артём", role: "Frontend & Product Developer" },
     ]);
   });
 
-  it("references local JPEG media with matching dimensions", async () => {
+  it("references local media with matching dimensions", async () => {
     const { homeContent } = await loadHomeModule();
     const assets = [
       ...homeContent.work.media,
@@ -221,12 +227,21 @@ describe("home content assets", () => {
     ];
 
     expect(homeContent.work.media).toHaveLength(10);
-    expect(homeContent.team.items).toHaveLength(2);
+    expect(homeContent.team.items).toHaveLength(3);
 
     for (const media of assets) {
       const assetPath = resolve(projectRoot, `public${media.src}`);
 
       expect(existsSync(assetPath), `${media.src} should exist`).toBe(true);
+
+      if (media.src.endsWith(".webp")) {
+        const image = readFileSync(assetPath);
+
+        expect(image.subarray(0, 4).toString("ascii")).toBe("RIFF");
+        expect(image.subarray(8, 12).toString("ascii")).toBe("WEBP");
+        continue;
+      }
+
       expect(readJpegDimensions(assetPath)).toEqual({
         width: media.width,
         height: media.height,

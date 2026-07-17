@@ -42,7 +42,7 @@ describe("home page sections", () => {
       "Прямой контакт с командой",
       "Один процесс от идеи до запуска",
       "Основа для развития",
-      "Разрабатываем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
+      "Создаем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
       "Работа, которую можно проверить.",
       "Быстрый старт",
       "Форматы работы и стоимость",
@@ -65,6 +65,20 @@ describe("home page sections", () => {
     ];
     expectedH2.forEach((copy) => expectExactElement(markup, "h2", copy));
     expectedH3.forEach((copy) => expectExactElement(markup, "h3", copy));
+  });
+
+  it("uses the credibility surface for metrics and starter cards", () => {
+    const styles = readProjectFile("app/globals.css");
+    const commercialCardRule =
+      styles.match(/\.commercial-card\s*{[^}]*}/)?.[0] ?? "";
+
+    expect(commercialCardRule).toContain(
+      "border: 1px solid var(--color-line);",
+    );
+    expect(commercialCardRule).toContain("background: var(--color-surface);");
+    expect(commercialCardRule).toContain("box-shadow: var(--shadow-card);");
+    expect(commercialCardRule).not.toContain("linear-gradient");
+    expect(commercialCardRule).not.toContain("inset");
   });
 
   it("keeps the conversion landmarks in the approved order", async () => {
@@ -163,6 +177,9 @@ describe("home page sections", () => {
     expect(form).toMatch(/auto[Cc]omplete="name"/);
     expect(form).toMatch(/auto[Cc]omplete="email"/);
     expect(form).toContain("Коротко о задаче");
+    expect(form).toContain('href="/terms"');
+    expect(form).toContain('href="/privacy"');
+    expect(form).toContain("персональных данных");
   });
 
   it("presents the unavailable contact form as disabled and explains why", async () => {
@@ -203,8 +220,8 @@ describe("home page sections", () => {
     );
 
     expect(markup).not.toContain("Концепт");
-    expect(markup.match(/target="_blank"/g)).toHaveLength(10);
-    expect(markup.match(/rel="noreferrer noopener"/g)).toHaveLength(10);
+    expect(markup.match(/target="_blank"/g)).toHaveLength(11);
+    expect(markup.match(/rel="noreferrer noopener"/g)).toHaveLength(11);
     expect(
       workMarkup.match(
         /<a\b[^>]*target="_blank"[^>]*rel="noreferrer noopener"[^>]*><figure(?:\s|>)/g,
@@ -231,6 +248,7 @@ describe("home page sections", () => {
       "/images/work/atelier-kitchens.jpg",
     );
     expect(markupWithReadableImagePaths).toContain("/images/work/groom.jpg");
+    expect(markupWithReadableImagePaths).toContain("/images/team/fedor.webp");
     expect(markupWithReadableImagePaths).toContain("/images/team/arseniy.jpg");
     expect(markupWithReadableImagePaths).toContain("/images/team/artem.jpg");
     expect(markup).toContain('href="https://atelier-kitchens.vercel.app"');
@@ -240,13 +258,21 @@ describe("home page sections", () => {
     expect(workSection).not.toContain("groom-woad.vercel.app");
     expect(workSection).toContain("project.href");
     expect(workSection).toContain("project.cta");
+    expect(markup).toContain("nyraflow");
+    expect(markup).toContain("Все права защищены");
+    expect(markup).toContain('href="mailto:nyraflow@yandex.ru"');
+    expect(markup).toContain('href="tel:+79045246108"');
+    expect(markup).toContain('href="https://t.me/nyraflow"');
+    expect(markup).toContain('href="/terms"');
+    expect(markup).toContain('href="/privacy"');
+    expect(markup).toContain("ИНН 463309989306");
 
-    for (const href of ["#work", "#services", "#team", "#faq", "#contact"]) {
+    for (const href of ["/#work", "/#services", "/#team", "/#faq", "/#contact"]) {
       expect(markup).toContain(`href="${href}"`);
     }
   });
 
-  it("renders two verified team members and one neutral responsive slot", async () => {
+  it("renders three verified team members in approved responsive cards", async () => {
     const markup = await renderPageAfterHero();
     const teamMarkup = markup.slice(
       markup.indexOf('<section id="team"'),
@@ -255,9 +281,11 @@ describe("home page sections", () => {
     const teamSection = readProjectFile("components/home/TeamSection.tsx");
 
     expect(markup).toContain("Три человека. Одна ответственность за результат.");
-    expect(markup).toContain("Арсений, Backend &amp; Automation Engineer");
-    expect(markup).toContain("Артём, Frontend &amp; Product Developer");
-    expect(markup).toContain("Место для третьего фото");
+    expect(teamMarkup).toContain("Федор, Founder &amp; Creative director");
+    expect(teamMarkup).toContain("Арсений, Backend &amp; Automation Engineer");
+    expect(teamMarkup).toContain("Артём, Frontend &amp; Product Developer");
+    expect(teamMarkup.indexOf("Федор")).toBeLessThan(teamMarkup.indexOf("Арсений"));
+    expect(teamMarkup).not.toContain("Место для третьего фото");
     expect(teamMarkup.match(/aspect-\[4\/5\]/g)).toHaveLength(3);
     expect(teamMarkup).toContain("md:grid-cols-2");
     expect(teamMarkup).toContain("xl:grid-cols-3");
@@ -307,7 +335,8 @@ describe("home page sections", () => {
       .map((child) => child.getText(sourceFile));
 
     expect(page).toContain('import SiteFooter from "@/components/home/SiteFooter";');
-    expect(mainChildren).toEqual(["<LockedSplineHero />", "<HomeSections />"]);
+    expect(page).toContain('import ResponsiveHero from "@/components/ResponsiveHero";');
+    expect(mainChildren).toEqual(["<ResponsiveHero />", "<HomeSections />"]);
     expect(footerNode).toBeDefined();
     expect(main && footerNode && main.end < footerNode.pos).toBe(true);
     expect(readProjectFile("components/HomeSections.tsx")).not.toContain(

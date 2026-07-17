@@ -4,7 +4,7 @@ const approvedHeadings = [
   "Прямой контакт с командой",
   "Один процесс от идеи до запуска",
   "Основа для развития",
-  "Разрабатываем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
+  "Создаем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
   "Работа, которую можно проверить.",
   "Собираем продукт вокруг бизнес-задачи.",
   "Три человека. Одна ответственность за результат.",
@@ -38,6 +38,21 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
     );
   });
 
+  const realCanvas = page.locator("main > div > canvas");
+  await expect(realCanvas).toBeVisible();
+  const realCanvasBox = await realCanvas.boundingBox();
+  if (!realCanvasBox) throw new Error("Spline canvas box is missing");
+
+  await page.evaluate(() =>
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" }),
+  );
+  await page.mouse.move(
+    realCanvasBox.x + realCanvasBox.width / 2,
+    realCanvasBox.y + Math.min(realCanvasBox.height / 2, 700),
+  );
+  await page.mouse.wheel(0, 700);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+
   await page.evaluate(async () => {
     const main = document.querySelector("main");
     if (!(main instanceof HTMLElement)) throw new Error("main is missing");
@@ -63,7 +78,7 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
       { passive: false },
     );
     main.prepend(canvas);
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 
     await new Promise<void>((resolve) => {
       window.requestAnimationFrame(() => {
@@ -88,6 +103,69 @@ test("wheel bridge restores document scrolling when a canvas captures wheel", as
     .poll(() => page.evaluate(() => window.scrollY))
     .toBeGreaterThan(0);
   expect(severeBrowserErrors).toEqual([]);
+});
+
+test("trackpad bursts scroll immediately over a wheel-capturing canvas", async ({
+  page,
+}) => {
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForFunction(() => {
+    const splineCanvas = document.querySelector("main > div > canvas");
+
+    return (
+      splineCanvas instanceof HTMLCanvasElement &&
+      Object.keys(splineCanvas).some((key) => key.startsWith("__reactFiber$"))
+    );
+  });
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => resolve());
+        });
+      }),
+  );
+
+  const result = await page.evaluate(async () => {
+    const main = document.querySelector("main");
+    if (!(main instanceof HTMLElement)) throw new Error("main is missing");
+
+    const canvas = document.createElement("canvas");
+    Object.assign(canvas.style, {
+      position: "fixed",
+      inset: "0",
+      width: "100vw",
+      height: "100vh",
+      zIndex: "2147483647",
+    });
+    main.prepend(canvas);
+    window.scrollTo({ top: 0, behavior: "instant" });
+
+    let defaultPrevented = false;
+
+    for (let index = 0; index < 10; index += 1) {
+      const wheelEvent = new WheelEvent("wheel", {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+        deltaY: 12,
+      });
+      canvas.dispatchEvent(wheelEvent);
+      defaultPrevented ||= wheelEvent.defaultPrevented;
+    }
+
+    await new Promise<void>((resolve) => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => resolve());
+      });
+    });
+
+    return { defaultPrevented, scrollY: window.scrollY };
+  });
+
+  expect(result.defaultPrevented).toBe(true);
+  expect(result.scrollY).toBe(120);
 });
 
 test.describe("Spline hero navigation", () => {
@@ -360,10 +438,53 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
     isMobile: true,
   });
   const page = await context.newPage();
+  const splineRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("prod.spline.design")) {
+      splineRequests.push(request.url());
+    }
+  });
 
   try {
     const response = await page.goto("/", { waitUntil: "domcontentloaded" });
     expect(response?.ok()).toBe(true);
+
+    const hero = page.getByTestId("mobile-hero");
+    await expect(hero).toBeVisible();
+    await expect(page.locator("main canvas")).toHaveCount(0);
+    await expect(hero.locator("img")).toHaveCount(0);
+    expect(splineRequests).toEqual([]);
+    await expect(page.getByRole("heading", {
+      name: "Создаём digital-продукты, которые двигают бизнес вперёд",
+      exact: true,
+    })).toBeVisible();
+    await expect(hero.getByRole("link", { name: "Обсудить проект" })).toHaveAttribute(
+      "href",
+      "#contact",
+    );
+    await expect(hero.getByRole("link", { name: "Узнать больше" })).toHaveAttribute(
+      "href",
+      "#work",
+    );
+
+    const heroMetrics = await hero.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return {
+        height: rect.height,
+        viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+        nextSectionTop:
+          document
+            .querySelector("main section[id]:not(#top)")
+            ?.getBoundingClientRect().top ?? Infinity,
+        backgroundImage: style.backgroundImage,
+        overflowX: element.scrollWidth - element.clientWidth,
+      };
+    });
+    expect(heroMetrics.height).toBeLessThan(heroMetrics.viewportHeight);
+    expect(heroMetrics.nextSectionTop).toBeLessThan(heroMetrics.viewportHeight);
+    expect(heroMetrics.backgroundImage).not.toBe("none");
+    expect(heroMetrics.overflowX).toBe(0);
 
     for (const selector of [
       "#metrics article",
@@ -415,6 +536,25 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
           document.documentElement.clientWidth,
       })),
     ).toEqual({ body: 0, document: 0 });
+
+    const cdp = await context.newCDPSession(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x: 195, y: 650, radiusX: 2, radiusY: 2, force: 1 }],
+    });
+    for (const y of [600, 550, 500, 450, 400, 350]) {
+      await cdp.send("Input.dispatchTouchEvent", {
+        type: "touchMove",
+        touchPoints: [{ x: 195, y, radiusX: 2, radiusY: 2, force: 1 }],
+      });
+    }
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+    expect(splineRequests).toEqual([]);
   } finally {
     await context.close();
   }

@@ -69,6 +69,11 @@ export default function ContactSection() {
             >
               Отправка будет доступна после подключения защищённого канала перед публикацией.
             </p>
+            <p className="mt-3 text-sm leading-relaxed text-text-secondary">
+              Используя форму после подключения отправки, вы принимаете условия{" "}
+              <a href="/terms">договора-оферты</a> и подтверждаете ознакомление с{" "}
+              <a href="/privacy">политикой обработки персональных данных</a>.
+            </p>
           </form>
         </div>
       </SectionContainer>

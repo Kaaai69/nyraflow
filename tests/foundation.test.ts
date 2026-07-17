@@ -214,7 +214,7 @@ describe("locked Spline hero", () => {
     expect(hero).not.toMatch(/className=|style=|position\s*:|z-index|animation/);
   });
 
-  it("renders the locked hero first through its isolated component", () => {
+  it("renders the responsive hero first through its isolated component", () => {
     const page = readProjectFile("app/page.tsx");
     const sourceFile = ts.createSourceFile(
       "app/page.tsx",
@@ -245,11 +245,11 @@ describe("locked Spline hero", () => {
     const firstChild = meaningfulChildren?.[0];
 
     expect(page).toContain(
-      'import LockedSplineHero from "@/components/LockedSplineHero";',
+      'import ResponsiveHero from "@/components/ResponsiveHero";',
     );
     expect(page).not.toContain("@splinetool/react-spline");
     expect(main).toBeDefined();
     expect(firstChild && ts.isJsxSelfClosingElement(firstChild)).toBe(true);
-    expect(firstChild?.getText(sourceFile)).toBe("<LockedSplineHero />");
+    expect(firstChild?.getText(sourceFile)).toBe("<ResponsiveHero />");
   });
 });
