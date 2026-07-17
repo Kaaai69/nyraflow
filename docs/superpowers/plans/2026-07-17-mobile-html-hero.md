@@ -16,6 +16,7 @@
 - Mobile scrolling must remain native; do not add `touchmove` handlers or simulated scrolling.
 - Use `min-height: 100svh`, allow content-driven growth, and respect safe-area insets.
 - Preserve the approved Russian copy, link destinations, desktop hero, footer, legal pages, and team content.
+- On mobile, use the existing `nyraflow` wordmark as the `#top` link, one filled primary action, one text secondary action, a `34-40px` heading, and a masked cube visual at `72-86%` width.
 - Verify first on a preview deployment; update production only after mobile and desktop checks pass.
 
 ## File Map
@@ -508,3 +509,189 @@ Confirm on production:
 - Fedor remains first in the team section;
 - legal footer, `/terms`, and `/privacy` remain present;
 - `git status --porcelain` is empty and local HEAD matches the pushed branch.
+
+---
+
+### Task 4: Refine the mobile hero composition
+
+**Files:**
+- Modify: `tests/mobile-hero.test.ts`
+- Modify: `components/MobileHero.tsx`
+- Modify: `content/mobile-hero.ts`
+- Modify: `app/globals.css`
+
+**Interfaces:**
+- Consumes: the existing `MobileHero`, `mobileHeroContent`, WebP asset, and responsive `768px` boundary.
+- Produces: the approved premium editorial-tech mobile composition without changing `ResponsiveHero`, desktop Spline, homepage sections, or footer.
+
+- [x] **Step 1: Add a failing composition contract**
+
+Extend `tests/mobile-hero.test.ts` with:
+
+```ts
+it("uses the approved editorial hierarchy", async () => {
+  const { default: MobileHero } = await import("../components/MobileHero");
+  const markup = renderToStaticMarkup(createElement(MobileHero));
+  const source = readFileSync(
+    resolve(projectRoot, "components/MobileHero.tsx"),
+    "utf8",
+  );
+  const styles = readFileSync(resolve(projectRoot, "app/globals.css"), "utf8");
+
+  expect(markup).toContain("nyraflow");
+  expect(markup).toContain("mobile-hero-wordmark");
+  expect(markup).toContain("mobile-hero-title");
+  expect(markup).toContain("mobile-hero-secondary-action");
+  expect(markup).not.toContain("button-secondary");
+  expect(source).not.toContain("CaretDown");
+  expect(source).not.toContain("grid-cols-2");
+  expect(styles).toMatch(/\.mobile-hero-art[\s\S]*mask-image:/);
+  expect(styles).not.toContain("width: calc(120%");
+});
+```
+
+Update the approved description assertion to:
+
+```ts
+expect(markup).toContain(
+  "Сайты, веб-сервисы и AI-автоматизация, которые превращают трафик в заявки, а сложные процессы в понятную систему.",
+);
+```
+
+- [x] **Step 2: Run the focused test and verify RED**
+
+Run:
+
+```bash
+npm test -- tests/mobile-hero.test.ts
+```
+
+Expected: the new test fails because the wordmark, hierarchy classes, text secondary action, and masked art treatment do not exist yet.
+
+- [x] **Step 3: Implement the approved mobile composition**
+
+Update `content/mobile-hero.ts` so the `#top` destination is owned by the wordmark and the description contains no em dash:
+
+```ts
+brand: { label: "nyraflow", href: "#top" },
+navigation: [
+  { label: "О нас", href: "#team" },
+  { label: "Контакты", href: "#contact" },
+],
+description:
+  "Сайты, веб-сервисы и AI-автоматизация, которые превращают трафик в заявки, а сложные процессы в понятную систему.",
+```
+
+Update `MobileHero` to use this structure:
+
+```tsx
+<header className="mobile-hero-header relative z-10 flex min-h-11 items-center justify-between gap-5">
+  <a className="mobile-hero-wordmark inline-flex min-h-11 items-center" href={content.brand.href}>
+    {content.brand.label}
+  </a>
+  <nav aria-label="Навигация первого экрана">
+    <ul className="flex items-center gap-5 text-sm text-text-secondary">
+      {content.navigation.map((item) => (
+        <li key={item.href}>
+          <a className="inline-flex min-h-11 items-center whitespace-nowrap" href={item.href}>
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<div className="relative z-10 mt-12 max-w-[34rem]">
+  <h1 className="mobile-hero-title font-medium text-text-primary">{content.title}</h1>
+  <p className="mt-5 max-w-[31rem] text-base leading-[1.55] text-text-secondary">
+    {content.description}
+  </p>
+  <div className="mt-7 flex flex-col items-start gap-3">
+    <a className="button-primary inline-flex min-w-[13.5rem] justify-between gap-4" href={content.primaryAction.href}>
+      {content.primaryAction.label}
+      <ArrowRight aria-hidden size={20} weight="bold" />
+    </a>
+    <a className="mobile-hero-secondary-action inline-flex min-h-11 items-center gap-2 whitespace-nowrap px-1 font-medium text-blue" href={content.secondaryAction.href}>
+      {content.secondaryAction.label}
+      <ArrowRight aria-hidden size={18} weight="bold" />
+    </a>
+  </div>
+</div>
+```
+
+Keep the existing decorative `Image`, but remove `priority`, remove the down indicator, and keep it inside `.mobile-hero-art-frame`.
+
+Replace the mobile hero CSS with the approved restrained treatment:
+
+```css
+.mobile-hero {
+  min-height: 100svh;
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at 72% 82%, rgb(67 185 242 / 0.18), transparent 38%),
+    linear-gradient(180deg, #f7f6f2 0%, #eef9ff 34%, #caebff 100%);
+  touch-action: pan-y;
+}
+
+.mobile-hero-wordmark {
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.mobile-hero-title {
+  max-width: 22rem;
+  font-size: clamp(2.125rem, 9.2vw, 2.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.mobile-hero-art-frame {
+  position: absolute;
+  inset: 0 calc(-1 * var(--spacing-gutter-mobile));
+  overflow: hidden;
+}
+
+.mobile-hero-art {
+  inset-inline: 0;
+  bottom: -6%;
+  width: 82%;
+  max-width: 22rem;
+  mask-image: radial-gradient(ellipse 72% 78% at 50% 52%, #000 58%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 72% 78% at 50% 52%, #000 58%, transparent 100%);
+}
+```
+
+- [x] **Step 4: Run focused verification and capture the three mobile sizes**
+
+Run:
+
+```bash
+npm test -- tests/mobile-hero.test.ts
+npm run typecheck
+npx playwright test tests/e2e/home.spec.ts --project=chromium --grep "mobile layout"
+```
+
+Capture `375 × 667`, `390 × 844`, and `430 × 932`. Confirm no action wraps, the art has no rectangular seam, horizontal overflow is zero, native touch scrolling works, and the hero remains readable with Safari browser chrome.
+
+- [x] **Step 5: Run regressions and commit**
+
+Run:
+
+```bash
+npm test
+npm run build
+npx playwright test tests/e2e/home.spec.ts --project=chromium --grep "desktop home page|trackpad bursts|mobile layout"
+```
+
+Expected: all unit tests, type checking, build, focused desktop behavior, and mobile behavior pass.
+
+Commit:
+
+```bash
+git add tests/mobile-hero.test.ts components/MobileHero.tsx content/mobile-hero.ts app/globals.css docs/superpowers/plans/2026-07-17-mobile-html-hero.md
+git commit -m "fix: refine mobile hero composition"
+```

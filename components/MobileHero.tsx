@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowRight, CaretDown } from "@phosphor-icons/react/ssr";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 
 import { mobileHeroContent } from "../content/mobile-hero";
 
@@ -12,62 +12,66 @@ export default function MobileHero() {
       data-testid="mobile-hero"
       className="mobile-hero relative isolate flex min-w-0 flex-col overflow-hidden px-gutter-mobile md:hidden"
     >
-      <nav aria-label="Навигация первого экрана" className="relative z-10">
-        <ul className="flex items-center justify-center gap-6 text-sm text-text-secondary">
-          {content.navigation.map((item) => (
-            <li key={item.href}>
-              <a className="inline-flex min-h-11 items-center" href={item.href}>
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <header className="mobile-hero-header relative z-10 flex min-h-11 items-center justify-between gap-5">
+        <a
+          className="mobile-hero-wordmark inline-flex min-h-11 items-center"
+          href={content.brand.href}
+        >
+          {content.brand.label}
+        </a>
+        <nav aria-label="Навигация первого экрана">
+          <ul className="flex items-center gap-5 text-sm text-text-secondary">
+            {content.navigation.map((item) => (
+              <li key={item.href}>
+                <a
+                  className="inline-flex min-h-11 items-center whitespace-nowrap"
+                  href={item.href}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </header>
 
-      <div className="relative z-10 mt-10 max-w-[34rem]">
-        <h1 className="text-[clamp(2.5rem,11vw,4.5rem)] font-medium leading-[0.98] tracking-[-0.045em] text-text-primary">
+      <div className="relative z-10 mt-12 max-w-[34rem]">
+        <h1 className="mobile-hero-title font-medium text-text-primary">
           {content.title}
         </h1>
-        <p className="mt-6 max-w-[31rem] text-base leading-relaxed text-text-secondary">
+        <p className="mt-5 max-w-[31rem] text-base leading-[1.55] text-text-secondary">
           {content.description}
         </p>
-        <div className="mt-7 grid gap-3 min-[390px]:grid-cols-2">
+        <div className="mt-7 flex flex-col items-start gap-3">
           <a
-            className="button-primary inline-flex justify-between gap-4"
+            className="button-primary inline-flex min-w-[13.5rem] justify-between gap-4"
             href={content.primaryAction.href}
           >
             {content.primaryAction.label}
             <ArrowRight aria-hidden size={20} weight="bold" />
           </a>
           <a
-            className="button-secondary inline-flex min-h-12 items-center justify-between gap-4 rounded-full border border-blue px-6 font-semibold text-blue"
+            className="mobile-hero-secondary-action inline-flex min-h-11 items-center gap-2 whitespace-nowrap px-1 font-medium text-blue"
             href={content.secondaryAction.href}
           >
             {content.secondaryAction.label}
-            <ArrowRight aria-hidden size={20} weight="bold" />
+            <ArrowRight aria-hidden size={18} weight="bold" />
           </a>
         </div>
       </div>
 
       <div
-        className="pointer-events-none relative mt-3 min-h-52 flex-1"
+        className="pointer-events-none relative min-h-60 flex-1"
         aria-hidden
       >
         <div className="mobile-hero-art-frame">
           <Image
             {...content.visual}
-            priority
             sizes="100vw"
             className="mobile-hero-art absolute mx-auto h-auto object-contain"
           />
         </div>
       </div>
-
-      <CaretDown
-        aria-hidden
-        className="relative z-10 mx-auto mt-2 shrink-0 text-text-secondary"
-        size={28}
-      />
     </section>
   );
 }

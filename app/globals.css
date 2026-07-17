@@ -111,42 +111,67 @@ body {
 
 .mobile-hero {
   min-height: 100svh;
-  padding-top: max(1.25rem, env(safe-area-inset-top));
-  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
   background:
-    radial-gradient(circle at 76% 72%, rgb(67 185 242 / 0.3), transparent 42%),
-    linear-gradient(180deg, #f7f6f2 0%, #d9f2ff 16%, #acdfff 72%, #f7f6f2 100%);
+    radial-gradient(circle at 72% 82%, rgb(67 185 242 / 0.18), transparent 38%),
+    linear-gradient(180deg, #f7f6f2 0%, #eef9ff 34%, #caebff 100%);
   touch-action: pan-y;
 }
 
+.mobile-hero-wordmark {
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  text-decoration: none;
+}
+
+.mobile-hero-title {
+  max-width: 22rem;
+  font-size: clamp(2.125rem, 9.2vw, 2.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.mobile-hero-secondary-action {
+  text-decoration: none;
+}
+
 .mobile-hero-art {
-  inset-inline: calc(1.8rem - 10%);
-  bottom: -4%;
-  width: calc(120% - 3.6rem);
-  max-width: 36rem;
+  inset-inline: 0;
+  bottom: -8%;
+  width: 100vw;
+  max-width: 27rem;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 52%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 52%);
 }
 
 .mobile-hero-art-frame {
   position: absolute;
-  inset-block: 0;
-  inset-inline: calc(-1 * var(--spacing-gutter-mobile));
+  inset: 0 calc(-1 * var(--spacing-gutter-mobile));
   overflow: hidden;
 }
 
-.button-secondary {
-  transition:
-    color var(--duration-base) var(--ease-premium),
-    background-color var(--duration-base) var(--ease-premium),
-    border-color var(--duration-base) var(--ease-premium),
-    transform var(--duration-base) var(--ease-premium);
+.mobile-hero-art-frame::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0 0 auto;
+  height: 8rem;
+  background: linear-gradient(
+    to bottom,
+    rgb(221 243 255) 0%,
+    rgb(221 243 255 / 0.82) 18%,
+    transparent 100%
+  );
+  content: "";
+  pointer-events: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .button-secondary:hover {
-    border-color: var(--color-blue-deep);
-    background: rgb(255 255 255 / 0.42);
+  .mobile-hero-secondary-action:hover {
     color: var(--color-blue-deep);
-    transform: translateY(-1px);
+    transform: translateX(0.125rem);
   }
 }
 

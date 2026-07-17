@@ -15,7 +15,7 @@ describe("mobile hero", () => {
     expect(markup).toContain('data-testid="mobile-hero"');
     expect(markup).toContain("Создаём digital-продукты, которые двигают бизнес вперёд");
     expect(markup).toContain(
-      "Сайты, веб-сервисы и AI-автоматизация, которые превращают трафик в заявки, а сложные процессы — в понятную систему.",
+      "Сайты, веб-сервисы и AI-автоматизация, которые превращают трафик в заявки, а сложные процессы в понятную систему.",
     );
     expect(markup.match(/<h1/g)).toHaveLength(1);
     expect(markup).toContain('aria-label="Навигация первого экрана"');
@@ -44,6 +44,29 @@ describe("mobile hero", () => {
     expect(markup).toContain("/images/hero/mobile-cubes.webp");
     expect(markup).toContain('alt=""');
     expect(markup).toContain("pointer-events-none");
+  });
+
+  it("uses the approved editorial hierarchy", async () => {
+    const { default: MobileHero } = await import("../components/MobileHero");
+    const markup = renderToStaticMarkup(createElement(MobileHero));
+    const source = readFileSync(
+      resolve(projectRoot, "components/MobileHero.tsx"),
+      "utf8",
+    );
+    const styles = readFileSync(resolve(projectRoot, "app/globals.css"), "utf8");
+
+    expect(markup).toContain("nyraflow");
+    expect(markup).toContain("mobile-hero-wordmark");
+    expect(markup).toContain("mobile-hero-title");
+    expect(markup).toContain("mobile-hero-secondary-action");
+    expect(markup).not.toContain("button-secondary");
+    expect(source).not.toContain("CaretDown");
+    expect(source).not.toContain("grid-cols-2");
+    expect(styles).toMatch(/\.mobile-hero-art[\s\S]*mask-image:/);
+    expect(styles).toMatch(
+      /\.mobile-hero-art-frame::after[\s\S]*linear-gradient/,
+    );
+    expect(styles).not.toContain("width: calc(120%");
   });
 
   it("keeps the desktop Spline implementation lazy and unchanged", () => {
