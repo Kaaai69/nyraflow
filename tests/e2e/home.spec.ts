@@ -452,6 +452,7 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
     const hero = page.getByTestId("mobile-hero");
     await expect(hero).toBeVisible();
     await expect(page.locator("main canvas")).toHaveCount(0);
+    await expect(hero.locator("img")).toHaveCount(0);
     expect(splineRequests).toEqual([]);
     await expect(page.getByRole("heading", {
       name: "Создаём digital-продукты, которые двигают бизнес вперёд",
@@ -472,11 +473,16 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
       return {
         height: rect.height,
         viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+        nextSectionTop:
+          document
+            .querySelector("main section[id]:not(#top)")
+            ?.getBoundingClientRect().top ?? Infinity,
         backgroundImage: style.backgroundImage,
         overflowX: element.scrollWidth - element.clientWidth,
       };
     });
-    expect(heroMetrics.height).toBeGreaterThanOrEqual(heroMetrics.viewportHeight);
+    expect(heroMetrics.height).toBeLessThan(heroMetrics.viewportHeight);
+    expect(heroMetrics.nextSectionTop).toBeLessThan(heroMetrics.viewportHeight);
     expect(heroMetrics.backgroundImage).not.toBe("none");
     expect(heroMetrics.overflowX).toBe(0);
 

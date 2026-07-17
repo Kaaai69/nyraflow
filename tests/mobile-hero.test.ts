@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -27,23 +27,13 @@ describe("mobile hero", () => {
     expect(markup).toContain("Узнать больше");
   });
 
-  it("uses an optimized decorative WebP that cannot capture touch input", async () => {
+  it("keeps the mobile first screen text-only without the cube artwork", async () => {
     const { default: MobileHero } = await import("../components/MobileHero");
-    const markup = decodeURIComponent(
-      renderToStaticMarkup(createElement(MobileHero)),
-    );
-    const assetPath = resolve(
-      projectRoot,
-      "public/images/hero/mobile-cubes.webp",
-    );
+    const markup = renderToStaticMarkup(createElement(MobileHero));
 
-    expect(existsSync(assetPath)).toBe(true);
-    const asset = readFileSync(assetPath);
-    expect(asset.subarray(0, 4).toString("ascii")).toBe("RIFF");
-    expect(asset.subarray(8, 12).toString("ascii")).toBe("WEBP");
-    expect(markup).toContain("/images/hero/mobile-cubes.webp");
-    expect(markup).toContain('alt=""');
-    expect(markup).toContain("pointer-events-none");
+    expect(markup).not.toContain("mobile-cubes.webp");
+    expect(markup).not.toContain("mobile-hero-art");
+    expect(markup).not.toContain("<img");
   });
 
   it("uses the approved editorial hierarchy", async () => {
@@ -62,10 +52,8 @@ describe("mobile hero", () => {
     expect(markup).not.toContain("button-secondary");
     expect(source).not.toContain("CaretDown");
     expect(source).not.toContain("grid-cols-2");
-    expect(styles).toMatch(/\.mobile-hero-art[\s\S]*mask-image:/);
-    expect(styles).toMatch(
-      /\.mobile-hero-art-frame::after[\s\S]*linear-gradient/,
-    );
+    expect(styles).not.toContain(".mobile-hero-art");
+    expect(styles).not.toMatch(/\.mobile-hero\s*\{[\s\S]*min-height:\s*100svh/);
     expect(styles).not.toContain("width: calc(120%");
   });
 

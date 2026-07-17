@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ArrowRight } from "@phosphor-icons/react/ssr";
 
 import { mobileHeroContent } from "../content/mobile-hero";
@@ -57,19 +56,6 @@ export default function MobileHero() {
             {content.secondaryAction.label}
             <ArrowRight aria-hidden size={18} weight="bold" />
           </a>
-        </div>
-      </div>
-
-      <div
-        className="pointer-events-none relative min-h-60 flex-1"
-        aria-hidden
-      >
-        <div className="mobile-hero-art-frame">
-          <Image
-            {...content.visual}
-            sizes="100vw"
-            className="mobile-hero-art absolute mx-auto h-auto object-contain"
-          />
         </div>
       </div>
     </section>

@@ -9,10 +9,4 @@ export const mobileHeroContent = {
     "Сайты, веб-сервисы и AI-автоматизация, которые превращают трафик в заявки, а сложные процессы в понятную систему.",
   primaryAction: { label: "Обсудить проект", href: "#contact" },
   secondaryAction: { label: "Узнать больше", href: "#work" },
-  visual: {
-    src: "/images/hero/mobile-cubes.webp",
-    alt: "",
-    width: 1120,
-    height: 1040,
-  },
 } as const;

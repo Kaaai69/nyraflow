@@ -110,12 +110,11 @@ body {
 }
 
 .mobile-hero {
-  min-height: 100svh;
   padding-top: max(1rem, env(safe-area-inset-top));
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  padding-bottom: max(3.5rem, env(safe-area-inset-bottom));
   background:
-    radial-gradient(circle at 72% 82%, rgb(67 185 242 / 0.18), transparent 38%),
-    linear-gradient(180deg, #f7f6f2 0%, #eef9ff 34%, #caebff 100%);
+    radial-gradient(circle at 88% 88%, rgb(67 185 242 / 0.14), transparent 42%),
+    linear-gradient(180deg, #f7f6f2 0%, #eef9ff 58%, #dff4ff 100%);
   touch-action: pan-y;
 }
 
@@ -136,36 +135,6 @@ body {
 
 .mobile-hero-secondary-action {
   text-decoration: none;
-}
-
-.mobile-hero-art {
-  inset-inline: 0;
-  bottom: -8%;
-  width: 100vw;
-  max-width: 27rem;
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 52%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 52%);
-}
-
-.mobile-hero-art-frame {
-  position: absolute;
-  inset: 0 calc(-1 * var(--spacing-gutter-mobile));
-  overflow: hidden;
-}
-
-.mobile-hero-art-frame::after {
-  position: absolute;
-  z-index: 1;
-  inset: 0 0 auto;
-  height: 8rem;
-  background: linear-gradient(
-    to bottom,
-    rgb(221 243 255) 0%,
-    rgb(221 243 255 / 0.82) 18%,
-    transparent 100%
-  );
-  content: "";
-  pointer-events: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
