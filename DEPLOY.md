@@ -35,7 +35,26 @@ These files live only on the developer machine and are git-ignored:
 | `vpn.conf`     | AmneziaWG client config (the VPN the server egress uses). |
 | `telegram.txt` | Telegram bot token / chat id (not referenced by the app code yet). |
 
-The app currently reads no runtime environment variables.
+### Runtime environment variables
+
+The contact form delivers submissions to Telegram, so the **app** container
+needs these (kept in `/opt/myland/.env` on the server — git-ignored, not baked
+into the image; `docker-compose.yml` loads them via `env_file`):
+
+| Variable             | Purpose                                  |
+|----------------------|------------------------------------------|
+| `TELEGRAM_BOT_TOKEN` | Bot token (BotFather).                   |
+| `TELEGRAM_CHAT_ID`   | Chat id that receives the applications.  |
+
+```bash
+# /opt/myland/.env
+TELEGRAM_BOT_TOKEN=123456:AA...
+TELEGRAM_CHAT_ID=1098997456
+```
+
+The recipient must have pressed **/start** on the bot at least once, otherwise
+Telegram refuses the message. Outbound requests to `api.telegram.org` go through
+the server's VPN egress (which is how they reach Telegram from Russia).
 
 ## First deploy
 
