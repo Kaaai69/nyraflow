@@ -109,6 +109,19 @@ body {
   }
 }
 
+.desktop-hero-logo {
+  position: absolute;
+  top: 1.9rem;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.desktop-hero-logo a {
+  pointer-events: auto;
+}
+
 .mobile-hero {
   padding-top: max(1rem, env(safe-area-inset-top));
   padding-bottom: max(3.5rem, env(safe-area-inset-bottom));

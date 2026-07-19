@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import MobileHero from "./MobileHero";
@@ -23,7 +24,27 @@ export default function ResponsiveHero() {
   }, []);
 
   return isDesktop ? (
-    <DesktopSplineHero />
+    <>
+      <DesktopSplineHero />
+      <div className="desktop-hero-logo" aria-hidden={false}>
+        <div className="mx-auto w-full max-w-site px-gutter-mobile md:px-gutter-tablet xl:px-gutter-desktop">
+          <a
+            href="#top"
+            aria-label="nyraflow — на главную"
+            className="inline-flex items-center"
+          >
+            <Image
+              src="/images/brand/lockup-transparent.png"
+              alt="nyraflow"
+              width={1027}
+              height={164}
+              priority
+              className="h-8 w-auto"
+            />
+          </a>
+        </div>
+      </div>
+    </>
   ) : (
     <>
       <MobileHero />
