@@ -10,3 +10,8 @@ artifacts/ignored/
 .superpowers/
 .worktrees/
 .vercel
+
+# deployment secrets — never commit
+server.txt
+telegram.txt
+vpn.conf
