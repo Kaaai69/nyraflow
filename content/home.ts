@@ -384,7 +384,7 @@ export const homeContent = {
   starter: {
     id: "starter",
     title: "Быстрый старт",
-    price: "от 20 000 ₽",
+    price: "от 30 000 ₽",
     items: [
       {
         id: "selling-structure",
@@ -426,7 +426,7 @@ export const homeContent = {
       {
         id: "landing",
         title: "Лендинг",
-        price: "от 20 000 ₽",
+        price: "от 30 000 ₽",
         description: "Для запуска продукта, услуги или проверки новой ниши.",
         included: [
           "Маркетинговая упаковка",
