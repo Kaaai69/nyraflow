@@ -21,18 +21,21 @@ export default function ProcessSection() {
 
         <ol className="mt-14 grid gap-x-6 gap-y-10 sm:grid-cols-2 xl:mt-20 xl:grid-cols-5">
           {content.items.map((item, index) => (
-            <li key={item.id} className="relative flex flex-col">
-              {index > 0 && (
-                <ArrowRightIcon
-                  aria-hidden
-                  weight="bold"
-                  size={22}
-                  className="absolute -left-[1.6rem] top-[1.1rem] hidden text-line-strong xl:block"
-                />
-              )}
-              <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-blue text-lg font-semibold text-blue">
-                {String(index + 1).padStart(2, "0")}
-              </span>
+            <li key={item.id} className="flex flex-col">
+              <div className="flex items-center">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-blue text-lg font-semibold text-blue">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                {index < content.items.length - 1 && (
+                  <span className="hidden flex-1 justify-center xl:flex" aria-hidden>
+                    <ArrowRightIcon
+                      weight="regular"
+                      size={18}
+                      className="text-line-strong"
+                    />
+                  </span>
+                )}
+              </div>
               <h3 className="mt-6 text-xl font-semibold leading-tight tracking-[-0.01em]">
                 {item.title}
               </h3>
