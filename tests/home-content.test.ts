@@ -146,6 +146,7 @@ describe("home content contract", () => {
       "team",
       "process",
       "faq",
+      "benefits",
       "contact",
     ]);
   });
@@ -161,12 +162,12 @@ describe("home content contract", () => {
       "20+",
       "100%",
     ]);
-    expect(homeContent.starter.price).toBe("от 20 000 ₽");
+    expect(homeContent.starter.price).toBe("от 30 000 ₽");
     expect(homeContent.starter.items).toHaveLength(4);
     expect(
       homeContent.pricing.items.map(({ title, price }) => ({ title, price })),
     ).toEqual([
-      { title: "Лендинг", price: "от 20 000 ₽" },
+      { title: "Лендинг", price: "от 30 000 ₽" },
       { title: "Веб-сервис / Telegram Mini App", price: "от 60 000 ₽" },
       { title: "Сайт + AI-автоматизация", price: "от 120 000 ₽" },
     ]);
@@ -187,7 +188,7 @@ describe("home content contract", () => {
   it.each([
     ["credibility", 3],
     ["services", 3],
-    ["process", 4],
+    ["process", 5],
     ["faq", 6],
   ] as const)("provides the required %s item count", async (section, count) => {
     const { homeContent } = await loadHomeModule();
@@ -213,9 +214,9 @@ describe("home content assets", () => {
     expect(
       homeContent.team.items.map(({ id, name, role }) => ({ id, name, role })),
     ).toEqual([
-      { id: "fedor", name: "Федор", role: "Founder & Creative director" },
+      { id: "fedor", name: "Федор", role: "Founder" },
       { id: "arseniy", name: "Арсений", role: "Backend & Automation Engineer" },
-      { id: "artem", name: "Артём", role: "Frontend & Product Developer" },
+      { id: "artem", name: "Артём", role: "CMO" },
     ]);
   });
 

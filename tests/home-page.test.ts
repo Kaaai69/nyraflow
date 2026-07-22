@@ -48,7 +48,8 @@ describe("home page sections", () => {
       "Форматы работы и стоимость",
       "Собираем продукт вокруг бизнес-задачи.",
       "Три человека. Одна ответственность за результат.",
-      "Сначала смысл. Потом система. Затем запуск.",
+      "Этапы разработки",
+      "Почему с нами безопасно и выгодно работать",
       "Обсудим, какой продукт нужен вашему бизнесу.",
     ];
     const expectedH3 = [
@@ -58,10 +59,15 @@ describe("home page sections", () => {
       "Конверсионные сайты",
       "Веб-сервисы",
       "AI-автоматизации",
-      "Разобраться",
-      "Спроектировать",
-      "Собрать",
-      "Запустить и проверить",
+      "Диагностика задачи",
+      "Структура и смыслы",
+      "Дизайн-концепт",
+      "Разработка и интеграции",
+      "Запуск и рост",
+      "Глубокий маркетинг",
+      "Юридическая чистота",
+      "Работа до результата",
+      "Помощь в дальнейшем развитии проекта",
     ];
     expectedH2.forEach((copy) => expectExactElement(markup, "h2", copy));
     expectedH3.forEach((copy) => expectExactElement(markup, "h3", copy));
@@ -94,6 +100,7 @@ describe("home page sections", () => {
       "team",
       "process",
       "faq",
+      "benefits",
       "contact",
     ];
     const positions = ids.map((id) => markup.indexOf(`id="${id}"`));
@@ -123,7 +130,7 @@ describe("home page sections", () => {
     expect(metrics).toContain("20+");
     expect(metrics).toContain("100%");
     expect(starter.match(/<article/g)).toHaveLength(4);
-    expect(starter).toContain("от 20 000 ₽");
+    expect(starter).toContain("от 30 000 ₽");
     expect(starter).toMatch(/<h2[^>]*text-blue[^>]*>Быстрый старт<\/h2>/);
     expect(pricing.match(/<article/g)).toHaveLength(3);
     expect(pricing).toContain("от 120 000 ₽");
@@ -150,7 +157,7 @@ describe("home page sections", () => {
     const markup = await renderPageAfterHero();
     const faqMarkup = markup.slice(
       markup.indexOf('<section id="faq"'),
-      markup.indexOf('<section id="contact"'),
+      markup.indexOf('<section id="benefits"'),
     );
     const faqSource = readProjectFile("components/home/FaqAccordion.tsx");
 
@@ -173,7 +180,7 @@ describe("home page sections", () => {
 
     expect(form).not.toBe("");
     expect(form).not.toMatch(/\saction=|\smethod=/);
-    expect(form).toContain('type="button"');
+    expect(form).toContain('type="submit"');
     expect(form).toMatch(/auto[Cc]omplete="name"/);
     expect(form).toMatch(/auto[Cc]omplete="email"/);
     expect(form).toContain("Коротко о задаче");
@@ -182,29 +189,18 @@ describe("home page sections", () => {
     expect(form).toContain("персональных данных");
   });
 
-  it("presents the unavailable contact form as disabled and explains why", async () => {
+  it("presents a working contact form wired for submission", async () => {
     const markup = await renderPageAfterHero();
     const form = markup.match(/<form[^>]*>[\s\S]*?<\/form>/)?.[0] ?? "";
 
+    // The submit button is enabled — the form posts to the contact API.
     expect(form).toMatch(
-      /<button[^>]*disabled=""[^>]*aria-describedby="contact-form-status"[^>]*>/,
+      /<button[^>]*type="submit"[^>]*aria-describedby="contact-form-status"[^>]*>/,
     );
-    expect(form).toContain(
-      'id="contact-form-status"',
-    );
-    expect(form).toContain(
-      "Отправка будет доступна после подключения защищённого канала перед публикацией.",
-    );
+    expect(form).not.toContain('disabled=""');
+    expect(form).toContain('id="contact-form-status"');
+    expect(form).toContain("Обычно отвечаем в течение рабочего дня.");
     expect(form).toContain("Обсудить проект");
-
-    const styles = readProjectFile("app/globals.css");
-    const disabledRule = styles.match(
-      /\.button-primary:disabled\s*{[^}]*}/,
-    )?.[0];
-
-    expect(disabledRule).toContain("background: var(--color-line);");
-    expect(disabledRule).toContain("color: var(--color-text-primary);");
-    expect(disabledRule).not.toContain("opacity:");
   });
 
   it("renders ten secure published project links, team images, and footer anchors", async () => {
@@ -281,9 +277,9 @@ describe("home page sections", () => {
     const teamSection = readProjectFile("components/home/TeamSection.tsx");
 
     expect(markup).toContain("Три человека. Одна ответственность за результат.");
-    expect(teamMarkup).toContain("Федор, Founder &amp; Creative director");
+    expect(teamMarkup).toContain("Федор, Founder");
     expect(teamMarkup).toContain("Арсений, Backend &amp; Automation Engineer");
-    expect(teamMarkup).toContain("Артём, Frontend &amp; Product Developer");
+    expect(teamMarkup).toContain("Артём, CMO");
     expect(teamMarkup.indexOf("Федор")).toBeLessThan(teamMarkup.indexOf("Арсений"));
     expect(teamMarkup).not.toContain("Место для третьего фото");
     expect(teamMarkup.match(/aspect-\[4\/5\]/g)).toHaveLength(3);

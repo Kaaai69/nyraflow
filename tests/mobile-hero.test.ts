@@ -27,13 +27,14 @@ describe("mobile hero", () => {
     expect(markup).toContain("Узнать больше");
   });
 
-  it("keeps the mobile first screen text-only without the cube artwork", async () => {
+  it("keeps the mobile first screen free of the cube artwork", async () => {
     const { default: MobileHero } = await import("../components/MobileHero");
     const markup = renderToStaticMarkup(createElement(MobileHero));
 
     expect(markup).not.toContain("mobile-cubes.webp");
     expect(markup).not.toContain("mobile-hero-art");
-    expect(markup).not.toContain("<img");
+    // The only image in the mobile hero is the brand logo.
+    expect(markup).toContain('alt="nyraflow"');
   });
 
   it("uses the approved editorial hierarchy", async () => {

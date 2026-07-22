@@ -1,3 +1,5 @@
+import { ArrowRightIcon } from "@phosphor-icons/react/ssr";
+
 import { homeContent } from "../../content/home";
 
 import { SectionContainer } from "./Layout";
@@ -7,30 +9,39 @@ export default function ProcessSection() {
 
   return (
     <section id="process" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
-      <SectionContainer className="grid gap-12 lg:grid-cols-12 lg:gap-6">
-        <header className="lg:col-span-5 lg:pr-12">
-          <div className="lg:sticky lg:top-24">
-            <h2 className="text-title-compact text-balance">
-              {content.title}
-            </h2>
-            <p className="mt-7 text-lg leading-relaxed text-text-secondary md:text-xl">
-              {content.description}
-            </p>
-          </div>
+      <SectionContainer>
+        <header className="mx-auto max-w-3xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue">
+            {content.eyebrow}
+          </p>
+          <h2 className="mt-3 text-title-compact text-balance">
+            {content.title}
+          </h2>
         </header>
 
-        <div className="border-t border-line lg:col-span-7">
-          {content.items.map((item) => (
-            <article key={item.id} className="border-b border-line py-9 md:py-11">
-              <h3 className="text-2xl font-semibold tracking-[-0.02em] md:text-subtitle">
+        <ol className="mt-14 grid gap-x-6 gap-y-10 sm:grid-cols-2 xl:mt-20 xl:grid-cols-5">
+          {content.items.map((item, index) => (
+            <li key={item.id} className="relative flex flex-col">
+              {index > 0 && (
+                <ArrowRightIcon
+                  aria-hidden
+                  weight="bold"
+                  size={22}
+                  className="absolute -left-[1.6rem] top-[1.1rem] hidden text-line-strong xl:block"
+                />
+              )}
+              <span className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-blue text-lg font-semibold text-blue">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <h3 className="mt-6 text-xl font-semibold leading-tight tracking-[-0.01em]">
                 {item.title}
               </h3>
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-text-secondary md:text-lg">
+              <p className="mt-3 text-base leading-relaxed text-text-secondary">
                 {item.description}
               </p>
-            </article>
+            </li>
           ))}
-        </div>
+        </ol>
       </SectionContainer>
     </section>
   );
