@@ -548,7 +548,7 @@ export const homeContent = {
       {
         id: "arseniy",
         name: "Арсений",
-        role: "Backend & Automation Engineer",
+        role: "Co-Founder & CGO",
         photo: {
           src: "/images/team/arseniy.jpg",
           alt: "Арсений",

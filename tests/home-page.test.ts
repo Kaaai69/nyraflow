@@ -278,7 +278,7 @@ describe("home page sections", () => {
 
     expect(markup).toContain("Три человека. Одна ответственность за результат.");
     expect(teamMarkup).toContain("Федор, Founder");
-    expect(teamMarkup).toContain("Арсений, Backend &amp; Automation Engineer");
+    expect(teamMarkup).toContain("Арсений, Co-Founder &amp; CGO");
     expect(teamMarkup).toContain("Артём, CMO");
     expect(teamMarkup.indexOf("Федор")).toBeLessThan(teamMarkup.indexOf("Арсений"));
     expect(teamMarkup).not.toContain("Место для третьего фото");

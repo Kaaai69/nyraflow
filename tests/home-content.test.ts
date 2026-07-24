@@ -215,7 +215,7 @@ describe("home content assets", () => {
       homeContent.team.items.map(({ id, name, role }) => ({ id, name, role })),
     ).toEqual([
       { id: "fedor", name: "Федор", role: "Founder" },
-      { id: "arseniy", name: "Арсений", role: "Backend & Automation Engineer" },
+      { id: "arseniy", name: "Арсений", role: "Co-Founder & CGO" },
       { id: "artem", name: "Артём", role: "CMO" },
     ]);
   });
