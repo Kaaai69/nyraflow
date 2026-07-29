@@ -563,8 +563,8 @@ export const homeContent = {
         photo: {
           src: "/images/team/artem.jpg",
           alt: "Артём",
-          width: 1920,
-          height: 2560,
+          width: 960,
+          height: 1280,
         },
       },
     ],
