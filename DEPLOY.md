@@ -1,5 +1,9 @@
 # MyLand — Deployment
 
+> Этот файл описывает **конкретно этот проект**. Переиспользуемые инструкции по
+> развёртыванию любых лендингов (сервер, Docker, VPN, чек-листы, шаблоны файлов)
+> — в [docs/runbook/](docs/runbook/README.md).
+
 Self-hosted deployment: the Next.js app runs in Docker behind Caddy (automatic
 HTTPS), on a server whose entire outbound traffic is tunnelled through an
 AmneziaWG VPN.

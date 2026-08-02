@@ -1,0 +1,15 @@
+[Unit]
+Description=AmneziaWG full-tunnel with inbound SSH/web exemption
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+# Type=oneshot + RemainAfterExit=yes обязательны: userspace-демон
+# amneziawg-go иначе будет убит вместе с завершением юнита.
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/vpn-up.sh
+ExecStop=/usr/local/sbin/vpn-down.sh
+
+[Install]
+WantedBy=multi-user.target

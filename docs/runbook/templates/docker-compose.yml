@@ -1,0 +1,47 @@
+# Шаблон: приложение + Caddy. Один проект — один compose-файл.
+#
+# Если на сервере несколько лендингов, используйте ОДИН общий Caddy:
+# создайте сеть `docker network create web`, объявите её здесь как external,
+# уберите сервис caddy из проектов и держите его отдельным compose-проектом.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: <PROJECT>-app:latest
+    restart: unless-stopped
+    # Секреты живут только в /opt/<PROJECT>/.env на сервере (права 600).
+    # required: false — чтобы сборка не падала на машине без .env.
+    env_file:
+      - path: .env
+        required: false
+    # Наружу не публикуем: приложение доступно только Caddy по имени сервиса.
+    expose:
+      - "3000"
+    networks:
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # caddy_data хранит сертификаты — без тома они будут перевыпускаться
+      # при каждом пересоздании контейнера (упрётесь в лимиты Let's Encrypt).
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - web
+
+networks:
+  web:
+
+volumes:
+  caddy_data:
+  caddy_config:

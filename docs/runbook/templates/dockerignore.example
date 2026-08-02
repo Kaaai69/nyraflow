@@ -1,0 +1,26 @@
+# Переименовать в .dockerignore в корне проекта.
+node_modules
+.next
+.git
+.github
+tests
+test-results
+playwright-report
+docs
+*.tsbuildinfo
+npm-debug.log*
+
+# сборочные файлы не нужны внутри образа
+Dockerfile
+.dockerignore
+docker-compose.yml
+Caddyfile
+
+# СЕКРЕТЫ — обязательно
+.env*
+!.env.example
+*.key
+*.pem
+server.txt
+vpn.conf
+telegram.txt
