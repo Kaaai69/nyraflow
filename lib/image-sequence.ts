@@ -98,3 +98,41 @@ export function priorityFrameOrder(frameCount: number, posterFrame: number) {
 
   return order;
 }
+
+export function boundedFrameOrder(
+  frameCount: number,
+  currentFrame: number,
+  radius: number,
+  posterFrame: number,
+  direction: -1 | 0 | 1 = 0,
+) {
+  if (frameCount < 1) return [];
+
+  const current = Math.min(frameCount - 1, Math.max(0, currentFrame));
+  const poster = Math.min(frameCount - 1, Math.max(0, posterFrame));
+  const safeRadius = Math.max(0, Math.floor(radius));
+  const order: number[] = [];
+  const seen = new Set<number>();
+  const add = (frame: number) => {
+    if (frame < 0 || frame >= frameCount || seen.has(frame)) return;
+    seen.add(frame);
+    order.push(frame);
+  };
+
+  add(current);
+  for (let distance = 1; distance <= safeRadius; distance += 1) {
+    if (direction >= 0) {
+      add(current + distance);
+      add(current - distance);
+    } else {
+      add(current - distance);
+      add(current + distance);
+    }
+  }
+
+  add(poster);
+  add(0);
+  add(frameCount - 1);
+
+  return order;
+}

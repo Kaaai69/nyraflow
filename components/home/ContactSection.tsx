@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import { homeContent } from "../../content/home";
 
 import { SectionContainer } from "./Layout";
@@ -5,6 +9,12 @@ import { SectionContainer } from "./Layout";
 export default function ContactSection() {
   const content = homeContent.contact;
   const [nameLabel, contactLabel, messageLabel] = content.fields;
+  const [isLocallyValidated, setIsLocallyValidated] = useState(false);
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsLocallyValidated(true);
+  }
 
   return (
     <section id="contact" className="py-section-mobile md:py-section-contact">
@@ -19,8 +29,8 @@ export default function ContactSection() {
             </p>
           </header>
 
-          <div
-            role="form"
+          <form
+            onSubmit={handleSubmit}
             data-preview="true"
             className="rounded-card border border-line bg-surface p-6 md:p-8 lg:col-span-6"
           >
@@ -67,7 +77,7 @@ export default function ContactSection() {
             </div>
 
             <button
-              type="button"
+              type="submit"
               aria-describedby="contact-form-status"
               className="button-primary mt-7 w-full justify-center"
             >
@@ -76,11 +86,13 @@ export default function ContactSection() {
 
             <p
               id="contact-form-status"
+              aria-live="polite"
               className="mt-3 text-sm leading-relaxed"
             >
               <span className="text-text-secondary">
-                Форма работает в режиме предпросмотра. Отправка будет подключена
-                после согласования.
+                {isLocallyValidated
+                  ? "Данные проверены локально и никуда не отправлены."
+                  : "Форма работает в режиме предпросмотра. Отправка будет подключена после согласования."}
               </span>
             </p>
 
@@ -89,7 +101,7 @@ export default function ContactSection() {
               <a href="/terms">договора-оферты</a> и подтверждаете ознакомление с{" "}
               <a href="/privacy">политикой обработки персональных данных</a>.
             </p>
-          </div>
+          </form>
         </div>
       </SectionContainer>
     </section>

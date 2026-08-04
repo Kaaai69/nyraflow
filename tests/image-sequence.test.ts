@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   canvasBackingSize,
+  boundedFrameOrder,
   frameIndexForProgress,
   frameUrl,
   getCoverRect,
@@ -64,5 +65,20 @@ describe("image sequence helpers", () => {
     expect(order.slice(0, 7)).toEqual([44, 0, 89, 43, 45, 42, 46]);
     expect(new Set(order).size).toBe(90);
     expect(order).toHaveLength(90);
+  });
+
+  it("builds a bounded directional preload window", () => {
+    expect(boundedFrameOrder(90, 44, 3, 0, 1)).toEqual([
+      44,
+      45,
+      43,
+      46,
+      42,
+      47,
+      41,
+      0,
+      89,
+    ]);
+    expect(boundedFrameOrder(90, 0, 3, 0, -1)).toEqual([0, 1, 2, 3, 89]);
   });
 });

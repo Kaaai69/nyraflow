@@ -36,13 +36,14 @@ describe("application foundation", () => {
   });
 
   it("makes the scroll animation a full-viewport visual layer", () => {
-    const styles = readProjectFile("app/globals.css")
-      .toLowerCase()
-      .replace(/\s+/g, " ");
+    const styles = readProjectFile("app/globals.css").toLowerCase();
+    const canvasRule = styles.match(
+      /\.scroll-sequence__canvas\s*\{([^}]+)\}/,
+    )?.[1];
 
-    expect(styles).toContain(".scroll-sequence__canvas {");
-    expect(styles).toContain("width: 100vw;");
-    expect(styles).toContain("height: 100dvh;");
+    expect(canvasRule).toContain("width: 100vw;");
+    expect(canvasRule).toContain("height: 100dvh;");
+    expect(canvasRule).toContain("pointer-events: none;");
   });
 
   it("does not ship the obsolete Spline runtime", () => {

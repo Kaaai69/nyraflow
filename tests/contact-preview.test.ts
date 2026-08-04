@@ -9,8 +9,8 @@ describe("contact preview", () => {
     const markup = renderToStaticMarkup(createElement(ContactSection));
 
     expect(markup).toContain('data-preview="true"');
-    expect(markup).toContain('type="button"');
-    expect(markup).not.toContain('type="submit"');
+    expect(markup).toContain("<form");
+    expect(markup).toContain('type="submit"');
     expect(markup).toContain(
       "Форма работает в режиме предпросмотра. Отправка будет подключена после согласования.",
     );

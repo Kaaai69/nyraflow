@@ -1,19 +1,14 @@
 "use client";
 
-import {
-  type CSSProperties,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 
 import {
+  boundedFrameOrder,
   canvasBackingSize,
   frameIndexForProgress,
   frameUrl,
   getCoverRect,
   getContainRect,
-  priorityFrameOrder,
 } from "../lib/image-sequence";
 
 export interface ScrollImageSequenceProps {
@@ -31,12 +26,6 @@ type SequenceStyle = CSSProperties & {
   "--sequence-scroll-distance": string;
   "--sequence-mobile-scroll-distance": string;
 };
-
-type IdleWindow = Window &
-  typeof globalThis & {
-    requestIdleCallback?: (callback: IdleRequestCallback) => number;
-    cancelIdleCallback?: (handle: number) => void;
-  };
 
 export function ScrollImageSequence({
   basePath,
@@ -68,23 +57,54 @@ export function ScrollImageSequence({
     const canvas = canvasRef.current;
     if (!canvas || frameCount < 1) return;
 
-    const frameImages: Array<HTMLImageElement | undefined> = new Array(
-      frameCount,
-    );
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const frameImages = new Map<number, HTMLImageElement>();
     const loadedFrames = new Set<number>();
     const loadingFrames = new Set<number>();
     let requestedFrame = Math.min(frameCount - 1, Math.max(0, posterFrame));
-    let lastDrawnFrame = requestedFrame;
+    let lastRequestedFrame = requestedFrame;
+    let lastDrawnFrame = -1;
+    let desiredFrames = new Set<number>();
     let cancelled = false;
-    let idleHandle: number | undefined;
-    let fallbackHandle: ReturnType<typeof setTimeout> | undefined;
+    let animationFrame: number | undefined;
+    let pendingFrame: number | undefined;
 
-    const draw = (frame: number) => {
-      requestedFrame = Math.min(frameCount - 1, Math.max(0, frame));
-      const target = loadedFrames.has(requestedFrame)
-        ? requestedFrame
-        : lastDrawnFrame;
-      const image = frameImages[target];
+    setIsLoading(true);
+
+    const releaseFrame = (frame: number) => {
+      const image = frameImages.get(frame);
+      if (image) {
+        image.onload = null;
+        image.onerror = null;
+        image.removeAttribute("src");
+      }
+      frameImages.delete(frame);
+      loadedFrames.delete(frame);
+      loadingFrames.delete(frame);
+    };
+
+    const pruneFrames = () => {
+      for (const frame of frameImages.keys()) {
+        if (!desiredFrames.has(frame) && frame !== lastDrawnFrame) {
+          releaseFrame(frame);
+        }
+      }
+    };
+
+    const drawLoadedFrame = (frame: number, force = false) => {
+      const target = loadedFrames.has(frame)
+        ? frame
+        : loadedFrames.has(lastDrawnFrame)
+          ? lastDrawnFrame
+          : [...loadedFrames].sort(
+              (left, right) =>
+                Math.abs(left - frame) - Math.abs(right - frame),
+            )[0];
+      if (target === undefined || (!force && target === lastDrawnFrame)) return;
+
+      const image = frameImages.get(target);
       const context = canvas.getContext("2d", { alpha: true });
 
       if (!image || !context || !image.naturalWidth || !image.naturalHeight) {
@@ -109,9 +129,71 @@ export function ScrollImageSequence({
       context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
       lastDrawnFrame = target;
       canvas.dataset.frame = String(target);
+      pruneFrames();
     };
 
-    drawFrameRef.current = draw;
+    const loadFrame = (frame: number) => {
+      if (cancelled || loadingFrames.has(frame) || loadedFrames.has(frame)) return;
+
+      loadingFrames.add(frame);
+      const image = new Image();
+      image.decoding = "async";
+      if (frame === posterFrame || frame === requestedFrame) {
+        image.fetchPriority = "high";
+      }
+      frameImages.set(frame, image);
+
+      image.onload = () => {
+        if (cancelled || frameImages.get(frame) !== image) return;
+        loadingFrames.delete(frame);
+        loadedFrames.add(frame);
+        if (frame === posterFrame) setIsLoading(false);
+        if (frame === requestedFrame || lastDrawnFrame < 0) {
+          drawLoadedFrame(requestedFrame);
+        }
+        pruneFrames();
+      };
+      image.onerror = () => {
+        if (frameImages.get(frame) !== image) return;
+        releaseFrame(frame);
+      };
+      image.src = frameUrl(basePath, frame);
+    };
+
+    const refreshFrameWindow = (frame: number) => {
+      const nextFrame = Math.min(frameCount - 1, Math.max(0, frame));
+      const direction: -1 | 0 | 1 =
+        nextFrame > lastRequestedFrame
+          ? 1
+          : nextFrame < lastRequestedFrame
+            ? -1
+            : 0;
+      lastRequestedFrame = nextFrame;
+      requestedFrame = nextFrame;
+
+      const order = prefersReducedMotion
+        ? [Math.min(frameCount - 1, Math.max(0, posterFrame))]
+        : boundedFrameOrder(frameCount, nextFrame, 3, posterFrame, direction);
+      desiredFrames = new Set(order);
+      pruneFrames();
+      order.forEach(loadFrame);
+      drawLoadedFrame(nextFrame);
+    };
+
+    drawFrameRef.current = (frame) => {
+      const nextFrame = Math.min(frameCount - 1, Math.max(0, frame));
+      if (nextFrame === lastRequestedFrame && animationFrame === undefined) return;
+
+      pendingFrame = nextFrame;
+      if (animationFrame !== undefined) return;
+      animationFrame = window.requestAnimationFrame(() => {
+        animationFrame = undefined;
+        if (pendingFrame === undefined) return;
+        const next = pendingFrame;
+        pendingFrame = undefined;
+        refreshFrameWindow(next);
+      });
+    };
 
     const resizeCanvas = () => {
       const bounds = canvas.getBoundingClientRect();
@@ -126,70 +208,23 @@ export function ScrollImageSequence({
         canvas.height = backing.height;
       }
 
-      draw(requestedFrame);
+      drawLoadedFrame(requestedFrame, true);
     };
 
     const resizeObserver = new ResizeObserver(resizeCanvas);
     resizeObserver.observe(canvas);
     resizeCanvas();
 
-    const order = priorityFrameOrder(frameCount, posterFrame);
-
-    const loadFrame = (frame: number) => {
-      if (cancelled || loadingFrames.has(frame) || loadedFrames.has(frame)) return;
-
-      loadingFrames.add(frame);
-      const image = new Image();
-      image.decoding = "async";
-      if (frame === posterFrame || frame === 0) image.fetchPriority = "high";
-      frameImages[frame] = image;
-
-      image.onload = () => {
-        if (cancelled) return;
-        loadingFrames.delete(frame);
-        loadedFrames.add(frame);
-        if (frame === posterFrame || frame === 0) setIsLoading(false);
-        if (frame === requestedFrame || !loadedFrames.has(lastDrawnFrame)) {
-          draw(frame);
-        }
-      };
-      image.onerror = () => loadingFrames.delete(frame);
-      image.src = frameUrl(basePath, frame);
-    };
-
-    const immediateFrames = order.slice(0, Math.min(7, order.length));
-    immediateFrames.forEach(loadFrame);
-
-    let remainingIndex = immediateFrames.length;
-    const loadNextFrame = () => {
-      if (cancelled || remainingIndex >= order.length) return;
-      loadFrame(order[remainingIndex]);
-      remainingIndex += 1;
-
-      const idleWindow = window as IdleWindow;
-      if (idleWindow.requestIdleCallback) {
-        idleHandle = idleWindow.requestIdleCallback(loadNextFrame);
-      } else {
-        fallbackHandle = setTimeout(loadNextFrame, 16);
-      }
-    };
-    loadNextFrame();
+    refreshFrameWindow(requestedFrame);
 
     return () => {
       cancelled = true;
       resizeObserver.disconnect();
       drawFrameRef.current = () => undefined;
-      frameImages.forEach((image) => {
-        if (!image) return;
-        image.onload = null;
-        image.onerror = null;
-      });
-
-      const idleWindow = window as IdleWindow;
-      if (idleHandle !== undefined && idleWindow.cancelIdleCallback) {
-        idleWindow.cancelIdleCallback(idleHandle);
+      if (animationFrame !== undefined) {
+        window.cancelAnimationFrame(animationFrame);
       }
-      if (fallbackHandle !== undefined) clearTimeout(fallbackHandle);
+      [...frameImages.keys()].forEach(releaseFrame);
     };
   }, [basePath, fit, frameCount, posterFrame]);
 
@@ -253,6 +288,16 @@ export function ScrollImageSequence({
       data-reduced-motion={reduceMotion ? "true" : "false"}
     >
       <div className="scroll-sequence__stage">
+        {/* The poster is server-rendered so the hero is never blank before hydration. */}
+        <img
+          src={frameUrl(basePath, posterFrame)}
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          fetchPriority="high"
+          className="scroll-sequence__poster"
+          data-visible={isLoading ? "true" : "false"}
+        />
         <canvas
           ref={canvasRef}
           className="scroll-sequence__canvas"

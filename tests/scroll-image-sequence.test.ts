@@ -19,6 +19,10 @@ describe("ScrollImageSequence", () => {
     );
 
     expect(markup).toContain("<canvas");
+    expect(markup).toContain('class="scroll-sequence__poster"');
+    expect(markup).toContain(
+      'src="/animation/tunnel/ezgif-frame-001.webp"',
+    );
     expect(markup).toContain(
       'aria-label="Абстрактная пространственная форма"',
     );

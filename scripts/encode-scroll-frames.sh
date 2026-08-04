@@ -2,11 +2,16 @@
 
 set -euo pipefail
 
-FRAME_SOURCE_DIR="/Users/a1111/Documents/MyLand/upscayl_png_upscayl-standard-4x_2x"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+FRAME_SOURCE_DIR="${1:-}"
 FRAME_OUTPUT_DIR="${PROJECT_DIR}/public/animation/tunnel"
 EXPECTED_FRAME_COUNT=90
+
+if [[ -z "${FRAME_SOURCE_DIR}" ]]; then
+  echo "Usage: $0 /absolute/path/to/png-frames" >&2
+  exit 2
+fi
 
 if [[ ! -d "${FRAME_SOURCE_DIR}" ]]; then
   echo "Missing source directory: ${FRAME_SOURCE_DIR}" >&2

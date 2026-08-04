@@ -107,11 +107,58 @@ test.describe("desktop redesign", () => {
     const preview = page.locator('#contact [role="form"][data-preview="true"]');
     await preview.scrollIntoViewIfNeeded();
     await expect(preview).toBeVisible();
+    await preview.getByLabel("Ваше имя").fill("Тест");
+    await preview.getByLabel("Телефон, Telegram или email").fill("test@example.com");
+    await preview.getByLabel("Коротко о задаче").fill("Проверка локального режима");
     const button = preview.getByRole("button", { name: "Обсудить проект" });
-    await expect(button).toHaveAttribute("type", "button");
+    await expect(button).toHaveAttribute("type", "submit");
     await button.click();
+    await expect(preview).toContainText(
+      "Данные проверены локально и никуда не отправлены.",
+    );
     expect(contactRequests).toEqual([]);
   });
+});
+
+test("the hero has a no-JavaScript poster and reduced motion avoids sequence preloading", async ({
+  browser,
+}) => {
+  const noScriptContext = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: { width: 390, height: 844 },
+  });
+  const noScriptPage = await noScriptContext.newPage();
+
+  try {
+    await noScriptPage.goto("/", { waitUntil: "domcontentloaded" });
+    await expect(noScriptPage.locator(".scroll-sequence__poster")).toBeVisible();
+  } finally {
+    await noScriptContext.close();
+  }
+
+  const reducedContext = await browser.newContext({
+    reducedMotion: "reduce",
+    viewport: { width: 390, height: 844 },
+  });
+  const reducedPage = await reducedContext.newPage();
+  const frameRequests = new Set<string>();
+  reducedPage.on("request", (request) => {
+    if (request.url().includes("/animation/tunnel/")) {
+      frameRequests.add(request.url());
+    }
+  });
+
+  try {
+    await reducedPage.goto("/", { waitUntil: "load" });
+    await reducedPage.waitForTimeout(500);
+    expect([...frameRequests]).toHaveLength(1);
+    await expect(reducedPage.locator("#top canvas")).toHaveAttribute(
+      "data-frame",
+      "0",
+    );
+  } finally {
+    await reducedContext.close();
+  }
 });
 
 test("mobile keeps the same scroll animation, sharp canvas, and single-column layout", async ({
