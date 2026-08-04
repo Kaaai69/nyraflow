@@ -11,6 +11,7 @@ describe("ScrollImageSequence", () => {
         basePath: "/animation/tunnel",
         frameCount: 90,
         scrollDistance: 1900,
+        mobileScrollDistance: 1300,
         ariaLabel: "Абстрактная пространственная форма",
         posterFrame: 0,
       }),
@@ -23,5 +24,6 @@ describe("ScrollImageSequence", () => {
     expect(markup).toContain('data-frame="0"');
     expect(markup).toContain('data-frame-count="90"');
     expect(markup).toContain("--sequence-scroll-distance:1900px");
+    expect(markup).toContain("--sequence-mobile-scroll-distance:1300px");
   });
 });

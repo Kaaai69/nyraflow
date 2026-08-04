@@ -63,6 +63,222 @@ body {
   min-height: 100%;
 }
 
+.scroll-hero {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  overflow: clip;
+  background: #0b0c0e;
+  color: #f1f5f9;
+}
+
+.scroll-sequence {
+  position: relative;
+  min-height: calc(100dvh + var(--sequence-mobile-scroll-distance));
+}
+
+.scroll-sequence__stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  overflow: hidden;
+}
+
+.scroll-sequence__canvas {
+  display: block;
+  width: min(92vw, 52rem);
+  aspect-ratio: 1;
+}
+
+.scroll-sequence__loading {
+  position: absolute;
+  right: max(1.5rem, env(safe-area-inset-right));
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
+  color: #94a3b8;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  transition: opacity 180ms ease;
+}
+
+.scroll-sequence__loading[data-visible="false"] {
+  opacity: 0;
+}
+
+.scroll-hero__overlay {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  padding: max(1rem, env(safe-area-inset-top)) 1.5rem 2rem;
+  pointer-events: none;
+}
+
+.scroll-hero__header {
+  display: flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.scroll-hero__header a,
+.scroll-hero__content a {
+  pointer-events: auto;
+}
+
+.scroll-hero__wordmark {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+}
+
+.scroll-hero__logo {
+  width: auto;
+  height: 1.5rem;
+  filter: invert(1);
+}
+
+.scroll-hero__navigation {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  list-style: none;
+}
+
+.scroll-hero__navigation a,
+.scroll-hero__primary,
+.scroll-hero__secondary {
+  text-decoration: none;
+}
+
+.scroll-hero__content {
+  display: flex;
+  width: min(100%, 34rem);
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 3rem;
+}
+
+.scroll-hero__content h1 {
+  max-width: 13ch;
+  margin: 0;
+  font-size: clamp(2.25rem, 9.3vw, 4rem);
+  font-weight: 560;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.scroll-hero__content p {
+  max-width: 31rem;
+  margin: 1.25rem 0 0;
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.scroll-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.75rem;
+}
+
+.scroll-hero__primary,
+.scroll-hero__secondary {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  white-space: nowrap;
+}
+
+.scroll-hero__primary {
+  border: 1px solid #f1f5f9;
+  border-radius: 999px;
+  background: #f1f5f9;
+  padding: 0.75rem 1.25rem;
+  color: #0b0c0e;
+  font-weight: 650;
+}
+
+.scroll-hero__secondary {
+  color: #f1f5f9;
+  font-weight: 550;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .scroll-hero__primary:hover {
+    transform: translateY(-1px);
+  }
+
+  .scroll-hero__secondary:hover,
+  .scroll-hero__navigation a:hover {
+    color: #ffffff;
+  }
+}
+
+@media (min-width: 768px) {
+  .scroll-sequence {
+    min-height: calc(100dvh + var(--sequence-scroll-distance));
+  }
+
+  .scroll-sequence__canvas {
+    width: min(58vw, 53.75rem);
+    transform: translateX(19vw);
+  }
+
+  .scroll-hero__overlay {
+    padding: 1.25rem 2.5rem 3rem;
+  }
+
+  .scroll-hero__logo {
+    height: 1.75rem;
+  }
+
+  .scroll-hero__navigation {
+    gap: 2rem;
+  }
+
+  .scroll-hero__content {
+    justify-content: center;
+    padding-bottom: 0;
+  }
+
+  .scroll-hero__content h1 {
+    font-size: clamp(3.25rem, 5vw, 4.75rem);
+  }
+}
+
+@media (min-width: 1280px) {
+  .scroll-hero__overlay {
+    padding-right: 4rem;
+    padding-left: 4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-sequence {
+    min-height: 100dvh;
+  }
+
+  .scroll-hero__primary,
+  .scroll-hero__secondary,
+  .scroll-hero__navigation a,
+  .scroll-sequence__loading {
+    transition: none;
+  }
+}
+
 body {
   margin: 0;
   background: #f7f6f2;

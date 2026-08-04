@@ -19,6 +19,7 @@ export interface ScrollImageSequenceProps {
   basePath: string;
   frameCount: number;
   scrollDistance?: number;
+  mobileScrollDistance?: number;
   className?: string;
   ariaLabel: string;
   posterFrame?: number;
@@ -26,6 +27,7 @@ export interface ScrollImageSequenceProps {
 
 type SequenceStyle = CSSProperties & {
   "--sequence-scroll-distance": string;
+  "--sequence-mobile-scroll-distance": string;
 };
 
 type IdleWindow = Window &
@@ -38,6 +40,7 @@ export function ScrollImageSequence({
   basePath,
   frameCount,
   scrollDistance = 1900,
+  mobileScrollDistance = 1300,
   className = "",
   ariaLabel,
   posterFrame = 0,
@@ -230,6 +233,7 @@ export function ScrollImageSequence({
 
   const style: SequenceStyle = {
     "--sequence-scroll-distance": `${scrollDistance}px`,
+    "--sequence-mobile-scroll-distance": `${mobileScrollDistance}px`,
   };
 
   return (
