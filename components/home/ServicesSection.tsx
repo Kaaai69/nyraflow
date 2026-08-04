@@ -16,7 +16,7 @@ export default function ServicesSection() {
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
 
-        <div className="mt-14 grid gap-5 md:mt-20">
+        <div className="services-list mt-14 grid gap-0 md:mt-20">
           {content.items.map((item) => (
             <article
               key={item.id}

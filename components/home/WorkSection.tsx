@@ -25,6 +25,7 @@ function ProjectCard({ project, featured = false, className }: ProjectCardProps)
             alt={project.alt}
             width={project.width}
             height={project.height}
+            quality={92}
             sizes={
               featured
                 ? "(max-width: 1240px) 100vw, 1112px"
@@ -63,12 +64,22 @@ export default function WorkSection() {
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
 
-        <div className="mt-14 md:mt-20">
-          {featured ? <ProjectCard project={featured} featured /> : null}
+        <div className="work-grid mt-14 md:mt-20">
+          {featured ? (
+            <ProjectCard
+              project={featured}
+              featured
+              className="work-card work-card-featured"
+            />
+          ) : null}
 
-          <div className="mt-12 grid items-start gap-x-6 gap-y-12 md:mt-16 md:grid-cols-2 xl:grid-cols-3">
-            {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+          <div className="work-gallery mt-8 grid items-start gap-6 md:mt-12 md:grid-cols-12">
+            {projects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                className={`work-card work-card-${index + 1}`}
+              />
             ))}
           </div>
         </div>

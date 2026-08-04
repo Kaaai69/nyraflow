@@ -17,12 +17,12 @@ export default function MetricsSection() {
       className="pb-section-mobile md:pb-section-desktop"
     >
       <SectionContainer>
-        <div className="grid gap-4 md:grid-cols-3 md:gap-5">
+        <div className="metrics-grid grid gap-4 md:grid-cols-12 md:gap-5">
           {homeContent.metrics.items.map((item, index) => {
             const Icon = icons[index];
 
             return (
-              <article key={item.id} className="commercial-card p-7 md:p-9">
+              <article key={item.id} className="metric-card commercial-card p-7 md:p-9">
                 {Icon ? (
                   <Icon
                     aria-hidden

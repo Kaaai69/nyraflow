@@ -31,7 +31,7 @@ export default function BenefitsSection() {
           </h2>
         </header>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2 md:gap-5 xl:mt-16">
+        <div className="benefits-grid mt-12 grid gap-4 md:grid-cols-12 md:gap-5 xl:mt-16">
           {content.items.map((item) => {
             const Icon = benefitIcons[item.icon];
 

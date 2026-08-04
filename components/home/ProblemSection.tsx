@@ -7,7 +7,7 @@ export default function ProblemSection() {
 
   return (
     <section id="problem" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
-      <SectionContainer className="grid gap-12 lg:grid-cols-12 lg:gap-6">
+      <SectionContainer className="problem-layout grid gap-12 lg:grid-cols-12 lg:gap-6">
         <header className="lg:col-span-5 lg:pr-10">
           <h2 className="text-title text-balance">
             {content.title}

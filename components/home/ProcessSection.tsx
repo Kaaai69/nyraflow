@@ -17,13 +17,10 @@ export default function ProcessSection() {
           </h2>
         </header>
 
-        <ol className="process-steps mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 xl:mt-20 xl:grid-cols-5">
-          {content.items.map((item, index) => (
+        <ol className="process-grid process-steps mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 xl:mt-20 xl:grid-cols-5">
+          {content.items.map((item) => (
             <li key={item.id} className="process-step">
-              <span className="process-step-number">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <h3 className="mt-6 text-xl font-bold leading-tight tracking-[-0.01em]">
+              <h3 className="text-xl font-bold leading-tight tracking-[-0.01em]">
                 {item.title}
               </h3>
               <p className="mt-4 text-[0.9375rem] leading-[1.65] text-text-secondary">

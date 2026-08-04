@@ -17,7 +17,7 @@ export default function PricingSection() {
           title={content.title}
           description={content.description}
         />
-        <div className="mt-14 grid items-stretch gap-5 md:mt-20 lg:grid-cols-3">
+        <div className="pricing-grid mt-14 grid items-stretch gap-5 md:mt-20 lg:grid-cols-12">
           {items.map((item) => (
             <article
               key={item.id}

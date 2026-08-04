@@ -9,7 +9,7 @@ export default function TeamSection() {
 
   return (
     <section id="team" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
-      <SectionContainer className="grid gap-14 lg:grid-cols-12 lg:gap-6">
+      <SectionContainer className="team-layout grid gap-14 lg:grid-cols-12 lg:gap-6">
         <header className="min-w-0 lg:col-span-5 lg:pr-10">
           <h2 className="text-team text-balance">
             {content.title}
@@ -25,6 +25,7 @@ export default function TeamSection() {
               <div className="aspect-[4/5] overflow-hidden rounded-media bg-surface-blue">
                 <Image
                   {...member.photo}
+                  quality={92}
                   sizes="(max-width: 767px) 100vw, (max-width: 1024px) 50vw, 34vw"
                   className="h-full w-full object-cover"
                 />

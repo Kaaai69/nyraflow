@@ -63,7 +63,7 @@ export default function ContactSection() {
   return (
     <section id="contact" className="py-section-mobile md:py-section-contact">
       <SectionContainer>
-        <div className="grid gap-12 rounded-media bg-surface-blue px-6 py-12 md:px-12 md:py-16 lg:grid-cols-12 lg:gap-8 lg:px-16 lg:py-20">
+        <div className="contact-shell grid gap-12 rounded-media bg-surface-blue px-6 py-12 md:px-12 md:py-16 lg:grid-cols-12 lg:gap-8 lg:px-16 lg:py-20">
           <header className="lg:col-span-6 lg:pr-10">
             <h2 className="text-title text-balance">
               {content.title}

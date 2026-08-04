@@ -27,7 +27,7 @@ export default function StarterSection() {
           </h2>
           <p className="mt-3 text-title-compact">{content.price}</p>
         </header>
-        <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4 xl:gap-5">
+        <div className="starter-grid mt-12 grid gap-4 md:grid-cols-12 xl:gap-5">
           {content.items.map((item) => {
             const Icon = starterIcons[item.icon];
 
