@@ -104,7 +104,7 @@ test.describe("desktop redesign", () => {
       )
       .toContain("q=92");
 
-    const preview = page.locator('#contact [role="form"][data-preview="true"]');
+    const preview = page.locator('#contact form[data-preview="true"]');
     await preview.scrollIntoViewIfNeeded();
     await expect(preview).toBeVisible();
     await preview.getByLabel("Ваше имя").fill("Тест");
@@ -156,6 +156,17 @@ test("the hero has a no-JavaScript poster and reduced motion avoids sequence pre
       "data-frame",
       "0",
     );
+
+    await reducedPage.emulateMedia({ reducedMotion: "no-preference" });
+    await reducedPage.mouse.wheel(0, 700);
+    await expect
+      .poll(async () =>
+        Number(
+          await reducedPage.locator("#top canvas").getAttribute("data-frame"),
+        ),
+      )
+      .toBeGreaterThan(0);
+    expect([...frameRequests].length).toBeGreaterThan(1);
   } finally {
     await reducedContext.close();
   }

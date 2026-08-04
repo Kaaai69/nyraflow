@@ -57,9 +57,9 @@ export function ScrollImageSequence({
     const canvas = canvasRef.current;
     if (!canvas || frameCount < 1) return;
 
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const prefersReducedMotion =
+      reduceMotion ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const frameImages = new Map<number, HTMLImageElement>();
     const loadedFrames = new Set<number>();
     const loadingFrames = new Set<number>();
@@ -226,10 +226,14 @@ export function ScrollImageSequence({
       }
       [...frameImages.keys()].forEach(releaseFrame);
     };
-  }, [basePath, fit, frameCount, posterFrame]);
+  }, [basePath, fit, frameCount, posterFrame, reduceMotion]);
 
   useEffect(() => {
-    if (reduceMotion || !sequenceRef.current) {
+    if (
+      reduceMotion ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !sequenceRef.current
+    ) {
       drawFrameRef.current(posterFrame);
       return;
     }
