@@ -5,6 +5,12 @@ export interface DrawRect {
   height: number;
 }
 
+export interface CanvasBackingSize {
+  width: number;
+  height: number;
+  scale: number;
+}
+
 export function frameIndexForProgress(progress: number, frameCount: number) {
   if (frameCount < 1) return 0;
 
@@ -35,4 +41,42 @@ export function getContainRect(
     width,
     height,
   };
+}
+
+export function canvasBackingSize(
+  cssWidth: number,
+  cssHeight: number,
+  devicePixelRatio: number,
+): CanvasBackingSize {
+  const scale = Math.min(2, Math.max(1, devicePixelRatio));
+
+  return {
+    width: Math.round(cssWidth * scale),
+    height: Math.round(cssHeight * scale),
+    scale,
+  };
+}
+
+export function priorityFrameOrder(frameCount: number, posterFrame: number) {
+  if (frameCount < 1) return [];
+
+  const poster = Math.min(frameCount - 1, Math.max(0, posterFrame));
+  const order: number[] = [];
+  const seen = new Set<number>();
+  const add = (frame: number) => {
+    if (frame < 0 || frame >= frameCount || seen.has(frame)) return;
+    seen.add(frame);
+    order.push(frame);
+  };
+
+  add(poster);
+  add(0);
+  add(frameCount - 1);
+
+  for (let distance = 1; order.length < frameCount; distance += 1) {
+    add(poster - distance);
+    add(poster + distance);
+  }
+
+  return order;
 }
