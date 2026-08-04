@@ -1,64 +1,10 @@
-"use client";
-
-import { useState } from "react";
-
 import { homeContent } from "../../content/home";
 
 import { SectionContainer } from "./Layout";
 
-type Status = "idle" | "submitting" | "success" | "error";
-
 export default function ContactSection() {
   const content = homeContent.contact;
   const [nameLabel, contactLabel, messageLabel] = content.fields;
-
-  const [status, setStatus] = useState<Status>("idle");
-  const [errorMessage, setErrorMessage] = useState<string>("");
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (status === "submitting") return;
-
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    const payload = {
-      name: String(data.get("name") ?? ""),
-      contact: String(data.get("contact") ?? ""),
-      message: String(data.get("message") ?? ""),
-      company: String(data.get("company") ?? ""), // honeypot
-    };
-
-    if (!payload.name.trim() || !payload.contact.trim() || !payload.message.trim()) {
-      setStatus("error");
-      setErrorMessage("Заполните все поля, пожалуйста.");
-      return;
-    }
-
-    setStatus("submitting");
-    setErrorMessage("");
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`status ${response.status}`);
-      }
-
-      setStatus("success");
-      form.reset();
-    } catch {
-      setStatus("error");
-      setErrorMessage(
-        "Не удалось отправить заявку. Попробуйте ещё раз или напишите нам в Telegram.",
-      );
-    }
-  }
-
-  const isSubmitting = status === "submitting";
 
   return (
     <section id="contact" className="py-section-mobile md:py-section-contact">
@@ -73,8 +19,9 @@ export default function ContactSection() {
             </p>
           </header>
 
-          <form
-            onSubmit={handleSubmit}
+          <div
+            role="form"
+            data-preview="true"
             className="rounded-card border border-line bg-surface p-6 md:p-8 lg:col-span-6"
           >
             <div>
@@ -88,7 +35,6 @@ export default function ContactSection() {
                 autoComplete="name"
                 required
                 maxLength={200}
-                disabled={isSubmitting}
                 className="form-field"
               />
             </div>
@@ -103,7 +49,6 @@ export default function ContactSection() {
                 autoComplete="email"
                 required
                 maxLength={200}
-                disabled={isSubmitting}
                 className="form-field"
               />
             </div>
@@ -117,48 +62,26 @@ export default function ContactSection() {
                 rows={5}
                 required
                 maxLength={4000}
-                disabled={isSubmitting}
                 className="form-field resize-y"
               />
             </div>
 
-            {/* Honeypot: hidden from users, catches bots that fill every field. */}
-            <div aria-hidden="true" className="hidden">
-              <label htmlFor="contact-company">Не заполняйте это поле</label>
-              <input
-                id="contact-company"
-                name="company"
-                type="text"
-                tabIndex={-1}
-                autoComplete="off"
-              />
-            </div>
-
             <button
-              type="submit"
-              disabled={isSubmitting}
+              type="button"
               aria-describedby="contact-form-status"
               className="button-primary mt-7 w-full justify-center"
             >
-              {isSubmitting ? "Отправляем…" : content.cta}
+              {content.cta}
             </button>
 
             <p
               id="contact-form-status"
-              aria-live="polite"
               className="mt-3 text-sm leading-relaxed"
             >
-              {status === "success" ? (
-                <span className="text-text-primary">
-                  Заявка отправлена — свяжемся с вами в ближайшее время.
-                </span>
-              ) : status === "error" ? (
-                <span className="text-red-600">{errorMessage}</span>
-              ) : (
-                <span className="text-text-secondary">
-                  Обычно отвечаем в течение рабочего дня.
-                </span>
-              )}
+              <span className="text-text-secondary">
+                Форма работает в режиме предпросмотра. Отправка будет подключена
+                после согласования.
+              </span>
             </p>
 
             <p className="mt-3 text-sm leading-relaxed text-text-secondary">
@@ -166,7 +89,7 @@ export default function ContactSection() {
               <a href="/terms">договора-оферты</a> и подтверждаете ознакомление с{" "}
               <a href="/privacy">политикой обработки персональных данных</a>.
             </p>
-          </form>
+          </div>
         </div>
       </SectionContainer>
     </section>
