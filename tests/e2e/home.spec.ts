@@ -184,7 +184,8 @@ test("native FAQ remains accessible with JavaScript disabled", async ({
   const page = await context.newPage();
 
   try {
-    await page.goto("/#faq", { waitUntil: "load" });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/#faq", { waitUntil: "domcontentloaded" });
     const details = page.locator("#faq details");
     await expect(details).toHaveCount(6);
     await details.nth(0).locator("summary").click();
