@@ -97,7 +97,11 @@ test.describe("desktop redesign", () => {
     const firstProjectImage = page.locator("#work img").first();
     await firstProjectImage.scrollIntoViewIfNeeded();
     await expect
-      .poll(() => firstProjectImage.evaluate((image) => image.currentSrc))
+      .poll(() =>
+        firstProjectImage.evaluate(
+          (image) => (image as HTMLImageElement).currentSrc,
+        ),
+      )
       .toContain("q=92");
 
     const preview = page.locator('#contact [role="form"][data-preview="true"]');
