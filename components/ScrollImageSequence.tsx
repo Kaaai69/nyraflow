@@ -191,7 +191,7 @@ export function ScrollImageSequence({
     }
 
     let cancelled = false;
-    let revertAnimation = () => undefined;
+    let revertAnimation: () => void = () => undefined;
 
     void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
       ([gsapModule, scrollTriggerModule]) => {
