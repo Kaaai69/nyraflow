@@ -10,6 +10,7 @@ export type HomeSectionId =
   | "team"
   | "process"
   | "faq"
+  | "benefits"
   | "contact";
 
 export type ImageAsset = {
@@ -49,6 +50,16 @@ export type StarterIconName =
 
 type StarterItem = TextItem & {
   icon: StarterIconName;
+};
+
+export type BenefitIconName =
+  | "marketing"
+  | "legal"
+  | "result"
+  | "growth";
+
+type BenefitItem = TextItem & {
+  icon: BenefitIconName;
 };
 
 export type PricingItem = {
@@ -136,13 +147,19 @@ export type HomeContent = {
   };
   process: {
     id: "process";
+    eyebrow: string;
     title: string;
-    description: string;
     items: readonly TextItem[];
   };
   faq: {
     id: "faq";
     items: readonly FaqItem[];
+  };
+  benefits: {
+    id: "benefits";
+    eyebrow: string;
+    title: string;
+    items: readonly BenefitItem[];
   };
   contact: {
     id: "contact";
@@ -167,6 +184,7 @@ export const homeSectionOrder = [
   "team",
   "process",
   "faq",
+  "benefits",
   "contact",
 ] as const satisfies readonly HomeSectionId[];
 
@@ -255,9 +273,9 @@ export const homeContent = {
   },
   work: {
     id: "work",
-    title: "Работа, которую можно проверить.",
+    title: "Концепты, которые можно посмотреть.",
     description:
-      "Показываем не только интерфейс. Для каждого проекта объясняем контекст, принятые решения и подтверждённый результат.",
+      "Показываем не только интерфейс. Для каждого концепта объясняем контекст, задачу и принятые решения.",
     media: [
       {
         id: "atelier-kitchens",
@@ -384,7 +402,7 @@ export const homeContent = {
   starter: {
     id: "starter",
     title: "Быстрый старт",
-    price: "от 20 000 ₽",
+    price: "от 30 000 ₽",
     items: [
       {
         id: "selling-structure",
@@ -426,7 +444,7 @@ export const homeContent = {
       {
         id: "landing",
         title: "Лендинг",
-        price: "от 20 000 ₽",
+        price: "от 30 000 ₽",
         description: "Для запуска продукта, услуги или проверки новой ниши.",
         included: [
           "Маркетинговая упаковка",
@@ -519,7 +537,7 @@ export const homeContent = {
       {
         id: "fedor",
         name: "Федор",
-        role: "Founder & Creative director",
+        role: "Founder",
         photo: {
           src: "/images/team/fedor.webp",
           alt: "Федор",
@@ -530,7 +548,7 @@ export const homeContent = {
       {
         id: "arseniy",
         name: "Арсений",
-        role: "Backend & Automation Engineer",
+        role: "Co-Founder & CGO",
         photo: {
           src: "/images/team/arseniy.jpg",
           alt: "Арсений",
@@ -541,7 +559,7 @@ export const homeContent = {
       {
         id: "artem",
         name: "Артём",
-        role: "Frontend & Product Developer",
+        role: "CMO",
         photo: {
           src: "/images/team/artem.jpg",
           alt: "Артём",
@@ -553,33 +571,38 @@ export const homeContent = {
   },
   process: {
     id: "process",
-    title: "Сначала смысл. Потом система. Затем запуск.",
-    description:
-      "Каждый этап заканчивается понятным результатом, который можно проверить до следующего шага.",
+    eyebrow: "Процесс",
+    title: "Этапы разработки",
     items: [
       {
-        id: "understand",
-        title: "Разобраться",
+        id: "diagnostics",
+        title: "Диагностика задачи",
         description:
-          "Уточняем задачу, аудиторию, ограничения и критерии результата. Фиксируем, что именно должен изменить продукт.",
+          "Разбираем продукт, аудиторию, оффер и главную причину, почему сейчас нет заявок.",
       },
       {
-        id: "design",
-        title: "Спроектировать",
+        id: "structure",
+        title: "Структура и смыслы",
         description:
-          "Собираем пользовательский путь, структуру, ключевые смыслы и визуальное направление.",
+          "Собираем путь клиента, пишем продающие блоки и фиксируем логику будущего сайта.",
       },
       {
-        id: "build",
-        title: "Собрать",
+        id: "design-concept",
+        title: "Дизайн-концепт",
         description:
-          "Разрабатываем интерфейс, подключаем данные, формы, аналитику и необходимые интеграции.",
+          "Показываем первый экран и визуальный язык до полной сборки, чтобы не идти вслепую.",
       },
       {
-        id: "launch",
-        title: "Запустить и проверить",
+        id: "development",
+        title: "Разработка и интеграции",
         description:
-          "Тестируем ключевые сценарии, публикуем продукт, передаём доступы и определяем следующие точки роста.",
+          "Верстаем, подключаем формы, аналитику, CRM и автоматизации, тестируем на устройствах.",
+      },
+      {
+        id: "launch-growth",
+        title: "Запуск и рост",
+        description:
+          "Публикуем сайт, проверяем заявки, передаём инструкцию и помогаем улучшать конверсию.",
       },
     ],
   },
@@ -621,6 +644,41 @@ export const homeContent = {
         question: "Что происходит после запуска?",
         answer:
           "Проверяем основные сценарии, передаём доступы и документацию. Формат дальнейшей поддержки или развития согласуется отдельно.",
+      },
+    ],
+  },
+  benefits: {
+    id: "benefits",
+    eyebrow: "Почему с нами",
+    title: "Почему с нами безопасно и выгодно работать",
+    items: [
+      {
+        id: "marketing",
+        icon: "marketing",
+        title: "Глубокий маркетинг",
+        description:
+          "Не просим у вас «ТЗ и тексты». Сами изучаем нишу, вытаскиваем смыслы и пишем продающий копирайтинг.",
+      },
+      {
+        id: "legal",
+        icon: "legal",
+        title: "Юридическая чистота",
+        description:
+          "Работаем официально по договору: чеки самозанятого, закрывающие документы и зафиксированные обязательства.",
+      },
+      {
+        id: "result",
+        icon: "result",
+        title: "Работа до результата",
+        description:
+          "Правки включены в стоимость. Запускаем проект только тогда, когда он выглядит убедительно.",
+      },
+      {
+        id: "growth",
+        icon: "growth",
+        title: "Помощь в дальнейшем развитии проекта",
+        description:
+          "Вы сможете менять цены и тексты в 2 клика. Запишем видеоинструкцию под ваш сайт и поможем развивать проект после запуска.",
       },
     ],
   },

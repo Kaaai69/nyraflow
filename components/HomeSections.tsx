@@ -1,3 +1,4 @@
+import BenefitsSection from "./home/BenefitsSection";
 import ContactSection from "./home/ContactSection";
 import CredibilitySection from "./home/CredibilitySection";
 import FaqSection from "./home/FaqSection";
@@ -23,6 +24,7 @@ export default function HomeSections() {
       <TeamSection />
       <ProcessSection />
       <FaqSection />
+      <BenefitsSection />
       <ContactSection />
     </>
   );

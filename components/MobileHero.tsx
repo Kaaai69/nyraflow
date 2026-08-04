@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowRight } from "@phosphor-icons/react/ssr";
 
 import { mobileHeroContent } from "../content/mobile-hero";
@@ -15,8 +16,16 @@ export default function MobileHero() {
         <a
           className="mobile-hero-wordmark inline-flex min-h-11 items-center"
           href={content.brand.href}
+          aria-label={`${content.brand.label} — на главную`}
         >
-          {content.brand.label}
+          <Image
+            src="/images/brand/lockup-transparent.png"
+            alt={content.brand.label}
+            width={1027}
+            height={164}
+            priority
+            className="h-6 w-auto"
+          />
         </a>
         <nav aria-label="Навигация первого экрана">
           <ul className="flex items-center gap-5 text-sm text-text-secondary">

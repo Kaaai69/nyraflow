@@ -109,6 +109,19 @@ body {
   }
 }
 
+.desktop-hero-logo {
+  position: absolute;
+  top: 1.9rem;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.desktop-hero-logo a {
+  pointer-events: auto;
+}
+
 .mobile-hero {
   padding-top: max(1rem, env(safe-area-inset-top));
   padding-bottom: max(3.5rem, env(safe-area-inset-bottom));
@@ -218,6 +231,52 @@ body {
     transition: transform var(--duration-slow) var(--ease-premium),
       border-color var(--duration-slow) var(--ease-premium),
       box-shadow var(--duration-slow) var(--ease-premium);
+  }
+
+  .process-step {
+    position: relative;
+  }
+
+  .process-step-number {
+    display: grid;
+    place-items: center;
+    width: 3.875rem;
+    height: 3.875rem;
+    border: 1px solid rgb(36 87 255 / 0.6);
+    border-radius: 999px;
+    background: var(--color-canvas);
+    color: var(--color-blue);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  /* Hairline connector + chevron between steps, centred on the 62px circle. */
+  @media (min-width: 1280px) {
+    .process-step:not(:last-child)::before,
+    .process-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+    }
+
+    /* 0.875rem of breathing room on both ends so the connector never
+       touches the circle it starts from or the one it points at. */
+    .process-step:not(:last-child)::before {
+      top: 1.9375rem;
+      left: 4.75rem;
+      right: -1.125rem;
+      height: 1px;
+      background: var(--color-line-strong);
+    }
+
+    .process-step:not(:last-child)::after {
+      top: 1.9375rem;
+      right: -1.125rem;
+      width: 9px;
+      height: 9px;
+      border-top: 1px solid var(--color-line-strong);
+      border-right: 1px solid var(--color-line-strong);
+      transform: translate(1px, -50%) rotate(45deg);
+    }
   }
 
   .faq-trigger {

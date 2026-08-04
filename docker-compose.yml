@@ -1,0 +1,38 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: myland-app:latest
+    restart: unless-stopped
+    # Secrets (TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID) live in /opt/myland/.env on
+    # the server only — never committed, never baked into the image.
+    env_file:
+      - path: .env
+        required: false
+    expose:
+      - "3000"
+    networks:
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - web
+
+networks:
+  web:
+
+volumes:
+  caddy_data:
+  caddy_config:

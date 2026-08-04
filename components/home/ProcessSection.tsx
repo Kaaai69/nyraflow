@@ -7,30 +7,31 @@ export default function ProcessSection() {
 
   return (
     <section id="process" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
-      <SectionContainer className="grid gap-12 lg:grid-cols-12 lg:gap-6">
-        <header className="lg:col-span-5 lg:pr-12">
-          <div className="lg:sticky lg:top-24">
-            <h2 className="text-title-compact text-balance">
-              {content.title}
-            </h2>
-            <p className="mt-7 text-lg leading-relaxed text-text-secondary md:text-xl">
-              {content.description}
-            </p>
-          </div>
+      <SectionContainer>
+        <header className="mx-auto max-w-3xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue">
+            {content.eyebrow}
+          </p>
+          <h2 className="mt-3 text-title-compact text-balance">
+            {content.title}
+          </h2>
         </header>
 
-        <div className="border-t border-line lg:col-span-7">
-          {content.items.map((item) => (
-            <article key={item.id} className="border-b border-line py-9 md:py-11">
-              <h3 className="text-2xl font-semibold tracking-[-0.02em] md:text-subtitle">
+        <ol className="process-steps mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 xl:mt-20 xl:grid-cols-5">
+          {content.items.map((item, index) => (
+            <li key={item.id} className="process-step">
+              <span className="process-step-number">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <h3 className="mt-6 text-xl font-bold leading-tight tracking-[-0.01em]">
                 {item.title}
               </h3>
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-text-secondary md:text-lg">
+              <p className="mt-4 text-[0.9375rem] leading-[1.65] text-text-secondary">
                 {item.description}
               </p>
-            </article>
+            </li>
           ))}
-        </div>
+        </ol>
       </SectionContainer>
     </section>
   );

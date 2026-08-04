@@ -1,0 +1,19 @@
+# MyLand reverse proxy with automatic HTTPS.
+#
+# Caddy provisions and renews Let's Encrypt certificates automatically for the
+# domains below (ports 80 and 443 are published and firewall-exempt on the
+# server). To run on a bare IP over HTTP instead, replace the block with:
+#
+#     :80 {
+#         encode zstd gzip
+#         reverse_proxy app:3000
+#     }
+
+nyraflow.ru {
+	encode zstd gzip
+	reverse_proxy app:3000
+}
+
+www.nyraflow.ru {
+	redir https://nyraflow.ru{uri} permanent
+}
