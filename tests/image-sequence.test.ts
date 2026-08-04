@@ -4,6 +4,7 @@ import {
   canvasBackingSize,
   frameIndexForProgress,
   frameUrl,
+  getCoverRect,
   getContainRect,
   priorityFrameOrder,
 } from "../lib/image-sequence";
@@ -32,6 +33,15 @@ describe("image sequence helpers", () => {
       y: 0,
       width: 800,
       height: 800,
+    });
+  });
+
+  it("covers a wide viewport edge to edge without distortion", () => {
+    expect(getCoverRect(1600, 900, 1080, 1080)).toEqual({
+      x: 0,
+      y: -350,
+      width: 1600,
+      height: 1600,
     });
   });
 

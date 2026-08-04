@@ -43,6 +43,24 @@ export function getContainRect(
   };
 }
 
+export function getCoverRect(
+  canvasWidth: number,
+  canvasHeight: number,
+  imageWidth: number,
+  imageHeight: number,
+): DrawRect {
+  const scale = Math.max(canvasWidth / imageWidth, canvasHeight / imageHeight);
+  const width = imageWidth * scale;
+  const height = imageHeight * scale;
+
+  return {
+    x: (canvasWidth - width) / 2,
+    y: (canvasHeight - height) / 2,
+    width,
+    height,
+  };
+}
+
 export function canvasBackingSize(
   cssWidth: number,
   cssHeight: number,

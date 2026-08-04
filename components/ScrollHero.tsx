@@ -20,6 +20,7 @@ export default function ScrollHero() {
         scrollDistance={1900}
         mobileScrollDistance={1300}
         ariaLabel="Абстрактная пространственная форма, меняющаяся при прокрутке"
+        fit="responsive"
         className="scroll-hero__sequence"
       />
 

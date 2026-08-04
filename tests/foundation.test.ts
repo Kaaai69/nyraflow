@@ -35,6 +35,16 @@ describe("application foundation", () => {
     expect(styles).toContain("color-scheme: dark");
   });
 
+  it("makes the scroll animation a full-viewport visual layer", () => {
+    const styles = readProjectFile("app/globals.css")
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+
+    expect(styles).toContain(".scroll-sequence__canvas {");
+    expect(styles).toContain("width: 100vw;");
+    expect(styles).toContain("height: 100dvh;");
+  });
+
   it("does not ship the obsolete Spline runtime", () => {
     const packageJson = JSON.parse(readProjectFile("package.json")) as {
       dependencies: Record<string, string>;

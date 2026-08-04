@@ -128,16 +128,14 @@ body {
   top: 0;
   display: grid;
   min-height: 100dvh;
-  place-items: start center;
+  place-items: center;
   overflow: hidden;
-  padding-top: 8dvh;
 }
 
 .scroll-sequence__canvas {
   display: block;
-  width: min(100vw, 50rem);
-  max-width: 100%;
-  aspect-ratio: 1;
+  width: 100vw;
+  height: 100dvh;
   image-rendering: auto;
   touch-action: pan-y;
 }
@@ -640,12 +638,11 @@ footer a {
 
   .scroll-sequence__stage {
     place-items: center;
-    padding-top: 0;
   }
 
   .scroll-sequence__canvas {
-    width: min(58vw, 53.75rem);
-    transform: translateX(19vw);
+    width: 100vw;
+    height: 100dvh;
   }
 
   .scroll-hero__overlay {
@@ -653,7 +650,15 @@ footer a {
   }
 
   .scroll-hero__overlay::after {
-    display: none;
+    inset: 0;
+    display: block;
+    background: linear-gradient(
+      90deg,
+      rgb(11 12 14 / 0.9) 0%,
+      rgb(11 12 14 / 0.58) 36%,
+      rgb(11 12 14 / 0.08) 66%,
+      transparent 78%
+    );
   }
 
   .scroll-hero__logo {

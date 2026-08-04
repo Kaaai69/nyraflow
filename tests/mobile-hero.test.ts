@@ -32,6 +32,7 @@ describe("scroll hero", () => {
 
     expect(markup).toContain('data-testid="scroll-hero"');
     expect(markup).toContain('data-frame-count="90"');
+    expect(markup).toContain('data-fit="responsive"');
     expect(markup).toContain("--sequence-scroll-distance:1900px");
     expect(markup).toContain("--sequence-mobile-scroll-distance:1300px");
     expect(markup).toContain("<canvas");

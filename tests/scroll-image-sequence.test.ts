@@ -14,6 +14,7 @@ describe("ScrollImageSequence", () => {
         mobileScrollDistance: 1300,
         ariaLabel: "Абстрактная пространственная форма",
         posterFrame: 0,
+        fit: "responsive",
       }),
     );
 
@@ -23,6 +24,7 @@ describe("ScrollImageSequence", () => {
     );
     expect(markup).toContain('data-frame="0"');
     expect(markup).toContain('data-frame-count="90"');
+    expect(markup).toContain('data-fit="responsive"');
     expect(markup).toContain("--sequence-scroll-distance:1900px");
     expect(markup).toContain("--sequence-mobile-scroll-distance:1300px");
   });

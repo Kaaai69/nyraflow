@@ -11,6 +11,7 @@ import {
   canvasBackingSize,
   frameIndexForProgress,
   frameUrl,
+  getCoverRect,
   getContainRect,
   priorityFrameOrder,
 } from "../lib/image-sequence";
@@ -23,6 +24,7 @@ export interface ScrollImageSequenceProps {
   className?: string;
   ariaLabel: string;
   posterFrame?: number;
+  fit?: "contain" | "cover" | "responsive";
 }
 
 type SequenceStyle = CSSProperties & {
@@ -44,6 +46,7 @@ export function ScrollImageSequence({
   className = "",
   ariaLabel,
   posterFrame = 0,
+  fit = "contain",
 }: ScrollImageSequenceProps) {
   const sequenceRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -88,7 +91,13 @@ export function ScrollImageSequence({
         return;
       }
 
-      const rect = getContainRect(
+      const resolvedFit =
+        fit === "responsive"
+          ? canvas.width >= canvas.height
+            ? "cover"
+            : "contain"
+          : fit;
+      const rect = (resolvedFit === "cover" ? getCoverRect : getContainRect)(
         canvas.width,
         canvas.height,
         image.naturalWidth,
@@ -182,7 +191,7 @@ export function ScrollImageSequence({
       }
       if (fallbackHandle !== undefined) clearTimeout(fallbackHandle);
     };
-  }, [basePath, frameCount, posterFrame]);
+  }, [basePath, fit, frameCount, posterFrame]);
 
   useEffect(() => {
     if (reduceMotion || !sequenceRef.current) {
@@ -251,6 +260,7 @@ export function ScrollImageSequence({
           aria-label={ariaLabel}
           data-frame="0"
           data-frame-count={frameCount}
+          data-fit={fit}
         />
         <span
           className="scroll-sequence__loading"
