@@ -10,7 +10,7 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="py-section-mobile md:py-section-desktop bg-[#F5F5F2] text-[#101114]"
+      className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]"
     >
       <SectionContainer>
         <SectionHeading
@@ -19,100 +19,106 @@ export default function PricingSection() {
           lightTheme
         />
         <div className="mt-14 grid items-stretch gap-6 md:mt-20 lg:grid-cols-3">
-          {items.map((item) => (
-            <article
-              key={item.id}
-              className={`grid min-w-0 grid-rows-[auto_auto_auto_1fr_auto] rounded-card p-7 transition-all duration-300 md:p-8 ${
-                item.featured
-                  ? "border border-[#101114] bg-[#101114] text-white shadow-xl"
-                  : "border border-[#101114]/16 bg-white text-[#101114] shadow-sm hover:border-[#101114]/30"
-              }`}
-            >
-              <div>
-                {item.featured && (
-                  <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white border border-white/20 mb-4">
-                    Популярный выбор
-                  </span>
-                )}
-                <h3
-                  className={`text-2xl font-bold tracking-tight ${
-                    item.featured ? "text-white" : "text-[#101114]"
-                  }`}
-                >
-                  {item.title}
-                </h3>
-              </div>
+          {items.map((item) => {
+            const isFeatured = item.featured;
 
-              <p
-                className={`mt-4 text-4xl font-bold tracking-tight ${
-                  item.featured ? "text-white" : "text-[#101114]"
+            return (
+              <article
+                key={item.id}
+                className={`flex flex-col justify-between rounded-[16px] p-8 transition-all duration-300 ${
+                  isFeatured
+                    ? "border border-[#101114] bg-[#101114] text-white shadow-2xl lg:-translate-y-6"
+                    : "border border-[#101114]/14 bg-[#FFFFFF] text-[#101114] shadow-sm hover:border-[#101114]/30 hover:-translate-y-1"
                 }`}
               >
-                {item.price}
-              </p>
+                <div>
+                  {isFeatured && (
+                    <span className="inline-block rounded-full bg-white/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-white border border-white/20 mb-6">
+                      Популярный выбор
+                    </span>
+                  )}
 
-              <p
-                className={`mt-4 leading-relaxed ${
-                  item.featured ? "text-white/70" : "text-[#101114]/75"
-                }`}
-              >
-                {item.description}
-              </p>
+                  <h3
+                    className={`text-2xl font-bold tracking-tight ${
+                      isFeatured ? "text-white" : "text-[#101114]"
+                    }`}
+                  >
+                    {item.title}
+                  </h3>
 
-              <div className="mt-8 space-y-3">
-                {item.included.map((line) => (
                   <p
-                    key={line}
-                    className={`flex gap-3 leading-relaxed ${
-                      item.featured ? "text-white/80" : "text-[#101114]/80"
+                    className={`mt-4 text-4xl font-extrabold tracking-tight ${
+                      isFeatured ? "text-white" : "text-[#101114]"
                     }`}
                   >
-                    <CheckIcon
-                      aria-hidden
-                      size={19}
-                      weight="bold"
-                      className={`mt-1 shrink-0 ${
-                        item.featured ? "text-white" : "text-[#101114]"
-                      }`}
-                    />
-                    <span>{line}</span>
+                    {item.price}
                   </p>
-                ))}
-                {item.optional?.length ? (
-                  <div
-                    className={`mt-6 rounded-card p-5 ${
-                      item.featured
-                        ? "border border-white/15 bg-white/5 text-white"
-                        : "border border-[#101114]/12 bg-[#F5F5F2] text-[#101114]"
+
+                  <p
+                    className={`mt-4 leading-relaxed ${
+                      isFeatured ? "text-white/70" : "text-[#101114]/75"
                     }`}
                   >
-                    <p className="font-bold">Опционально</p>
-                    {item.optional.map((line) => (
+                    {item.description}
+                  </p>
+
+                  <div className="mt-8 space-y-3.5 border-t pt-6 border-current/12">
+                    {item.included.map((line) => (
                       <p
                         key={line}
-                        className={`mt-2 text-sm leading-relaxed ${
-                          item.featured ? "text-white/70" : "text-[#101114]/70"
+                        className={`flex gap-3 leading-relaxed text-sm ${
+                          isFeatured ? "text-white/85" : "text-[#101114]/85"
                         }`}
                       >
-                        {line}
+                        <CheckIcon
+                          aria-hidden
+                          size={18}
+                          weight="bold"
+                          className={`mt-0.5 shrink-0 ${
+                            isFeatured ? "text-white" : "text-[#101114]"
+                          }`}
+                        />
+                        <span>{line}</span>
                       </p>
                     ))}
-                  </div>
-                ) : null}
-              </div>
 
-              <a
-                href="#contact"
-                className={`mt-9 inline-flex h-12 items-center justify-center rounded-full px-6 font-semibold transition-all duration-200 ${
-                  item.featured
-                    ? "bg-white text-[#101114] hover:bg-[#F5F5F2] hover:scale-105 active:scale-95"
-                    : "border border-[#101114] bg-[#101114] text-white hover:bg-[#000000] hover:scale-105 active:scale-95"
-                }`}
-              >
-                {content.cta}
-              </a>
-            </article>
-          ))}
+                    {item.optional?.length ? (
+                      <div
+                        className={`mt-6 rounded-xl p-4 text-xs ${
+                          isFeatured
+                            ? "border border-white/15 bg-white/5 text-white"
+                            : "border border-[#101114]/12 bg-[#F3F3EF] text-[#101114]"
+                        }`}
+                      >
+                        <p className="font-bold uppercase tracking-wider mb-2">Опционально</p>
+                        {item.optional.map((line) => (
+                          <p
+                            key={line}
+                            className={`mt-1 leading-relaxed ${
+                              isFeatured ? "text-white/70" : "text-[#101114]/70"
+                            }`}
+                          >
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <a
+                  href="#contact"
+                  className={`mt-10 flex h-13 w-full items-center justify-center rounded-full font-semibold transition-all duration-200 ${
+                    isFeatured
+                      ? "bg-white text-[#101114] hover:bg-[#F3F3EF] hover:scale-105 active:scale-95 shadow-md"
+                      : "border border-[#101114] bg-[#101114] text-white hover:bg-black hover:scale-105 active:scale-95 shadow-sm"
+                  }`}
+                >
+                  {content.cta}
+                </a>
+              </article>
+            );
+          })}
         </div>
       </SectionContainer>
     </section>
