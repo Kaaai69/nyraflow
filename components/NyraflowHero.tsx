@@ -102,19 +102,13 @@ export default function NyraflowHero() {
       className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none"
     >
       {/* Top Header Logo Bar */}
-      <header className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-6 md:px-12 md:py-8 max-w-7xl mx-auto w-full">
+      <header className="absolute top-0 left-0 right-0 z-30 flex items-center justify-start px-6 py-6 md:px-12 md:py-8 max-w-7xl mx-auto w-full">
         <a href="#" className="flex items-center">
           <img
             src="/nyraflow-logo.png"
             alt="nyraflow logo"
             className="h-8 md:h-10 w-auto object-contain invert brightness-200"
           />
-        </a>
-        <a
-          href="#contact"
-          className="inline-flex h-10 items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-[#101114] hover:bg-[#F5F5F2] transition-all"
-        >
-          Обсудить проект
         </a>
       </header>
 
