@@ -1,5 +1,4 @@
-import VideoScrollAnimation1 from "@/components/VideoScrollAnimation1";
-import VideoScrollAnimation2 from "@/components/VideoScrollAnimation2";
+import AnimatedServicesSection from "@/components/AnimatedServicesSection";
 import BenefitsSection from "./home/BenefitsSection";
 import ContactSection from "./home/ContactSection";
 import CredibilitySection from "./home/CredibilitySection";
@@ -20,11 +19,10 @@ export default function HomeSections() {
       <ProblemSection />
       <MetricsSection />
       <WorkSection />
-      <VideoScrollAnimation1 />
       <StarterSection />
-      <PricingSection />
       <ServicesSection />
-      <VideoScrollAnimation2 />
+      <AnimatedServicesSection />
+      <PricingSection />
       <TeamSection />
       <ProcessSection />
       <FaqSection />

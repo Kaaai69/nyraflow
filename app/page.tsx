@@ -1,6 +1,5 @@
 import HomeSections from "@/components/HomeSections";
 import ResponsiveHero from "@/components/ResponsiveHero";
-import SplineWheelBridge from "@/components/SplineWheelBridge";
 import SiteFooter from "@/components/home/SiteFooter";
 
 export default function Home() {
@@ -10,7 +9,6 @@ export default function Home() {
         <ResponsiveHero />
         <HomeSections />
       </main>
-      <SplineWheelBridge />
       <SiteFooter />
     </>
   );
