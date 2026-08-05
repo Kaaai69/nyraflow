@@ -1,3 +1,4 @@
+import SecondScrollAnimation from "@/components/SecondScrollAnimation";
 import BenefitsSection from "./home/BenefitsSection";
 import ContactSection from "./home/ContactSection";
 import CredibilitySection from "./home/CredibilitySection";
@@ -21,6 +22,7 @@ export default function HomeSections() {
       <StarterSection />
       <PricingSection />
       <ServicesSection />
+      <SecondScrollAnimation />
       <TeamSection />
       <ProcessSection />
       <FaqSection />
