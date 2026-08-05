@@ -13,6 +13,8 @@ artifacts/ignored/
 .DS_Store
 ezgif-5f3fa14f6ad05262-jpg/
 upscayl_png_upscayl-standard-4x_2x/
+*.mov
+extract_video_frames.py
 
 # deployment secrets — never commit
 server.txt
