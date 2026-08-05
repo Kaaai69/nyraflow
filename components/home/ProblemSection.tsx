@@ -27,7 +27,7 @@ export default function ProblemSection() {
 
         {/* 3 Asymmetric Problem Cards */}
         <div className="mt-12 grid gap-6 md:grid-cols-3 items-stretch">
-          {/* Card 1 - White Card (34% relative) */}
+          {/* Card 1 - White Card */}
           {items[0] && (
             <article className="flex flex-col justify-between rounded-[16px] border border-[#101114]/14 bg-[#FFFFFF] p-8 shadow-sm transition-all hover:border-[#101114]/30 hover:-translate-y-1">
               <div>
@@ -44,7 +44,7 @@ export default function ProblemSection() {
             </article>
           )}
 
-          {/* Card 2 - Inverted Dark Card (38% relative) */}
+          {/* Card 2 - Inverted Dark Card */}
           {items[1] && (
             <article className="flex flex-col justify-between rounded-[16px] border border-[#101114] bg-[#101114] p-8 text-white shadow-xl transition-all hover:-translate-y-1">
               <div>
@@ -61,7 +61,7 @@ export default function ProblemSection() {
             </article>
           )}
 
-          {/* Card 3 - White Card (28% relative) */}
+          {/* Card 3 - White Card */}
           {items[2] && (
             <article className="flex flex-col justify-between rounded-[16px] border border-[#101114]/14 bg-[#FFFFFF] p-8 shadow-sm transition-all hover:border-[#101114]/30 hover:-translate-y-1">
               <div>
@@ -77,13 +77,6 @@ export default function ProblemSection() {
               </div>
             </article>
           )}
-        </div>
-
-        {/* Conclusion Highlight */}
-        <div className="mt-12 rounded-[16px] border border-[#101114]/14 bg-[#E7E7E1] p-8 md:p-10">
-          <p className="text-xl font-bold leading-relaxed text-[#101114] md:text-2xl">
-            {content.conclusion}
-          </p>
         </div>
       </SectionContainer>
     </section>

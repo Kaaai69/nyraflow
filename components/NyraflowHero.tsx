@@ -122,7 +122,7 @@ export default function NyraflowHero() {
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="text-display font-medium tracking-tight text-white/80"
+              className="text-4xl font-bold tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl"
             >
               Мы —
             </motion.div>
@@ -136,7 +136,7 @@ export default function NyraflowHero() {
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="text-display font-semibold tracking-tight text-white"
+              className="text-4xl font-bold tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl"
             >
               Мы — больше, чем веб-студия
             </motion.div>
