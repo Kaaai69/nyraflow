@@ -15,10 +15,10 @@ function ProjectCard({ project, featured = false, className }: ProjectCardProps)
       href={project.href}
       target="_blank"
       rel="noreferrer noopener"
-      className={`project-card group block overflow-hidden rounded-media border border-white/10 bg-[#16181D]/60 p-3 shadow-card backdrop-blur-md transition-all duration-300 hover:border-white/25 hover:bg-[#16181D]/90 md:p-4 ${className ?? ""}`}
+      className={`project-card group block overflow-hidden rounded-media border border-white/14 bg-[#101114] p-3 transition-all duration-300 hover:border-white/30 md:p-4 ${className ?? ""}`}
     >
       <figure>
-        <div className="aspect-[8/5] overflow-hidden rounded-media bg-[#0B0C0E]">
+        <div className="aspect-[8/5] overflow-hidden rounded-media bg-[#000000]">
           <Image
             src={project.src}
             alt={project.alt}
@@ -34,14 +34,14 @@ function ProjectCard({ project, featured = false, className }: ProjectCardProps)
         </div>
         <figcaption className="mt-4 flex items-start justify-between gap-4 px-2 pb-2">
           <span>
-            <span className="block text-lg font-semibold text-[#F1F5F9] transition-colors group-hover:text-white">
+            <span className="block text-xl font-bold text-white transition-colors">
               {project.title}
             </span>
-            <span className="mt-1 block text-sm font-medium text-[#94A3B8]">
+            <span className="mt-1 block text-sm font-medium text-white/60">
               {project.caption}
             </span>
           </span>
-          <span className="shrink-0 text-sm font-semibold text-[#38BDF8] transition-all group-hover:translate-x-0.5">
+          <span className="shrink-0 text-sm font-semibold text-white transition-all group-hover:translate-x-1">
             {project.cta} →
           </span>
         </figcaption>
@@ -57,7 +57,7 @@ export default function WorkSection() {
   return (
     <section
       id="work"
-      className="py-section-mobile md:py-section-desktop xl:py-section-wide bg-[#0B0C0E]"
+      className="py-section-mobile md:py-section-desktop bg-[#000000] text-[#FFFFFF]"
     >
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />

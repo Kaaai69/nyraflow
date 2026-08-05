@@ -5,22 +5,27 @@ export default function CredibilitySection() {
   return (
     <section
       id="credibility"
-      aria-label="Почему нам доверяют"
-      className="py-section-mobile md:py-section-credibility bg-[#0B0C0E]"
+      aria-label="Принципы работы"
+      className="py-section-mobile md:py-section-desktop bg-[#000000] text-[#FFFFFF]"
     >
       <SectionContainer>
-        <div className="grid gap-4 md:grid-cols-3 md:gap-5">
-          {homeContent.credibility.items.map((item) => (
+        <div className="grid gap-8 md:grid-cols-3 md:gap-10 border-t border-white/18 pt-10">
+          {homeContent.credibility.items.map((item, index) => (
             <article
               key={item.id}
-              className="rounded-card border border-white/10 bg-[#16181D]/60 p-7 backdrop-blur-md shadow-card transition-all duration-300 hover:border-white/20 hover:bg-[#16181D]/80 md:p-8"
+              className="flex flex-col justify-between"
             >
-              <h2 className="text-2xl font-semibold leading-tight tracking-[-0.02em] text-[#F1F5F9]">
-                {item.title}
-              </h2>
-              <p className="mt-5 text-base leading-relaxed text-[#94A3B8]">
-                {item.description}
-              </p>
+              <div>
+                <span className="text-xs font-bold tracking-widest text-white/50 uppercase">
+                  0{index + 1}
+                </span>
+                <h2 className="mt-4 text-2xl font-bold leading-snug tracking-tight text-white md:text-3xl">
+                  {item.title}
+                </h2>
+                <p className="mt-4 text-base leading-relaxed text-white/70">
+                  {item.description}
+                </p>
+              </div>
             </article>
           ))}
         </div>

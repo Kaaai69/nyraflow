@@ -19,38 +19,38 @@ export default function BenefitsSection() {
   const content = homeContent.benefits;
 
   return (
-    <section id="benefits" className="py-section-mobile md:py-section-desktop bg-[#0B0C0E]">
+    <section id="benefits" className="py-section-mobile md:py-section-desktop bg-[#F5F5F2] text-[#101114]">
       <SectionContainer>
-        <header className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#38BDF8]">
+        <header className="border-t border-[#101114]/16 pt-10">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#101114]">
             {content.eyebrow}
           </p>
-          <h2 className="mt-3 text-title-compact text-balance text-[#F1F5F9]">
+          <h2 className="mt-3 text-title-compact text-balance text-[#101114] font-bold">
             {content.title}
           </h2>
         </header>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2 md:gap-5 xl:mt-16">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 md:gap-6 xl:mt-14">
           {content.items.map((item) => {
             const Icon = benefitIcons[item.icon];
 
             return (
               <article
                 key={item.id}
-                className="rounded-card border border-white/10 bg-[#16181D]/60 p-7 backdrop-blur-md shadow-card transition-all duration-300 hover:border-white/20 hover:bg-[#16181D]/80 md:p-8"
+                className="rounded-card border border-[#101114]/16 bg-white p-7 shadow-sm transition-all duration-300 hover:border-[#101114]/30 md:p-8"
               >
                 <div className="flex items-start gap-4">
                   <Icon
                     aria-hidden
                     size={28}
                     weight="regular"
-                    className="mt-0.5 shrink-0 text-[#38BDF8]"
+                    className="mt-0.5 shrink-0 text-[#101114]"
                   />
                   <div>
-                    <h3 className="text-xl font-semibold leading-tight text-[#F1F5F9]">
+                    <h3 className="text-xl font-bold leading-tight text-[#101114]">
                       {item.title}
                     </h3>
-                    <p className="mt-3 text-base leading-relaxed text-[#94A3B8]">
+                    <p className="mt-3 text-base leading-relaxed text-[#101114]/75">
                       {item.description}
                     </p>
                   </div>

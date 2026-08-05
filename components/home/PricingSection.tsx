@@ -10,39 +10,52 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="py-section-mobile md:py-section-desktop xl:py-section-wide bg-[#0B0C0E]"
+      className="py-section-mobile md:py-section-desktop bg-[#F5F5F2] text-[#101114]"
     >
       <SectionContainer>
         <SectionHeading
           title={content.title}
           description={content.description}
+          lightTheme
         />
-        <div className="mt-14 grid items-stretch gap-5 md:mt-20 lg:grid-cols-3">
+        <div className="mt-14 grid items-stretch gap-6 md:mt-20 lg:grid-cols-3">
           {items.map((item) => (
             <article
               key={item.id}
-              className={`grid min-w-0 grid-rows-[auto_auto_auto_1fr_auto] rounded-card p-7 backdrop-blur-md transition-all duration-300 md:p-8 ${
+              className={`grid min-w-0 grid-rows-[auto_auto_auto_1fr_auto] rounded-card p-7 transition-all duration-300 md:p-8 ${
                 item.featured
-                  ? "border border-white/30 bg-gradient-to-b from-[#1C2029]/90 to-[#16181D]/90 shadow-[0_0_35px_rgba(255,255,255,0.08)] ring-1 ring-white/20"
-                  : "border border-white/10 bg-[#16181D]/60 hover:border-white/20 hover:bg-[#16181D]/80"
+                  ? "border border-[#101114] bg-[#101114] text-white shadow-xl"
+                  : "border border-[#101114]/16 bg-white text-[#101114] shadow-sm hover:border-[#101114]/30"
               }`}
             >
               <div>
                 {item.featured && (
-                  <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#38BDF8] border border-white/15 mb-4">
+                  <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white border border-white/20 mb-4">
                     Популярный выбор
                   </span>
                 )}
-                <h3 className="text-2xl font-semibold tracking-[-0.025em] text-[#F1F5F9]">
+                <h3
+                  className={`text-2xl font-bold tracking-tight ${
+                    item.featured ? "text-white" : "text-[#101114]"
+                  }`}
+                >
                   {item.title}
                 </h3>
               </div>
 
-              <p className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-[#F1F5F9]">
+              <p
+                className={`mt-4 text-4xl font-bold tracking-tight ${
+                  item.featured ? "text-white" : "text-[#101114]"
+                }`}
+              >
                 {item.price}
               </p>
 
-              <p className="mt-4 leading-relaxed text-[#94A3B8]">
+              <p
+                className={`mt-4 leading-relaxed ${
+                  item.featured ? "text-white/70" : "text-[#101114]/75"
+                }`}
+              >
                 {item.description}
               </p>
 
@@ -50,24 +63,36 @@ export default function PricingSection() {
                 {item.included.map((line) => (
                   <p
                     key={line}
-                    className="flex gap-3 leading-relaxed text-[#94A3B8]"
+                    className={`flex gap-3 leading-relaxed ${
+                      item.featured ? "text-white/80" : "text-[#101114]/80"
+                    }`}
                   >
                     <CheckIcon
                       aria-hidden
                       size={19}
                       weight="bold"
-                      className="mt-1 shrink-0 text-[#38BDF8]"
+                      className={`mt-1 shrink-0 ${
+                        item.featured ? "text-white" : "text-[#101114]"
+                      }`}
                     />
                     <span>{line}</span>
                   </p>
                 ))}
                 {item.optional?.length ? (
-                  <div className="mt-6 rounded-card border border-white/10 bg-[#1F232C]/60 p-5">
-                    <p className="font-semibold text-[#F1F5F9]">Опционально</p>
+                  <div
+                    className={`mt-6 rounded-card p-5 ${
+                      item.featured
+                        ? "border border-white/15 bg-white/5 text-white"
+                        : "border border-[#101114]/12 bg-[#F5F5F2] text-[#101114]"
+                    }`}
+                  >
+                    <p className="font-bold">Опционально</p>
                     {item.optional.map((line) => (
                       <p
                         key={line}
-                        className="mt-2 text-sm leading-relaxed text-[#94A3B8]"
+                        className={`mt-2 text-sm leading-relaxed ${
+                          item.featured ? "text-white/70" : "text-[#101114]/70"
+                        }`}
                       >
                         {line}
                       </p>
@@ -78,10 +103,10 @@ export default function PricingSection() {
 
               <a
                 href="#contact"
-                className={`mt-9 inline-flex min-h-[3rem] items-center justify-center rounded-full px-6 font-semibold transition-all duration-200 ${
+                className={`mt-9 inline-flex h-12 items-center justify-center rounded-full px-6 font-semibold transition-all duration-200 ${
                   item.featured
-                    ? "bg-white text-[#0B0C0E] shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:bg-[#E2E8F0] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] active:scale-95"
-                    : "border border-white/20 bg-white/10 text-[#F1F5F9] backdrop-blur-md hover:bg-white/20 hover:border-white/40 active:scale-95"
+                    ? "bg-white text-[#101114] hover:bg-[#F5F5F2] hover:scale-105 active:scale-95"
+                    : "border border-[#101114] bg-[#101114] text-white hover:bg-[#000000] hover:scale-105 active:scale-95"
                 }`}
               >
                 {content.cta}
