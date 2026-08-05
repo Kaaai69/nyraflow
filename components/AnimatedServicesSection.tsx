@@ -31,7 +31,6 @@ export default function AnimatedServicesSection() {
   useEffect(() => {
     if (prefersReducedMotion || isPaused) return;
 
-    // 3.5 seconds per word for calm, crystal-clear readability
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % SERVICES.length);
     }, 3500);
@@ -67,17 +66,17 @@ export default function AnimatedServicesSection() {
     <section
       ref={sectionRef}
       id="animated-services-section"
-      className="relative flex min-h-[50vh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none py-20"
+      className="relative flex min-h-[50vh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none py-24"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col items-start justify-center px-6 md:px-12">
         <div className="flex flex-col sm:flex-row items-center sm:items-baseline justify-center sm:justify-start gap-4 md:gap-6 w-full text-center sm:text-left">
           {/* STATIC PHRASE - 100% FIXED POSITION */}
-          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap leading-none">
+          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap leading-normal">
             Мы создаём
           </span>
 
-          {/* DYNAMIC WORD - CRISP WHITE, 3.5s DURATION, SMOOTH MOTION */}
-          <div className="relative flex-1 h-[1.3em] overflow-hidden flex items-center justify-center sm:justify-start">
+          {/* DYNAMIC WORD - INCREASED HEIGHT (2.2em) PREVENTS ALL CLIPPING */}
+          <div className="relative flex-1 h-[2.2em] overflow-visible flex items-center justify-center sm:justify-start">
             <AnimatePresence mode="wait">
               <motion.span
                 key={SERVICES[currentIndex]}
@@ -85,10 +84,10 @@ export default function AnimatedServicesSection() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -35, opacity: 0 }}
                 transition={{
-                  duration: 0.7,
+                  duration: 0.65,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap leading-none text-white block"
+                className="absolute left-0 top-1/2 -translate-y-1/2 text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap leading-normal text-white block py-2"
               >
                 {SERVICES[currentIndex]}
               </motion.span>
