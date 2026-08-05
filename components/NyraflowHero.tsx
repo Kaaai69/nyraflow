@@ -32,8 +32,8 @@ export default function NyraflowHero() {
       1500, // 4: Automations (White Panel)
       1400, // 5: Integrations
       1500, // 6: Telegram Apps (White Panel)
-      1800, // 7: Единая связная система / Созданная вокруг вашего бизнеса
-      3800, // 8: NYRAFLOW Final Brand Scene + CTA button
+      1800, // 7: Единая экосистема / Созданная вокруг задач вашего бизнеса
+      3800, // 8: nyraflow Final Brand Scene + CTA button
       1200, // 9: Fade out reset transition
     ];
 
@@ -77,8 +77,8 @@ export default function NyraflowHero() {
         className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center bg-[#000000] text-[#FFFFFF] px-6 text-center"
       >
         <div className="mx-auto max-w-4xl">
-          <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-            NYRAFLOW
+          <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl lowercase">
+            nyraflow
           </h1>
           <p className="mt-4 text-xl text-white/70 md:text-2xl">
             Websites, automations, integrations и Telegram apps для вашего бизнеса
@@ -210,7 +210,7 @@ export default function NyraflowHero() {
             </motion.div>
           )}
 
-          {/* Scene 7: Единая связная система / Созданная вокруг вашего бизнеса */}
+          {/* Scene 7: Единая экосистема / Созданная вокруг задач вашего бизнеса */}
           {sceneIndex === 7 && (
             <motion.div
               key="scene-7"
@@ -229,7 +229,7 @@ export default function NyraflowHero() {
             </motion.div>
           )}
 
-          {/* Scene 8: Final Brand Scene NYRAFLOW */}
+          {/* Scene 8: Final Brand Scene (nyraflow in lowercase) */}
           {sceneIndex === 8 && (
             <motion.div
               key="scene-8"
@@ -239,8 +239,8 @@ export default function NyraflowHero() {
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-col items-center space-y-6"
             >
-              <div className="text-5xl font-black tracking-tighter text-white md:text-7xl lg:text-8xl">
-                NYRAFLOW
+              <div className="text-5xl font-bold tracking-tight text-white lowercase md:text-7xl lg:text-8xl">
+                nyraflow
               </div>
               <p className="text-lg font-medium text-white/75 md:text-2xl">
                 Цифровые решения и системы для роста бизнеса
@@ -272,7 +272,7 @@ export default function NyraflowHero() {
 
       {/* Accessible h1 */}
       <h1 className="sr-only">
-        NYRAFLOW — Сайты, автоматизации, интеграции и Telegram приложения для бизнеса
+        nyraflow — Сайты, автоматизации, интеграции и Telegram приложения для бизнеса
       </h1>
     </section>
   );
