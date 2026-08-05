@@ -69,25 +69,25 @@ export default function AnimatedServicesSection() {
       className="relative flex min-h-[50vh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none py-24"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col items-start justify-center px-6 md:px-12">
-        <div className="flex flex-col sm:flex-row items-center sm:items-baseline justify-center sm:justify-start gap-4 md:gap-6 w-full text-center sm:text-left">
-          {/* STATIC PHRASE - 100% FIXED POSITION */}
-          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap leading-normal">
+        <div className="flex flex-col sm:flex-row items-baseline justify-start gap-4 md:gap-6 w-full text-center sm:text-left">
+          {/* STATIC PHRASE - EXACT BASELINE ALIGNMENT */}
+          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap">
             Мы создаём
           </span>
 
-          {/* DYNAMIC WORD - INCREASED HEIGHT (2.2em) PREVENTS ALL CLIPPING */}
-          <div className="relative flex-1 h-[2.2em] overflow-visible flex items-center justify-center sm:justify-start">
+          {/* DYNAMIC WORD - EXACT TYPOGRAPHIC BASELINE ALIGNMENT */}
+          <div className="relative inline-flex items-baseline min-w-[260px] sm:min-w-[340px] md:min-w-[460px]">
             <AnimatePresence mode="wait">
               <motion.span
                 key={SERVICES[currentIndex]}
-                initial={{ y: 35, opacity: 0 }}
+                initial={{ y: 25, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -35, opacity: 0 }}
+                exit={{ y: -25, opacity: 0 }}
                 transition={{
                   duration: 0.65,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="absolute left-0 top-1/2 -translate-y-1/2 text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap leading-normal text-white block py-2"
+                className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap inline-block text-white"
               >
                 {SERVICES[currentIndex]}
               </motion.span>
