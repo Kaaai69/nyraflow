@@ -32,7 +32,7 @@ function LetterStaggerText({
       y: 0,
       filter: "blur(0px)",
       transition: {
-        type: "spring",
+        type: "spring" as const,
         damping: 14,
         stiffness: 100,
       },
