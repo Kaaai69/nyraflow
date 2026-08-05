@@ -6,7 +6,6 @@ import {
 } from "@phosphor-icons/react/ssr";
 
 import { homeContent, type BenefitIconName } from "../../content/home";
-
 import { SectionContainer } from "./Layout";
 
 const benefitIcons = {
@@ -20,13 +19,13 @@ export default function BenefitsSection() {
   const content = homeContent.benefits;
 
   return (
-    <section id="benefits" className="py-section-mobile md:py-section-desktop">
+    <section id="benefits" className="py-section-mobile md:py-section-desktop bg-[#0B0C0E]">
       <SectionContainer>
         <header className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#38BDF8]">
             {content.eyebrow}
           </p>
-          <h2 className="mt-3 text-title-compact text-balance">
+          <h2 className="mt-3 text-title-compact text-balance text-[#F1F5F9]">
             {content.title}
           </h2>
         </header>
@@ -38,20 +37,20 @@ export default function BenefitsSection() {
             return (
               <article
                 key={item.id}
-                className="rounded-card border border-line bg-surface p-7 shadow-card md:p-8"
+                className="rounded-card border border-white/10 bg-[#16181D]/60 p-7 backdrop-blur-md shadow-card transition-all duration-300 hover:border-white/20 hover:bg-[#16181D]/80 md:p-8"
               >
                 <div className="flex items-start gap-4">
                   <Icon
                     aria-hidden
                     size={28}
                     weight="regular"
-                    className="mt-0.5 shrink-0 text-cyan"
+                    className="mt-0.5 shrink-0 text-[#38BDF8]"
                   />
                   <div>
-                    <h3 className="text-xl font-semibold leading-tight">
+                    <h3 className="text-xl font-semibold leading-tight text-[#F1F5F9]">
                       {item.title}
                     </h3>
-                    <p className="mt-3 text-base leading-relaxed text-text-secondary">
+                    <p className="mt-3 text-base leading-relaxed text-[#94A3B8]">
                       {item.description}
                     </p>
                   </div>

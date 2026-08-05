@@ -16,17 +16,17 @@ const legalLinks = [
 ] as const;
 
 const footerLinkClassName =
-  "inline-flex min-h-11 items-center transition-opacity duration-base ease-premium hover:opacity-65";
+  "inline-flex min-h-11 items-center transition-opacity duration-base ease-premium hover:opacity-75";
 
 export default function SiteFooter() {
   return (
-    <footer className="pb-10 pt-8 md:pb-12">
-      <SectionContainer className="grid gap-10 border-t border-line pt-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+    <footer className="pb-10 pt-8 md:pb-12 bg-[#0B0C0E] text-[#F1F5F9]">
+      <SectionContainer className="grid gap-10 border-t border-white/10 pt-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         <div>
-          <p className="text-xl font-semibold tracking-[-0.02em]">
+          <p className="text-xl font-semibold tracking-[-0.02em] text-[#F1F5F9]">
             {legalIdentity.brand}
           </p>
-          <p className="mt-4 text-sm leading-relaxed text-text-secondary">
+          <p className="mt-4 text-sm leading-relaxed text-[#94A3B8]">
             © {new Date().getFullYear()} {legalIdentity.brand}.
             <br />
             Все права защищены.
@@ -34,13 +34,13 @@ export default function SiteFooter() {
         </div>
 
         <nav aria-label="Навигация в подвале">
-          <p className="text-sm font-semibold text-text-primary">Навигация</p>
+          <p className="text-sm font-semibold text-[#F1F5F9]">Навигация</p>
           <ul className="mt-4 space-y-3">
             {footerLinks.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className={`font-medium text-text-secondary ${footerLinkClassName}`}
+                  className={`font-medium text-[#94A3B8] hover:text-[#F1F5F9] ${footerLinkClassName}`}
                 >
                   {link.label}
                 </a>
@@ -50,12 +50,12 @@ export default function SiteFooter() {
         </nav>
 
         <address className="not-italic">
-          <p className="text-sm font-semibold text-text-primary">Контакты</p>
-          <ul className="mt-4 space-y-3 text-text-secondary">
+          <p className="text-sm font-semibold text-[#F1F5F9]">Контакты</p>
+          <ul className="mt-4 space-y-3 text-[#94A3B8]">
             <li>
               <a
                 href={`mailto:${legalIdentity.email}`}
-                className={footerLinkClassName}
+                className={`hover:text-[#F1F5F9] ${footerLinkClassName}`}
               >
                 {legalIdentity.email}
               </a>
@@ -63,7 +63,7 @@ export default function SiteFooter() {
             <li>
               <a
                 href={legalIdentity.phoneHref}
-                className={footerLinkClassName}
+                className={`hover:text-[#F1F5F9] ${footerLinkClassName}`}
               >
                 {legalIdentity.phoneLabel}
               </a>
@@ -73,7 +73,7 @@ export default function SiteFooter() {
                 href={legalIdentity.telegramHref}
                 target="_blank"
                 rel="noreferrer noopener"
-                className={footerLinkClassName}
+                className={`hover:text-[#F1F5F9] ${footerLinkClassName}`}
               >
                 {legalIdentity.telegramLabel}
               </a>
@@ -82,16 +82,16 @@ export default function SiteFooter() {
         </address>
 
         <div>
-          <p className="text-sm font-semibold text-text-primary">
+          <p className="text-sm font-semibold text-[#F1F5F9]">
             Правовая информация
           </p>
-          <p className="mt-4 text-sm font-medium leading-relaxed">
+          <p className="mt-4 text-sm font-medium leading-relaxed text-[#F1F5F9]">
             {legalIdentity.fullName}
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+          <p className="mt-2 text-sm leading-relaxed text-[#94A3B8]">
             {legalIdentity.status}
           </p>
-          <p className="mt-2 text-sm text-text-secondary">
+          <p className="mt-2 text-sm text-[#94A3B8]">
             ИНН {legalIdentity.inn}
           </p>
           <ul className="mt-4 space-y-3 text-sm">
@@ -99,7 +99,7 @@ export default function SiteFooter() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className={`text-blue-deep ${footerLinkClassName}`}
+                  className={`text-[#38BDF8] hover:underline ${footerLinkClassName}`}
                 >
                   {link.label}
                 </a>

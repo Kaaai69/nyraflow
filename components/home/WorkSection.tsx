@@ -1,7 +1,6 @@
 import Image from "next/image";
 
 import { homeContent, type WorkMedia } from "../../content/home";
-
 import { SectionContainer, SectionHeading } from "./Layout";
 
 type ProjectCardProps = {
@@ -16,10 +15,10 @@ function ProjectCard({ project, featured = false, className }: ProjectCardProps)
       href={project.href}
       target="_blank"
       rel="noreferrer noopener"
-      className={`project-card block overflow-hidden rounded-media border border-line-strong bg-surface p-3 shadow-card md:p-4 ${className ?? ""}`}
+      className={`project-card group block overflow-hidden rounded-media border border-white/10 bg-[#16181D]/60 p-3 shadow-card backdrop-blur-md transition-all duration-300 hover:border-white/25 hover:bg-[#16181D]/90 md:p-4 ${className ?? ""}`}
     >
       <figure>
-        <div className="aspect-[8/5] overflow-hidden rounded-media bg-surface">
+        <div className="aspect-[8/5] overflow-hidden rounded-media bg-[#0B0C0E]">
           <Image
             src={project.src}
             alt={project.alt}
@@ -30,20 +29,20 @@ function ProjectCard({ project, featured = false, className }: ProjectCardProps)
                 ? "(max-width: 1240px) 100vw, 1112px"
                 : "(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
             }
-            className="project-card-image h-full w-full object-cover"
+            className="project-card-image h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
         <figcaption className="mt-4 flex items-start justify-between gap-4 px-2 pb-2">
           <span>
-            <span className="block text-lg font-semibold text-text-primary">
+            <span className="block text-lg font-semibold text-[#F1F5F9] transition-colors group-hover:text-white">
               {project.title}
             </span>
-            <span className="mt-1 block text-sm font-medium text-text-secondary">
+            <span className="mt-1 block text-sm font-medium text-[#94A3B8]">
               {project.caption}
             </span>
           </span>
-          <span className="shrink-0 text-sm font-semibold text-blue-deep">
-            {project.cta}
+          <span className="shrink-0 text-sm font-semibold text-[#38BDF8] transition-all group-hover:translate-x-0.5">
+            {project.cta} →
           </span>
         </figcaption>
       </figure>
@@ -58,7 +57,7 @@ export default function WorkSection() {
   return (
     <section
       id="work"
-      className="py-section-mobile md:py-section-desktop xl:py-section-wide"
+      className="py-section-mobile md:py-section-desktop xl:py-section-wide bg-[#0B0C0E]"
     >
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />

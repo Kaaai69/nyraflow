@@ -10,6 +10,9 @@ artifacts/ignored/
 .superpowers/
 .worktrees/
 .vercel
+.DS_Store
+ezgif-5f3fa14f6ad05262-jpg/
+upscayl_png_upscayl-standard-4x_2x/
 
 # deployment secrets — never commit
 server.txt

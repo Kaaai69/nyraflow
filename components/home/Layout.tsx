@@ -17,6 +17,7 @@ export function SectionContainer({
     </div>
   );
 }
+
 type SectionHeadingProps = Readonly<{
   title: string;
   description: string;
@@ -30,10 +31,10 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <header className={`max-w-4xl ${className}`}>
-      <h2 className="text-display text-balance">
+      <h2 className="text-display text-balance text-[#F1F5F9]">
         {title}
       </h2>
-      <p className="mt-6 max-w-[65ch] text-lg leading-relaxed text-text-secondary md:text-xl">
+      <p className="mt-6 max-w-[65ch] text-lg leading-relaxed text-[#94A3B8] md:text-xl">
         {description}
       </p>
     </header>
