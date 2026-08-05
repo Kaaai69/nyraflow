@@ -1,23 +1,31 @@
 import { homeContent } from "../../content/home";
-
 import { SectionContainer } from "./Layout";
 
 export default function CredibilitySection() {
   return (
-    <section id="credibility" aria-label="Почему нам доверяют" className="py-section-mobile md:py-section-credibility">
+    <section
+      id="credibility"
+      aria-label="Принципы работы"
+      className="py-section-mobile md:py-section-desktop bg-[#000000] text-[#FFFFFF]"
+    >
       <SectionContainer>
-        <div className="grid gap-4 md:grid-cols-3 md:gap-5">
-          {homeContent.credibility.items.map((item) => (
+        <div className="grid gap-6 md:grid-cols-3 md:gap-8 items-stretch">
+          {homeContent.credibility.items.map((item, index) => (
             <article
               key={item.id}
-              className="rounded-card border border-line bg-surface p-7 shadow-card md:p-8"
+              className="flex flex-col justify-between rounded-[16px] border border-white/13 bg-[#151515] p-8 md:p-10 shadow-lg transition-all duration-300 hover:border-white/30 hover:bg-[#1B1B1B] hover:-translate-y-1"
             >
-              <h2 className="text-2xl font-semibold leading-tight tracking-[-0.02em]">
-                {item.title}
-              </h2>
-              <p className="mt-5 text-base leading-relaxed text-text-secondary">
-                {item.description}
-              </p>
+              <div>
+                <span className="text-sm font-bold tracking-widest text-white/50 uppercase">
+                  0{index + 1}
+                </span>
+                <h2 className="mt-6 text-2xl font-bold leading-snug tracking-tight text-white md:text-3xl">
+                  {item.title}
+                </h2>
+                <p className="mt-4 text-base leading-relaxed text-white/70">
+                  {item.description}
+                </p>
+              </div>
             </article>
           ))}
         </div>

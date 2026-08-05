@@ -6,7 +6,6 @@ import {
 } from "@phosphor-icons/react/ssr";
 
 import { homeContent, type BenefitIconName } from "../../content/home";
-
 import { SectionContainer } from "./Layout";
 
 const benefitIcons = {
@@ -20,41 +19,56 @@ export default function BenefitsSection() {
   const content = homeContent.benefits;
 
   return (
-    <section id="benefits" className="py-section-mobile md:py-section-desktop">
+    <section id="benefits" className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]">
       <SectionContainer>
-        <header className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue">
+        <header className="border-b border-[#101114]/12 pb-8">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#101114]/50">
             {content.eyebrow}
           </p>
-          <h2 className="mt-3 text-title-compact text-balance">
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#101114] sm:text-4xl md:text-5xl">
             {content.title}
           </h2>
         </header>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2 md:gap-5 xl:mt-16">
-          {content.items.map((item) => {
+        {/* 2x2 Grid with 1 Inverted Dark Card (#101114) */}
+        <div className="mt-12 grid gap-6 md:grid-cols-2 md:gap-8">
+          {content.items.map((item, index) => {
             const Icon = benefitIcons[item.icon];
+            const isInverted = index === 2; // Card 3 is inverted dark
 
             return (
               <article
                 key={item.id}
-                className="rounded-card border border-line bg-surface p-7 shadow-card md:p-8"
+                className={`flex flex-col justify-between rounded-[16px] p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 ${
+                  isInverted
+                    ? "bg-[#101114] text-white border border-[#101114]"
+                    : "bg-[#FFFFFF] text-[#101114] border border-[#101114]/14 hover:border-[#101114]/30"
+                }`}
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-center justify-between">
                   <Icon
                     aria-hidden
-                    size={28}
+                    size={32}
                     weight="regular"
-                    className="mt-0.5 shrink-0 text-cyan"
+                    className={`shrink-0 ${isInverted ? "text-white" : "text-[#101114]"}`}
                   />
-                  <div>
-                    <h3 className="text-xl font-semibold leading-tight">
-                      {item.title}
-                    </h3>
-                    <p className="mt-3 text-base leading-relaxed text-text-secondary">
-                      {item.description}
-                    </p>
-                  </div>
+                  <span className={`text-xs font-bold tracking-widest uppercase ${
+                    isInverted ? "text-white/50" : "text-[#101114]/40"
+                  }`}>
+                    0{index + 1}
+                  </span>
+                </div>
+                <div className="mt-8">
+                  <h3 className={`text-xl font-bold leading-tight ${
+                    isInverted ? "text-white" : "text-[#101114]"
+                  }`}>
+                    {item.title}
+                  </h3>
+                  <p className={`mt-3 text-base leading-relaxed ${
+                    isInverted ? "text-white/75" : "text-[#101114]/75"
+                  }`}>
+                    {item.description}
+                  </p>
                 </div>
               </article>
             );

@@ -18,7 +18,7 @@ export default function LegalDocumentPage({
 
   return (
     <>
-      <main className="legal-page text-text-primary">
+      <main className="legal-page bg-[#0B0C0E] text-[#F1F5F9]">
         <header className="legal-hero mx-auto w-full max-w-site px-gutter-mobile pb-12 pt-8 md:px-gutter-tablet md:pb-16 md:pt-10 xl:px-gutter-desktop">
           <nav
             className="legal-print-hidden flex flex-wrap items-center justify-between gap-4"
@@ -26,27 +26,27 @@ export default function LegalDocumentPage({
           >
             <a
               href="/"
-              className="text-lg font-semibold tracking-[-0.02em] text-text-primary"
+              className="text-lg font-semibold tracking-[-0.02em] text-[#F1F5F9]"
             >
               nyraflow
             </a>
             <a
               href="/"
-              className="inline-flex min-h-11 items-center text-sm font-semibold text-blue-deep hover:text-blue"
+              className="inline-flex min-h-11 items-center text-sm font-semibold text-[#38BDF8] hover:underline"
             >
               Вернуться на главную
             </a>
           </nav>
-          <p className="mt-16 text-xs font-semibold uppercase tracking-[0.16em] text-blue md:mt-24">
+          <p className="mt-16 text-xs font-semibold uppercase tracking-[0.16em] text-[#38BDF8] md:mt-24">
             {document.eyebrow}
           </p>
-          <h1 className="mt-4 max-w-4xl text-balance text-title">
+          <h1 className="mt-4 max-w-4xl text-balance text-title text-[#F1F5F9]">
             {document.title}
           </h1>
-          <p className="mt-6 max-w-3xl text-lg leading-relaxed text-text-secondary md:text-xl">
+          <p className="mt-6 max-w-3xl text-lg leading-relaxed text-[#94A3B8] md:text-xl">
             {document.description}
           </p>
-          <p className="mt-8 text-sm font-medium text-text-secondary">
+          <p className="mt-8 text-sm font-medium text-[#94A3B8]">
             Редакция от {document.effectiveDate}
           </p>
         </header>
@@ -56,7 +56,7 @@ export default function LegalDocumentPage({
             {document.introduction.map((paragraph, index) => (
               <p
                 key={`introduction-${index}`}
-                className="max-w-[72ch] text-base leading-7 text-text-secondary"
+                className="max-w-[72ch] text-base leading-7 text-[#94A3B8]"
               >
                 {paragraph}
               </p>
@@ -66,7 +66,7 @@ export default function LegalDocumentPage({
 
         <div className="legal-layout mx-auto w-full max-w-site px-gutter-mobile pb-section-mobile md:px-gutter-tablet md:pb-section-desktop xl:px-gutter-desktop">
           <nav
-            className="legal-toc legal-print-hidden border-t border-line pt-6"
+            className="legal-toc legal-print-hidden border-t border-white/10 pt-6"
             aria-label="Содержание документа"
           >
             <ol className="m-0 list-none space-y-1 p-0">
@@ -74,7 +74,7 @@ export default function LegalDocumentPage({
                 <li key={section.id}>
                   <a
                     href={`#${section.id}`}
-                    className="block border-l-2 border-transparent py-2 pl-3 text-sm leading-snug text-text-secondary hover:border-blue hover:text-blue-deep"
+                    className="block border-l-2 border-transparent py-2 pl-3 text-sm leading-snug text-[#94A3B8] hover:border-[#38BDF8] hover:text-[#F1F5F9]"
                   >
                     {section.title}
                   </a>
@@ -84,7 +84,7 @@ export default function LegalDocumentPage({
                 <li>
                   <a
                     href="#requisites"
-                    className="block border-l-2 border-transparent py-2 pl-3 text-sm leading-snug text-text-secondary hover:border-blue hover:text-blue-deep"
+                    className="block border-l-2 border-transparent py-2 pl-3 text-sm leading-snug text-[#94A3B8] hover:border-[#38BDF8] hover:text-[#F1F5F9]"
                   >
                     Сведения и реквизиты Исполнителя
                   </a>
@@ -98,21 +98,21 @@ export default function LegalDocumentPage({
               <section
                 key={section.id}
                 id={section.id}
-                className="legal-section scroll-mt-8 py-10 md:py-12"
+                className="legal-section border-t border-white/10 scroll-mt-8 py-10 md:py-12"
               >
                 <p
-                  className="text-xs font-semibold tracking-[0.16em] text-blue"
+                  className="text-xs font-semibold tracking-[0.16em] text-[#38BDF8]"
                   aria-hidden="true"
                 >
                   {String(index + 1).padStart(2, "0")}
                 </p>
-                <h2 className="mt-4 max-w-3xl text-2xl font-semibold tracking-[-0.025em] md:text-3xl">
+                <h2 className="mt-4 max-w-3xl text-2xl font-semibold tracking-[-0.025em] text-[#F1F5F9] md:text-3xl">
                   {section.title}
                 </h2>
                 {section.paragraphs.map((paragraph, paragraphIndex) => (
                   <p
                     key={`${section.id}-${paragraphIndex}`}
-                    className="mt-5 max-w-[72ch] text-base leading-7 text-text-secondary"
+                    className="mt-5 max-w-[72ch] text-base leading-7 text-[#94A3B8]"
                   >
                     {paragraph}
                   </p>
@@ -123,15 +123,15 @@ export default function LegalDocumentPage({
             {document.requisites ? (
               <section
                 id="requisites"
-                className="legal-section scroll-mt-8 py-10 md:py-12"
+                className="legal-section border-t border-white/10 scroll-mt-8 py-10 md:py-12"
               >
-                <h2 className="max-w-3xl text-2xl font-semibold tracking-[-0.025em] md:text-3xl">
+                <h2 className="max-w-3xl text-2xl font-semibold tracking-[-0.025em] text-[#F1F5F9] md:text-3xl">
                   Сведения и реквизиты Исполнителя
                 </h2>
                 {document.requisites.map((requisite, index) => (
                   <p
                     key={`requisite-${index}`}
-                    className="mt-5 max-w-[72ch] text-base leading-7 text-text-secondary"
+                    className="mt-5 max-w-[72ch] text-base leading-7 text-[#94A3B8]"
                   >
                     {requisite}
                   </p>
@@ -140,15 +140,15 @@ export default function LegalDocumentPage({
             ) : null}
 
             <aside
-              className="legal-print-hidden border-t border-line py-10 md:py-12"
+              className="legal-print-hidden border-t border-white/10 py-10 md:py-12"
               aria-label="Другой юридический документ"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#94A3B8]">
                 Другой юридический документ
               </p>
               <a
                 href={relatedDocument.href}
-                className="mt-3 inline-flex min-h-11 items-center text-lg font-semibold text-blue-deep hover:text-blue"
+                className="mt-3 inline-flex min-h-11 items-center text-lg font-semibold text-[#38BDF8] hover:underline"
               >
                 {relatedDocument.label}
               </a>

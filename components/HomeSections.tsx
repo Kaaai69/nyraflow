@@ -1,3 +1,4 @@
+import AnimatedServicesSection from "@/components/AnimatedServicesSection";
 import BenefitsSection from "./home/BenefitsSection";
 import ContactSection from "./home/ContactSection";
 import CredibilitySection from "./home/CredibilitySection";
@@ -18,9 +19,10 @@ export default function HomeSections() {
       <ProblemSection />
       <MetricsSection />
       <WorkSection />
+      <ServicesSection />
+      <AnimatedServicesSection />
       <StarterSection />
       <PricingSection />
-      <ServicesSection />
       <TeamSection />
       <ProcessSection />
       <FaqSection />

@@ -1,5 +1,4 @@
 import { homeContent } from "../../content/home";
-
 import { SectionContainer, SectionHeading } from "./Layout";
 
 const serviceLabels = {
@@ -8,51 +7,91 @@ const serviceLabels = {
   businessOutcome: "Что получает бизнес",
 } as const;
 
+const watermarks = ["WEB", "SYSTEM", "AI"] as const;
+
 export default function ServicesSection() {
   const content = homeContent.services;
 
   return (
-    <section id="services" className="py-section-mobile md:py-section-desktop xl:py-section-wide">
+    <section id="services" className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]">
       <SectionContainer>
-        <SectionHeading title={content.title} description={content.description} />
+        <SectionHeading title={content.title} description={content.description} lightTheme />
 
-        <div className="mt-14 grid gap-5 md:mt-20">
-          {content.items.map((item) => (
-            <article
-              key={item.id}
-              className="service-panel grid gap-8 rounded-media border border-line-strong bg-surface p-7 shadow-card md:p-9 lg:grid-cols-12 lg:gap-6"
-            >
-              <h3 className="service-title text-2xl font-semibold tracking-[-0.02em] transition-transform duration-slow ease-premium md:text-subtitle lg:col-span-3 lg:pr-5">
-                {item.title}
-              </h3>
-              <div className="grid gap-7 md:grid-cols-3 lg:col-span-9">
-                {(Object.keys(serviceLabels) as Array<keyof typeof serviceLabels>).map(
-                  (key) => (
-                    <div
-                      key={key}
-                      className={
-                        key === "businessOutcome"
-                          ? "service-outcome rounded-card bg-surface-blue p-5"
-                          : "p-5"
-                      }
-                    >
-                      <p className="text-sm font-semibold text-blue-deep">
-                        {serviceLabels[key]}
-                      </p>
-                      <p className="mt-3 text-base leading-relaxed text-text-secondary">
-                        {item[key]}
-                      </p>
-                    </div>
-                  ),
-                )}
-              </div>
-            </article>
-          ))}
+        <div className="mt-14 space-y-8 md:mt-16">
+          {content.items.map((item, index) => {
+            const isDarkCard = index === 1;
+            const watermark = watermarks[index] ?? "FLOW";
+
+            return (
+              <article
+                key={item.id}
+                className={`relative overflow-hidden rounded-[20px] p-8 md:p-12 transition-all duration-300 shadow-md ${
+                  isDarkCard
+                    ? "bg-[#101114] text-white border border-[#101114]"
+                    : "bg-[#FFFFFF] text-[#101114] border border-[#101114]/14"
+                }`}
+              >
+                {/* Watermark Text Background */}
+                <span
+                  aria-hidden="true"
+                  className={`absolute -right-4 -bottom-6 text-8xl md:text-9xl font-black tracking-widest pointer-events-none select-none ${
+                    isDarkCard ? "text-white/5" : "text-[#101114]/4"
+                  }`}
+                >
+                  {watermark}
+                </span>
+
+                <div className="relative z-10 grid gap-8 lg:grid-cols-12 lg:gap-10">
+                  {/* Left Column: Number & Service Title */}
+                  <div className="lg:col-span-4 border-b pb-6 lg:border-b-0 lg:pb-0 lg:border-r lg:pr-8 border-current/16">
+                    <span className={`text-xs font-bold tracking-widest uppercase ${
+                      isDarkCard ? "text-white/50" : "text-[#101114]/40"
+                    }`}>
+                      0{index + 1}
+                    </span>
+                    <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+                      {item.title}
+                    </h3>
+                  </div>
+
+                  {/* Right 3 Sub-columns */}
+                  <div className="grid gap-6 sm:grid-cols-3 lg:col-span-8">
+                    {(Object.keys(serviceLabels) as Array<keyof typeof serviceLabels>).map(
+                      (key) => (
+                        <div
+                          key={key}
+                          className={`rounded-xl p-5 ${
+                            key === "businessOutcome"
+                              ? isDarkCard
+                                ? "bg-white/10 border border-white/15"
+                                : "bg-[#F3F3EF] border border-[#101114]/12"
+                              : ""
+                          }`}
+                        >
+                          <p className="text-xs font-bold uppercase tracking-wider opacity-60">
+                            {serviceLabels[key]}
+                          </p>
+                          <p className="mt-3 text-base leading-relaxed opacity-90 font-medium">
+                            {item[key]}
+                          </p>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
 
-        <a href="#contact" className="button-primary mt-10 inline-flex">
-          {content.cta}
-        </a>
+        <div className="mt-12 text-center md:text-left">
+          <a
+            href="#contact"
+            className="inline-flex h-14 items-center justify-center rounded-full bg-[#101114] px-9 text-base font-semibold text-[#FFFFFF] hover:bg-[#000000] hover:scale-105 active:scale-95 transition-all shadow-lg"
+          >
+            {content.cta}
+          </a>
+        </div>
       </SectionContainer>
     </section>
   );

@@ -10,65 +10,115 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="py-section-mobile md:py-section-desktop xl:py-section-wide"
+      className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]"
     >
       <SectionContainer>
         <SectionHeading
           title={content.title}
           description={content.description}
+          lightTheme
         />
-        <div className="mt-14 grid items-stretch gap-5 md:mt-20 lg:grid-cols-3">
-          {items.map((item) => (
-            <article
-              key={item.id}
-              className={`pricing-card grid min-w-0 grid-rows-[auto_auto_auto_1fr_auto] p-7 md:p-8 ${item.featured ? "pricing-card-featured" : ""}`}
-            >
-              <h3 className="text-2xl font-semibold tracking-[-0.025em]">
-                {item.title}
-              </h3>
-              <p className="mt-5 text-4xl font-semibold tracking-[-0.04em] text-blue-deep">
-                {item.price}
-              </p>
-              <p className="mt-5 leading-relaxed text-text-secondary">
-                {item.description}
-              </p>
-              <div className="mt-9 space-y-3">
-                {item.included.map((line) => (
-                  <p
-                    key={line}
-                    className="flex gap-3 leading-relaxed text-text-secondary"
+        <div className="mt-14 grid items-stretch gap-6 md:mt-20 lg:grid-cols-3">
+          {items.map((item) => {
+            const isFeatured = item.featured;
+
+            return (
+              <article
+                key={item.id}
+                className={`flex flex-col justify-between rounded-[16px] p-8 transition-all duration-300 ${
+                  isFeatured
+                    ? "border border-[#101114] bg-[#101114] text-white shadow-2xl lg:-translate-y-6"
+                    : "border border-[#101114]/14 bg-[#FFFFFF] text-[#101114] shadow-sm hover:border-[#101114]/30 hover:-translate-y-1"
+                }`}
+              >
+                <div>
+                  {isFeatured && (
+                    <span className="inline-block rounded-full bg-white/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-white border border-white/20 mb-6">
+                      Популярный выбор
+                    </span>
+                  )}
+
+                  <h3
+                    className={`text-2xl font-bold tracking-tight ${
+                      isFeatured ? "text-white" : "text-[#101114]"
+                    }`}
                   >
-                    <CheckIcon
-                      aria-hidden
-                      size={19}
-                      weight="bold"
-                      className="mt-1 shrink-0 text-cyan"
-                    />
-                    <span>{line}</span>
+                    {item.title}
+                  </h3>
+
+                  <p
+                    className={`mt-4 text-4xl font-extrabold tracking-tight ${
+                      isFeatured ? "text-white" : "text-[#101114]"
+                    }`}
+                  >
+                    {item.price}
                   </p>
-                ))}
-                {item.optional?.length ? (
-                  <div className="mt-7 rounded-card bg-surface-blue p-5">
-                    <p className="font-semibold text-text-primary">Опционально</p>
-                    {item.optional.map((line) => (
+
+                  <p
+                    className={`mt-4 leading-relaxed ${
+                      isFeatured ? "text-white/70" : "text-[#101114]/75"
+                    }`}
+                  >
+                    {item.description}
+                  </p>
+
+                  <div className="mt-8 space-y-3.5 border-t pt-6 border-current/12">
+                    {item.included.map((line) => (
                       <p
                         key={line}
-                        className="mt-2 text-sm leading-relaxed text-text-secondary"
+                        className={`flex gap-3 leading-relaxed text-sm ${
+                          isFeatured ? "text-white/85" : "text-[#101114]/85"
+                        }`}
                       >
-                        {line}
+                        <CheckIcon
+                          aria-hidden
+                          size={18}
+                          weight="bold"
+                          className={`mt-0.5 shrink-0 ${
+                            isFeatured ? "text-white" : "text-[#101114]"
+                          }`}
+                        />
+                        <span>{line}</span>
                       </p>
                     ))}
+
+                    {item.optional?.length ? (
+                      <div
+                        className={`mt-6 rounded-xl p-4 text-xs ${
+                          isFeatured
+                            ? "border border-white/15 bg-white/5 text-white"
+                            : "border border-[#101114]/12 bg-[#F3F3EF] text-[#101114]"
+                        }`}
+                      >
+                        <p className="font-bold uppercase tracking-wider mb-2">Опционально</p>
+                        {item.optional.map((line) => (
+                          <p
+                            key={line}
+                            className={`mt-1 leading-relaxed ${
+                              isFeatured ? "text-white/70" : "text-[#101114]/70"
+                            }`}
+                          >
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
-                ) : null}
-              </div>
-              <a
-                href="#contact"
-                className="button-primary mt-9 inline-flex justify-center"
-              >
-                {content.cta}
-              </a>
-            </article>
-          ))}
+                </div>
+
+                <a
+                  href="#contact"
+                  className={`mt-10 flex h-13 w-full items-center justify-center rounded-full font-semibold transition-all duration-200 ${
+                    isFeatured
+                      ? "bg-white text-[#101114] hover:bg-[#F3F3EF] hover:scale-105 active:scale-95 shadow-md"
+                      : "border border-[#101114] bg-[#101114] text-white hover:bg-black hover:scale-105 active:scale-95 shadow-sm"
+                  }`}
+                >
+                  {content.cta}
+                </a>
+              </article>
+            );
+          })}
         </div>
       </SectionContainer>
     </section>
