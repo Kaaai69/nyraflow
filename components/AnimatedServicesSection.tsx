@@ -66,28 +66,26 @@ export default function AnimatedServicesSection() {
     <section
       ref={sectionRef}
       id="animated-services-section"
-      className="relative flex min-h-[55vh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none py-20"
+      className="relative flex min-h-[50vh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none py-24"
     >
-      <div className="mx-auto flex w-full max-w-site flex-col justify-center px-4 sm:px-6 md:px-8">
-        <div className="flex flex-col items-center justify-center gap-2 sm:flex-row sm:items-baseline sm:justify-center sm:gap-4 md:gap-6 text-center sm:text-left">
-          {/* Static Phrase: Мы создаём */}
-          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap leading-none">
+      <div className="mx-auto flex w-full max-w-site flex-col justify-center px-6">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center md:text-left">
+          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap">
             Мы создаём
           </span>
 
-          {/* Vertical Sliding Reel */}
-          <div className="relative h-[1.35em] overflow-hidden flex items-center justify-center sm:justify-start min-w-[240px] sm:min-w-[320px] md:min-w-[440px]">
+          <div className="inline-flex items-center">
             <AnimatePresence mode="wait">
               <motion.span
                 key={SERVICES[currentIndex]}
-                initial={{ y: "100%", opacity: 0 }}
-                animate={{ y: "0%", opacity: 1 }}
-                exit={{ y: "-100%", opacity: 0 }}
+                initial={{ y: 25, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -25, opacity: 0 }}
                 transition={{
-                  duration: 0.55,
+                  duration: 0.5,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap block leading-none"
+                className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap block"
               >
                 {SERVICES[currentIndex]}
               </motion.span>

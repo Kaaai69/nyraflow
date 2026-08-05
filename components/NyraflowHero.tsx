@@ -3,6 +3,64 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+function LetterStaggerText({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const letters = Array.from(text);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: (i = 1) => ({
+      opacity: 1,
+      transition: { staggerChildren: 0.03, delayChildren: 0.04 * i },
+    }),
+    exit: {
+      opacity: 0,
+      y: -10,
+      filter: "blur(4px)",
+      transition: { duration: 0.3 },
+    },
+  };
+
+  const childVariants = {
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: {
+        type: "spring",
+        damping: 14,
+        stiffness: 100,
+      },
+    },
+    hidden: {
+      opacity: 0,
+      y: 12,
+      filter: "blur(4px)",
+    },
+  };
+
+  return (
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className={`inline-flex flex-wrap justify-center ${className}`}
+    >
+      {letters.map((letter, index) => (
+        <motion.span variants={childVariants} key={index}>
+          {letter === " " ? "\u00A0" : letter}
+        </motion.span>
+      ))}
+    </motion.div>
+  );
+}
+
 export default function NyraflowHero() {
   const [sceneIndex, setSceneIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -28,10 +86,10 @@ export default function NyraflowHero() {
       1300, // 0: Мы —
       1600, // 1: Мы — больше, чем веб-студия
       1800, // 2: Создаём цифровые системы для бизнеса
-      1400, // 3: Websites
-      1500, // 4: Automations (White Panel)
-      1400, // 5: Integrations
-      1500, // 6: Telegram Apps (White Panel)
+      1500, // 3: Websites (Black background, white panel/card)
+      1500, // 4: Automations (White Panel, dark text)
+      1500, // 5: Integrations (Black background, white text)
+      1500, // 6: Telegram Apps (White Panel, dark text)
       1800, // 7: Единая экосистема / Созданная вокруг задач вашего бизнеса
       3800, // 8: nyraflow Final Brand Scene + CTA button
       1200, // 9: Fade out reset transition
@@ -105,33 +163,23 @@ export default function NyraflowHero() {
         <AnimatePresence mode="wait">
           {/* Scene 0: Мы — */}
           {sceneIndex === 0 && (
-            <motion.div
+            <LetterStaggerText
               key="scene-0"
-              initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              text="Мы —"
               className="text-display font-medium tracking-tight text-white/80"
-            >
-              Мы —
-            </motion.div>
+            />
           )}
 
           {/* Scene 1: Мы — больше, чем веб-студия */}
           {sceneIndex === 1 && (
-            <motion.div
+            <LetterStaggerText
               key="scene-1"
-              initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              text="Мы — больше, чем веб-студия"
               className="text-display font-semibold tracking-tight text-white"
-            >
-              Мы — больше, чем веб-студия
-            </motion.div>
+            />
           )}
 
-          {/* Scene 2: Разрабатываем цифровые системы для бизнеса */}
+          {/* Scene 2: Создаём цифровые системы для бизнеса */}
           {sceneIndex === 2 && (
             <motion.div
               key="scene-2"
@@ -144,27 +192,31 @@ export default function NyraflowHero() {
               <div className="text-2xl font-medium text-white/60 md:text-3xl lg:text-4xl">
                 Мы — больше, чем веб-студия
               </div>
-              <div className="text-3xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl">
-                Создаём цифровые системы для бизнеса
-              </div>
+              <LetterStaggerText
+                text="Создаём цифровые системы для бизнеса"
+                className="text-3xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl"
+              />
             </motion.div>
           )}
 
-          {/* Scene 3: Websites */}
+          {/* Scene 3: Websites (Black background, white text) */}
           {sceneIndex === 3 && (
             <motion.div
               key="scene-3"
-              initial={{ opacity: 0, scale: 0.96 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.04 }}
+              exit={{ opacity: 0, scale: 1.05 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="text-5xl font-bold tracking-tight text-white md:text-7xl lg:text-8xl"
+              className="inline-flex flex-col items-center justify-center rounded-2xl border border-white/20 bg-black/80 px-12 py-16 text-white shadow-2xl md:px-20 md:py-24"
             >
-              Websites
+              <LetterStaggerText
+                text="Websites"
+                className="text-5xl font-bold tracking-tight md:text-7xl lg:text-8xl"
+              />
             </motion.div>
           )}
 
-          {/* Scene 4: Automations (White Vertical Panel) */}
+          {/* Scene 4: Automations (White Vertical Panel, dark text) */}
           {sceneIndex === 4 && (
             <motion.div
               key="scene-4"
@@ -174,27 +226,31 @@ export default function NyraflowHero() {
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="inline-flex flex-col items-center justify-center rounded-2xl bg-[#F5F5F2] px-12 py-16 text-[#101114] shadow-2xl md:px-20 md:py-24"
             >
-              <span className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-                Automations
-              </span>
+              <LetterStaggerText
+                text="Automations"
+                className="text-4xl font-bold tracking-tight text-[#101114] md:text-6xl lg:text-7xl"
+              />
             </motion.div>
           )}
 
-          {/* Scene 5: Integrations */}
+          {/* Scene 5: Integrations (Black background, white text) */}
           {sceneIndex === 5 && (
             <motion.div
               key="scene-5"
-              initial={{ opacity: 0, scale: 0.96 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.04 }}
+              exit={{ opacity: 0, scale: 1.05 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="text-5xl font-bold tracking-tight text-white md:text-7xl lg:text-8xl"
+              className="inline-flex flex-col items-center justify-center rounded-2xl border border-white/20 bg-black/80 px-12 py-16 text-white shadow-2xl md:px-20 md:py-24"
             >
-              Integrations
+              <LetterStaggerText
+                text="Integrations"
+                className="text-5xl font-bold tracking-tight md:text-7xl lg:text-8xl"
+              />
             </motion.div>
           )}
 
-          {/* Scene 6: Telegram Apps (White Vertical Panel) */}
+          {/* Scene 6: Telegram Apps (White Vertical Panel, dark text) */}
           {sceneIndex === 6 && (
             <motion.div
               key="scene-6"
@@ -204,9 +260,10 @@ export default function NyraflowHero() {
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="inline-flex flex-col items-center justify-center rounded-2xl bg-[#F5F5F2] px-10 py-16 text-[#101114] shadow-2xl md:px-16 md:py-24"
             >
-              <span className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-                Telegram Apps
-              </span>
+              <LetterStaggerText
+                text="Telegram Apps"
+                className="text-4xl font-bold tracking-tight text-[#101114] md:text-6xl lg:text-7xl"
+              />
             </motion.div>
           )}
 
@@ -220,9 +277,10 @@ export default function NyraflowHero() {
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="space-y-4"
             >
-              <div className="text-3xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl">
-                Единая экосистема
-              </div>
+              <LetterStaggerText
+                text="Единая экосистема"
+                className="text-3xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl"
+              />
               <div className="text-xl font-normal text-white/70 md:text-3xl">
                 Созданная вокруг задач вашего бизнеса
               </div>
