@@ -14,7 +14,7 @@ function LetterStaggerText({
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: (i = 1) => ({
+    visible: (i: number = 1) => ({
       opacity: 1,
       transition: { staggerChildren: 0.03, delayChildren: 0.04 * i },
     }),
