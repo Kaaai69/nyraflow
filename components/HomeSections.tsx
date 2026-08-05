@@ -19,9 +19,9 @@ export default function HomeSections() {
       <ProblemSection />
       <MetricsSection />
       <WorkSection />
-      <StarterSection />
       <ServicesSection />
       <AnimatedServicesSection />
+      <StarterSection />
       <PricingSection />
       <TeamSection />
       <ProcessSection />

@@ -24,21 +24,20 @@ export default function NyraflowHero() {
   useEffect(() => {
     if (prefersReducedMotion || isPaused) return;
 
-    // Durations for each scene in milliseconds
     const sceneDurations = [
-      1200, // 0: We are
-      1500, // 1: We are more than a web studio
-      1600, // 2: We build digital systems for business
+      1300, // 0: Мы —
+      1600, // 1: Мы — больше, чем веб-студия
+      1800, // 2: Создаём цифровые системы для бизнеса
       1400, // 3: Websites
       1500, // 4: Automations (White Panel)
       1400, // 5: Integrations
       1500, // 6: Telegram Apps (White Panel)
-      1800, // 7: One connected system / Built around your business
-      3500, // 8: NYRAFLOW Final Brand Scene + CTA button
-      1200, // 9: Fade out transition
+      1800, // 7: Единая связная система / Созданная вокруг вашего бизнеса
+      3800, // 8: NYRAFLOW Final Brand Scene + CTA button
+      1200, // 9: Fade out reset transition
     ];
 
-    const currentDuration = sceneDurations[sceneIndex] || 1500;
+    const currentDuration = sceneDurations[sceneIndex] || 1600;
 
     const timer = setTimeout(() => {
       setSceneIndex((prev) => (prev + 1) % sceneDurations.length);
@@ -47,7 +46,6 @@ export default function NyraflowHero() {
     return () => clearTimeout(timer);
   }, [sceneIndex, isPaused, prefersReducedMotion]);
 
-  // Pause when scrolled out of view or tab inactive
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -61,11 +59,7 @@ export default function NyraflowHero() {
     }
 
     const handleVisibilityChange = () => {
-      if (document.hidden) {
-        setIsPaused(true);
-      } else {
-        setIsPaused(false);
-      }
+      setIsPaused(document.hidden);
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -87,14 +81,14 @@ export default function NyraflowHero() {
             NYRAFLOW
           </h1>
           <p className="mt-4 text-xl text-white/70 md:text-2xl">
-            Websites, automations, integrations and Telegram apps for business
+            Websites, automations, integrations и Telegram apps для вашего бизнеса
           </p>
           <div className="mt-8">
             <a
               href="#contact"
               className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 font-semibold text-[#000000] hover:bg-white/90"
             >
-              Start a project
+              Начать проект
             </a>
           </div>
         </div>
@@ -109,7 +103,7 @@ export default function NyraflowHero() {
     >
       <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center justify-center px-6 text-center">
         <AnimatePresence mode="wait">
-          {/* Scene 0: We are */}
+          {/* Scene 0: Мы — */}
           {sceneIndex === 0 && (
             <motion.div
               key="scene-0"
@@ -119,11 +113,11 @@ export default function NyraflowHero() {
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="text-display font-medium tracking-tight text-white/80"
             >
-              We are
+              Мы —
             </motion.div>
           )}
 
-          {/* Scene 1: We are more than a web studio */}
+          {/* Scene 1: Мы — больше, чем веб-студия */}
           {sceneIndex === 1 && (
             <motion.div
               key="scene-1"
@@ -133,11 +127,11 @@ export default function NyraflowHero() {
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="text-display font-semibold tracking-tight text-white"
             >
-              We are more than a web studio
+              Мы — больше, чем веб-студия
             </motion.div>
           )}
 
-          {/* Scene 2: We build digital systems for business */}
+          {/* Scene 2: Разрабатываем цифровые системы для бизнеса */}
           {sceneIndex === 2 && (
             <motion.div
               key="scene-2"
@@ -148,10 +142,10 @@ export default function NyraflowHero() {
               className="space-y-4"
             >
               <div className="text-2xl font-medium text-white/60 md:text-3xl lg:text-4xl">
-                We are more than a web studio
+                Мы — больше, чем веб-студия
               </div>
               <div className="text-3xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl">
-                We build digital systems for business
+                Создаём цифровые системы для бизнеса
               </div>
             </motion.div>
           )}
@@ -216,7 +210,7 @@ export default function NyraflowHero() {
             </motion.div>
           )}
 
-          {/* Scene 7: One connected system / Built around your business */}
+          {/* Scene 7: Единая связная система / Созданная вокруг вашего бизнеса */}
           {sceneIndex === 7 && (
             <motion.div
               key="scene-7"
@@ -227,15 +221,15 @@ export default function NyraflowHero() {
               className="space-y-4"
             >
               <div className="text-3xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl">
-                One connected system
+                Единая экосистема
               </div>
               <div className="text-xl font-normal text-white/70 md:text-3xl">
-                Built around your business
+                Созданная вокруг задач вашего бизнеса
               </div>
             </motion.div>
           )}
 
-          {/* Scene 8: Final Brand Scene */}
+          {/* Scene 8: Final Brand Scene NYRAFLOW */}
           {sceneIndex === 8 && (
             <motion.div
               key="scene-8"
@@ -249,20 +243,20 @@ export default function NyraflowHero() {
                 NYRAFLOW
               </div>
               <p className="text-lg font-medium text-white/75 md:text-2xl">
-                Digital systems built for business
+                Цифровые решения и системы для роста бизнеса
               </p>
               <div className="pt-4">
                 <a
                   href="#contact"
                   className="inline-flex h-14 items-center justify-center rounded-full bg-white px-9 text-base font-semibold text-[#000000] shadow-[0_0_30px_rgba(255,255,255,0.25)] transition-all hover:bg-white/90 hover:scale-105 active:scale-95"
                 >
-                  Start a project
+                  Начать проект
                 </a>
               </div>
             </motion.div>
           )}
 
-          {/* Scene 9: Blank / Smooth Reset Transition */}
+          {/* Scene 9: Blank / Reset */}
           {sceneIndex === 9 && (
             <motion.div
               key="scene-9"
@@ -276,9 +270,9 @@ export default function NyraflowHero() {
         </AnimatePresence>
       </div>
 
-      {/* Accessible h1 for SEO */}
+      {/* Accessible h1 */}
       <h1 className="sr-only">
-        Websites, automations, integrations and Telegram apps for business
+        NYRAFLOW — Сайты, автоматизации, интеграции и Telegram приложения для бизнеса
       </h1>
     </section>
   );

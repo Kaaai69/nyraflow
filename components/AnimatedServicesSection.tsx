@@ -66,28 +66,28 @@ export default function AnimatedServicesSection() {
     <section
       ref={sectionRef}
       id="animated-services-section"
-      className="relative flex min-h-[75vh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none border-y border-white/10"
+      className="relative flex min-h-[60vh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none py-16"
     >
       <div className="mx-auto flex w-full max-w-site flex-col justify-center px-gutter-mobile md:px-gutter-tablet xl:px-gutter-desktop">
-        <div className="flex flex-col items-center justify-center gap-3 md:flex-row md:items-baseline md:gap-6 text-center md:text-left">
-          {/* Static Phrase */}
-          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] md:text-6xl lg:text-7xl shrink-0">
+        <div className="flex flex-col items-center justify-center gap-2 md:flex-row md:items-baseline md:gap-5 text-center md:text-left">
+          {/* Static Phrase: Мы создаём */}
+          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] md:text-6xl lg:text-7xl shrink-0 leading-tight">
             Мы создаём
           </span>
 
-          {/* Vertically Sliding Services Tape */}
-          <div className="relative h-20 min-w-[280px] sm:min-w-[360px] md:min-w-[440px] overflow-hidden flex items-center justify-center md:justify-start">
-            <AnimatePresence mode="wait">
+          {/* Vertical Reel Scroll Area */}
+          <div className="relative h-[1.3em] min-w-[280px] sm:min-w-[360px] md:min-w-[460px] overflow-hidden flex items-baseline justify-center md:justify-start">
+            <AnimatePresence mode="popLayout" initial={false}>
               <motion.span
                 key={SERVICES[currentIndex]}
-                initial={{ y: 50, opacity: 0, filter: "blur(4px)" }}
-                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                exit={{ y: -50, opacity: 0, filter: "blur(4px)" }}
+                initial={{ y: "100%", opacity: 0, filter: "blur(4px)" }}
+                animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
+                exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
                 transition={{
-                  duration: 0.6,
+                  duration: 0.65,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="absolute text-4xl font-semibold tracking-tight text-[#38BDF8] md:text-6xl lg:text-7xl whitespace-nowrap"
+                className="text-4xl font-semibold tracking-tight text-[#FFFFFF] md:text-6xl lg:text-7xl whitespace-nowrap leading-tight"
               >
                 {SERVICES[currentIndex]}
               </motion.span>
