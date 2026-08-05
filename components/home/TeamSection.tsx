@@ -7,7 +7,7 @@ export default function TeamSection() {
   const content = homeContent.team;
   const originalItems = content.items;
 
-  // Reorder so Федор (Founder) is in the center position (#2)
+  // Reorder so Федор (Founder) is in the center position (#2) and staggered higher
   const fedor = originalItems.find((m) => m.name === "Федор") ?? originalItems[0];
   const arseny = originalItems.find((m) => m.name === "Арсений") ?? originalItems[1];
   const artem = originalItems.find((m) => m.name === "Артём") ?? originalItems[2];
@@ -30,13 +30,17 @@ export default function TeamSection() {
           </p>
         </header>
 
-        {/* Right Column: 3 Portrait Cards with Fedor in Center */}
+        {/* Right Column: 3 Portrait Cards with Fedor in Center & Staggered Higher */}
         <div className="grid min-w-0 gap-6 sm:grid-cols-3 lg:col-span-7 items-stretch">
           {teamMembers.map((member, index) => {
+            const isCenter = index === 1;
+
             return (
               <article
                 key={member.id}
-                className="min-w-0 group rounded-[16px] border border-white/13 bg-[#151515] overflow-hidden shadow-xl transition-all duration-300 hover:border-white/30 hover:-translate-y-1 flex flex-col justify-between"
+                className={`min-w-0 group rounded-[16px] border border-white/13 bg-[#151515] overflow-hidden shadow-xl transition-all duration-300 hover:border-white/30 hover:-translate-y-1 flex flex-col justify-between ${
+                  isCenter ? "md:-translate-y-6" : ""
+                }`}
               >
                 <div className="aspect-[4/5] overflow-hidden bg-[#000000] relative">
                   <Image
@@ -44,9 +48,6 @@ export default function TeamSection() {
                     sizes="(max-width: 767px) 100vw, (max-width: 1024px) 33vw, 300px"
                     className="h-full w-full object-cover filter grayscale contrast-[1.04] transition-transform duration-500 group-hover:scale-105 group-hover:grayscale-0"
                   />
-                  <span className="absolute top-3 left-3 rounded-full bg-black/70 backdrop-blur-md px-3 py-1 text-xs font-bold text-white/80 border border-white/20">
-                    0{index + 1}
-                  </span>
                 </div>
                 <div className="p-5 border-t border-white/10">
                   <h3 className="text-lg font-bold tracking-tight text-white">

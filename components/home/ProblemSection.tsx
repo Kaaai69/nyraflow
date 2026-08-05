@@ -9,20 +9,13 @@ export default function ProblemSection() {
     <section id="problem" className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]">
       <SectionContainer>
         {/* Top Header Composition */}
-        <header className="grid gap-6 lg:grid-cols-12 lg:items-end border-b border-[#101114]/12 pb-12">
-          <div className="lg:col-span-7">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#101114]/50">
-              Бизнес-контекст
-            </span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#101114] sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
-              {content.title}
-            </h2>
-          </div>
-          <div className="lg:col-span-5 lg:pl-6">
-            <p className="text-lg leading-relaxed text-[#101114]/75 md:text-xl">
-              {content.description}
-            </p>
-          </div>
+        <header className="border-b border-[#101114]/12 pb-10">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#101114]/50">
+            Бизнес-контекст
+          </span>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#101114] sm:text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl">
+            {content.title}
+          </h2>
         </header>
 
         {/* 3 Asymmetric Problem Cards */}
