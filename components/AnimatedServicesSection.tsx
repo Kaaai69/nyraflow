@@ -68,24 +68,26 @@ export default function AnimatedServicesSection() {
       id="animated-services-section"
       className="relative flex min-h-[50vh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none py-24"
     >
-      <div className="mx-auto flex w-full max-w-site flex-col justify-center px-6">
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center md:text-left">
-          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-start justify-center px-8 md:px-16">
+        <div className="relative flex w-full items-baseline justify-start gap-4 md:gap-6">
+          {/* STATIC PHRASE - 100% FIXED POSITION */}
+          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap leading-none">
             Мы создаём
           </span>
 
-          <div className="inline-flex items-center">
+          {/* DYNAMIC WORD - ANIMATES SMOOTHLY IN FIXED ABSOLUTE CONTAINER */}
+          <div className="relative flex-1 h-[1.3em] overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.span
                 key={SERVICES[currentIndex]}
-                initial={{ y: 25, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -25, opacity: 0 }}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: "0%", opacity: 1 }}
+                exit={{ y: "-100%", opacity: 0 }}
                 transition={{
-                  duration: 0.5,
+                  duration: 0.55,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap block"
+                className="absolute left-0 top-0 text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap leading-none"
               >
                 {SERVICES[currentIndex]}
               </motion.span>
