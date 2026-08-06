@@ -44,14 +44,18 @@ export default function ContactSection() {
       });
 
       if (!response.ok) {
-        console.warn("Contact submission response:", response.status);
+        throw new Error(`status ${response.status}`);
       }
 
       setStatus("success");
       form.reset();
     } catch {
-      setStatus("success");
-      form.reset();
+      // Никогда не показываем успех при неудачной отправке: иначе заявка
+      // молча теряется, а посетитель уверен, что мы её получили.
+      setStatus("error");
+      setErrorMessage(
+        "Не удалось отправить заявку. Попробуйте ещё раз или напишите нам в Telegram.",
+      );
     }
   }
 
@@ -165,10 +169,10 @@ export default function ContactSection() {
                     Заявка отправлена — свяжемся с вами в ближайшее время.
                   </span>
                 ) : status === "error" ? (
-                  <span className="text-white/90">{errorMessage}</span>
+                  <span className="font-semibold text-[#FF6B6B]">{errorMessage}</span>
                 ) : (
                   <span className="text-white/60">
-                    Ообычно отвечаем в течение рабочего дня.
+                    Обычно отвечаем в течение рабочего дня.
                   </span>
                 )}
               </p>
