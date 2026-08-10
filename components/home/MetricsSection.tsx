@@ -7,13 +7,12 @@ export default function MetricsSection() {
   return (
     <section
       id="metrics"
-      data-theme="light"
       aria-label="Опыт и результаты"
-      className="pb-section-mobile md:pb-section-desktop bg-transparent text-[#101114]"
+      className="pb-section-mobile md:pb-section-desktop bg-transparent text-[#FFFFFF]"
     >
       <SectionContainer>
         {/* Large Visual Dark Container Block */}
-        <div className="relative overflow-hidden rounded-[22px] border border-white/14 bg-[#0B0B0B]/85 backdrop-blur-md p-8 md:p-10 lg:p-12 text-white shadow-2xl">
+        <div className="relative overflow-hidden rounded-[22px] border border-white/14 bg-[#151515]/75 backdrop-blur-md p-8 md:p-10 lg:p-12 text-white shadow-2xl">
           {/* Subtle Grid Overlay Background */}
           <div
             className="absolute inset-0 opacity-10 pointer-events-none"

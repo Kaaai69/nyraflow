@@ -19,37 +19,28 @@ export default function ServicesSection() {
 
         <div className="mt-14 space-y-8 md:mt-16">
           {content.items.map((item, index) => {
-            const isDarkCard = index === 1;
             const watermark = watermarks[index] ?? "FLOW";
 
             return (
               <article
                 key={item.id}
-                className={`relative overflow-hidden rounded-[20px] p-8 md:p-12 transition-all duration-300 shadow-md backdrop-blur-md ${
-                  isDarkCard
-                    ? "bg-[#101114]/90 text-white border border-[#101114]"
-                    : "bg-[#FFFFFF]/80 text-[#101114] border border-[#101114]/14"
-                }`}
+                className="relative overflow-hidden rounded-[20px] p-8 md:p-12 transition-all duration-300 shadow-sm backdrop-blur-md bg-[#FFFFFF]/80 text-[#101114] border border-[#101114]/14 hover:bg-[#FFFFFF]/95 hover:border-[#101114]/30"
               >
                 {/* Watermark Text Background */}
                 <span
                   aria-hidden="true"
-                  className={`absolute -right-4 -bottom-6 text-8xl md:text-9xl font-black tracking-widest pointer-events-none select-none ${
-                    isDarkCard ? "text-white/5" : "text-[#101114]/4"
-                  }`}
+                  className="absolute -right-4 -bottom-6 text-8xl md:text-9xl font-black tracking-widest pointer-events-none select-none text-[#101114]/4"
                 >
                   {watermark}
                 </span>
 
                 <div className="relative z-10 grid gap-8 lg:grid-cols-12 lg:gap-10">
                   {/* Left Column: Number & Service Title */}
-                  <div className="lg:col-span-4 border-b pb-6 lg:border-b-0 lg:pb-0 lg:border-r lg:pr-8 border-current/16">
-                    <span className={`text-xs font-bold tracking-widest uppercase ${
-                      isDarkCard ? "text-white/50" : "text-[#101114]/40"
-                    }`}>
+                  <div className="lg:col-span-4 border-b pb-6 lg:border-b-0 lg:pb-0 lg:border-r lg:pr-8 border-[#101114]/16">
+                    <span className="text-xs font-bold tracking-widest uppercase text-[#101114]/40">
                       0{index + 1}
                     </span>
-                    <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+                    <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl text-[#101114]">
                       {item.title}
                     </h3>
                   </div>
@@ -62,9 +53,7 @@ export default function ServicesSection() {
                           key={key}
                           className={`rounded-xl p-5 ${
                             key === "businessOutcome"
-                              ? isDarkCard
-                                ? "bg-white/10 border border-white/15"
-                                : "bg-[#F3F3EF] border border-[#101114]/12"
+                              ? "bg-[#F3F2ED] border border-[#101114]/12"
                               : ""
                           }`}
                         >
