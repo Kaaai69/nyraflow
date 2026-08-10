@@ -15,20 +15,20 @@ export default function FaqAccordion({
   return (
     <div className="grid gap-x-16 gap-y-0 grid-cols-1 lg:grid-cols-2 items-start">
       {/* Left Column Container */}
-      <div className="divide-y divide-[#101114]/16 border-t border-b border-[#101114]/16">
+      <div className="divide-y divide-white/14 border-t border-b border-white/14">
         {leftColumn.map((item) => (
           <details key={item.id} className="faq-details group">
-            <summary className="faq-trigger flex w-full items-center justify-between gap-4 py-6 text-left text-base md:text-lg font-bold leading-snug text-[#101114] transition-colors hover:text-[#000000]">
+            <summary className="faq-trigger flex w-full items-center justify-between gap-4 py-6 text-left text-base md:text-lg font-bold leading-snug text-white transition-colors hover:text-white/80 cursor-pointer">
               <span className="pr-2">{item.question}</span>
               <CaretDownIcon
                 aria-hidden
                 size={20}
                 weight="bold"
-                className="faq-indicator mt-0.5 shrink-0 text-[#101114]"
+                className="faq-indicator mt-0.5 shrink-0 text-white"
               />
             </summary>
             <div className="faq-panel">
-              <p className="pb-6 pr-6 text-sm md:text-base leading-relaxed text-[#101114]/75">
+              <p className="pb-6 pr-6 text-sm md:text-base leading-relaxed text-white/75">
                 {item.answer}
               </p>
             </div>
@@ -37,20 +37,20 @@ export default function FaqAccordion({
       </div>
 
       {/* Right Column Container */}
-      <div className="divide-y divide-[#101114]/16 border-t border-b border-[#101114]/16 mt-0">
+      <div className="divide-y divide-white/14 border-t border-b border-white/14 mt-0">
         {rightColumn.map((item) => (
           <details key={item.id} className="faq-details group">
-            <summary className="faq-trigger flex w-full items-center justify-between gap-4 py-6 text-left text-base md:text-lg font-bold leading-snug text-[#101114] transition-colors hover:text-[#000000]">
+            <summary className="faq-trigger flex w-full items-center justify-between gap-4 py-6 text-left text-base md:text-lg font-bold leading-snug text-white transition-colors hover:text-white/80 cursor-pointer">
               <span className="pr-2">{item.question}</span>
               <CaretDownIcon
                 aria-hidden
                 size={20}
                 weight="bold"
-                className="faq-indicator mt-0.5 shrink-0 text-[#101114]"
+                className="faq-indicator mt-0.5 shrink-0 text-white"
               />
             </summary>
             <div className="faq-panel">
-              <p className="pb-6 pr-6 text-sm md:text-base leading-relaxed text-[#101114]/75">
+              <p className="pb-6 pr-6 text-sm md:text-base leading-relaxed text-white/75">
                 {item.answer}
               </p>
             </div>

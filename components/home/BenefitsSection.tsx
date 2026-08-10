@@ -19,30 +19,30 @@ export default function BenefitsSection() {
   const content = homeContent.benefits;
 
   return (
-    <section id="benefits" data-theme="light" className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]">
+    <section id="benefits" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
       <SectionContainer>
-        <header className="border-b border-[#101114]/12 pb-8">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#101114]/50">
+        <header className="border-b border-white/14 pb-8">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/50">
             {content.eyebrow}
           </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#101114] sm:text-4xl md:text-5xl">
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
             {content.title}
           </h2>
         </header>
 
-        {/* 2x2 Grid with 1 Inverted Dark Card (#101114) */}
+        {/* 2x2 Grid with 1 Inverted Dark Card */}
         <div className="mt-12 grid gap-6 md:grid-cols-2 md:gap-8">
           {content.items.map((item, index) => {
             const Icon = benefitIcons[item.icon];
-            const isInverted = index === 2; // Card 3 is inverted dark
+            const isHighlight = index === 2;
 
             return (
               <article
                 key={item.id}
-                className={`flex flex-col justify-between rounded-[16px] p-8 shadow-sm transition-all duration-300 backdrop-blur-md hover:-translate-y-1 ${
-                  isInverted
-                    ? "bg-[#101114]/90 text-white border border-[#101114]"
-                    : "bg-[#FFFFFF]/80 text-[#101114] border border-[#101114]/14 hover:border-[#101114]/30 hover:bg-[#FFFFFF]/95"
+                className={`flex flex-col justify-between rounded-[16px] p-8 shadow-2xl transition-all duration-300 backdrop-blur-md hover:-translate-y-1 ${
+                  isHighlight
+                    ? "bg-[#202227]/90 text-white border border-white/20"
+                    : "bg-[#151515]/75 text-white border border-white/14 hover:border-white/30 hover:bg-[#151515]/90"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -50,23 +50,17 @@ export default function BenefitsSection() {
                     aria-hidden
                     size={32}
                     weight="regular"
-                    className={`shrink-0 ${isInverted ? "text-white" : "text-[#101114]"}`}
+                    className="shrink-0 text-white"
                   />
-                  <span className={`text-xs font-bold tracking-widest uppercase ${
-                    isInverted ? "text-white/50" : "text-[#101114]/40"
-                  }`}>
+                  <span className="text-xs font-bold tracking-widest uppercase text-white/50">
                     0{index + 1}
                   </span>
                 </div>
                 <div className="mt-8">
-                  <h3 className={`text-xl font-bold leading-tight ${
-                    isInverted ? "text-white" : "text-[#101114]"
-                  }`}>
+                  <h3 className="text-xl font-bold leading-tight text-white">
                     {item.title}
                   </h3>
-                  <p className={`mt-3 text-base leading-relaxed ${
-                    isInverted ? "text-white/75" : "text-[#101114]/75"
-                  }`}>
+                  <p className="mt-3 text-base leading-relaxed text-white/75">
                     {item.description}
                   </p>
                 </div>

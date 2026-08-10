@@ -10,8 +10,8 @@ interface Particle {
   size: number;
   baseAlpha: number;
   alpha: number;
-  colorDark: string;    // rgb string e.g. "255, 255, 255"
-  colorLight: string;   // rgb string e.g. "16, 17, 20"
+  colorDark: string;    // rgb e.g. "255, 255, 255"
+  colorLight: string;   // rgb e.g. "20, 22, 26"
   glowSpeed: number;
   glowPhase: number;
   depth: number;        // 0 (far) to 1 (near)
@@ -37,25 +37,27 @@ export default function BackgroundFlowField() {
     let dpr = 1;
     let time = 0;
 
-    // Scroll speed multiplier interaction
+    // Scroll speed multiplier: 1.0 when idle, up to 1.15 when active
     let scrollSpeedMultiplier = 1.0;
+    let targetScrollMultiplier = 1.0;
     let lastScrollY = typeof window !== "undefined" ? window.scrollY : 0;
-    let scrollTimeout: NodeJS.Timeout | null = null;
+    let scrollDecayTimeout: NodeJS.Timeout | null = null;
 
-    // Theme interpolation state (0 = Dark Theme #000000, 1 = Light Theme #F3F3EF)
-    let currentThemeProgress = 0; // Current rendered theme value
-    let targetThemeProgress = 0;  // Target theme value based on visible section
+    // Continuous Theme & Intensity State
+    // Theme: 0.0 = Dark (#000000), 1.0 = Light (#EDECE7)
+    let currentThemeProgress = 0.0;
+    let targetThemeProgress = 0.0;
 
-    // Exclusion fade state (1 = fully visible particles, 0 = faded out for 2 existing animations)
-    let currentExclusionOpacity = 1;
-    let targetExclusionOpacity = 1;
+    // Intensity: 0.3 (Hero top) to 1.0 (Standard) to 0.1 (Animated Services exclusion)
+    let currentIntensity = 0.3;
+    let targetIntensity = 0.3;
 
-    // Desktop particle count: 750 (mobile ~350)
+    // Particle pool setup: 750 desktop, 320 mobile
     const isMobile = window.innerWidth < 768;
     const PARTICLE_COUNT = isMobile ? 320 : 750;
     const particles: Particle[] = [];
 
-    // Dark Mode particle colors (whites, soft silvers, slate grays)
+    // Dark Mode particle colors (white, soft silvers, slate grays)
     const darkColors = [
       "255, 255, 255", // Crisp White
       "241, 245, 249", // Soft White (slate-50)
@@ -64,9 +66,9 @@ export default function BackgroundFlowField() {
       "100, 116, 139", // Slate-500
     ];
 
-    // Light Mode particle colors (charcoals, dark grays, slate-800)
+    // Light Mode particle colors (charcoals, dark slate grays)
     const lightColors = [
-      "16, 17, 20",    // Near Black
+      "20, 22, 26",    // Deep Charcoal / Near Black
       "30, 41, 59",    // Slate-800
       "51, 65, 85",    // Slate-700
       "71, 85, 105",   // Slate-600
@@ -74,12 +76,11 @@ export default function BackgroundFlowField() {
     ];
 
     const createParticle = (randomizePosition = true): Particle => {
-      const depth = Math.pow(Math.random(), 1.5);
+      const depth = Math.pow(Math.random(), 1.4);
       const isHighlight = Math.random() < 0.08;
 
-      // Particle sizes: 0.8px to 1.4px, rare highlights up to 1.8px
       const size = isHighlight ? 1.6 + Math.random() * 0.3 : 0.8 + depth * 0.6;
-      const baseAlpha = isHighlight ? 0.85 : 0.25 + depth * 0.55; // High contrast
+      const baseAlpha = isHighlight ? 0.85 : 0.28 + depth * 0.52;
       const colorIdx = Math.floor(Math.random() * darkColors.length);
 
       return {
@@ -111,86 +112,104 @@ export default function BackgroundFlowField() {
 
       ctx.scale(dpr, dpr);
 
-      // Fill initial canvas state
-      ctx.fillStyle = currentThemeProgress > 0.5 ? "#F3F3EF" : "#000000";
-      ctx.fillRect(0, 0, width, height);
-
+      // Pre-seed particles if empty across the entire initial viewport
       if (particles.length === 0) {
         for (let i = 0; i < PARTICLE_COUNT; i++) {
           particles.push(createParticle(true));
         }
       }
+
+      // Initial fill
+      ctx.fillStyle = currentThemeProgress > 0.5 ? "#EDECE7" : "#000000";
+      ctx.fillRect(0, 0, width, height);
     };
 
     window.addEventListener("resize", resize);
     resize();
 
-    // Scroll listener: temporarily boosts particle speed multiplier during active scrolling
+    // Scroll listener: subtle speed boost on active scroll, decaying smoothly to 1.0 when idle
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       const delta = Math.abs(currentScrollY - lastScrollY);
       lastScrollY = currentScrollY;
 
-      // Increase multiplier slightly (up to 1.22)
-      scrollSpeedMultiplier = Math.min(1.22, 1.0 + delta * 0.003);
+      targetScrollMultiplier = Math.min(1.15, 1.0 + delta * 0.002);
 
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        // Smoothly settles back to 1.0 when scroll stops
-        scrollSpeedMultiplier = 1.0;
+      if (scrollDecayTimeout) clearTimeout(scrollDecayTimeout);
+      scrollDecayTimeout = setTimeout(() => {
+        targetScrollMultiplier = 1.0;
       }, 150);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // IntersectionObserver to handle:
-    // 1. Smooth Fade-Out Exclusion for the 2 Existing Animations (Hero & Animated Services)
-    // 2. Light vs Dark section theme detection
-    const setupObservers = () => {
-      // 1. Existing Animations Observers
-      const excludedElements = [
-        document.querySelector("#hero"),
-        document.querySelector("section:has(#nyraflow-logo)"),
-        document.querySelector("#animated-services-section"),
-      ].filter(Boolean);
+    // Chapter Theme & Exclusion State Evaluation based on scroll position
+    const evaluateChapterAndExclusion = () => {
+      const scrollY = window.scrollY;
+      const vh = window.innerHeight;
+      const viewportCenterY = scrollY + vh * 0.5;
 
-      const animationObserver = new IntersectionObserver(
-        (entries) => {
-          const isAnyAnimationVisible = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio > 0.05);
-          targetExclusionOpacity = isAnyAnimationVisible ? 0 : 1;
-        },
-        { threshold: [0, 0.05, 0.2] }
-      );
+      // Hero integration: Top of page intensity starts at 0.3, increases to 1.0 at bottom of Hero
+      const heroEl = document.querySelector("#hero");
+      const heroHeight = heroEl ? heroEl.getBoundingClientRect().height : vh;
 
-      excludedElements.forEach((el) => el && animationObserver.observe(el));
+      if (scrollY < heroHeight) {
+        const heroProgress = scrollY / heroHeight;
+        targetIntensity = 0.3 + heroProgress * 0.7; // Smoothly increases 0.3 -> 1.0
+      } else {
+        targetIntensity = 1.0;
+      }
 
-      // 2. Light Theme Section Observers
-      const lightSections = document.querySelectorAll("[data-theme='light'], #problem, #services, #starter, #pricing, #process");
+      // Animated Services Section exclusion: smooth fade out around #animated-services-section
+      const animServicesEl = document.querySelector("#animated-services-section");
+      if (animServicesEl) {
+        const rect = animServicesEl.getBoundingClientRect();
+        const topAbs = rect.top + scrollY;
+        const bottomAbs = rect.bottom + scrollY;
 
-      const themeObserver = new IntersectionObserver(
-        (entries) => {
-          const isLightVisible = Array.from(lightSections).some((el) => {
-            const rect = el.getBoundingClientRect();
-            return rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
-          });
+        // Transition zone around animated services section
+        if (viewportCenterY >= topAbs - vh * 0.3 && viewportCenterY <= bottomAbs + vh * 0.3) {
+          targetIntensity = 0.1; // Smoothly dim to 10%
+        }
+      }
 
-          targetThemeProgress = isLightVisible ? 1 : 0;
-        },
-        { threshold: [0.1, 0.3, 0.5] }
-      );
+      // 5 Large Visual Chapters Evaluation:
+      // Chapter 01 (Dark): Hero, Credibility, Problem
+      // Chapter 02 (Light): Metrics, Work, Services
+      // Chapter 03 (Dark): AnimatedServices, Starter, Pricing
+      // Chapter 04 (Light): Team, Process
+      // Chapter 05 (Dark): FAQ, Benefits, Contact, Footer
 
-      lightSections.forEach((el) => themeObserver.observe(el));
+      const metricsEl = document.querySelector("#metrics");
+      const starterEl = document.querySelector("#starter");
+      const teamEl = document.querySelector("#team");
+      const faqEl = document.querySelector("#faq");
 
-      return () => {
-        animationObserver.disconnect();
-        themeObserver.disconnect();
-      };
+      const ch2Top = metricsEl ? metricsEl.getBoundingClientRect().top + scrollY : vh * 2;
+      const ch3Top = starterEl ? starterEl.getBoundingClientRect().top + scrollY : vh * 5;
+      const ch4Top = teamEl ? teamEl.getBoundingClientRect().top + scrollY : vh * 8;
+      const ch5Top = faqEl ? faqEl.getBoundingClientRect().top + scrollY : vh * 11;
+
+      // Determine active chapter theme target with smooth blending zones
+      if (viewportCenterY < ch2Top - vh * 0.2) {
+        // Chapter 01 - DARK
+        targetThemeProgress = 0.0;
+      } else if (viewportCenterY >= ch2Top - vh * 0.2 && viewportCenterY < ch3Top - vh * 0.2) {
+        // Chapter 02 - LIGHT (#EDECE7)
+        targetThemeProgress = 1.0;
+      } else if (viewportCenterY >= ch3Top - vh * 0.2 && viewportCenterY < ch4Top - vh * 0.2) {
+        // Chapter 03 - DARK (#000000)
+        targetThemeProgress = 0.0;
+      } else if (viewportCenterY >= ch4Top - vh * 0.2 && viewportCenterY < ch5Top - vh * 0.2) {
+        // Chapter 04 - LIGHT (#EDECE7)
+        targetThemeProgress = 1.0;
+      } else {
+        // Chapter 05 - DARK (#000000)
+        targetThemeProgress = 0.0;
+      }
     };
 
-    const cleanupObservers = setupObservers();
-
     if (prefersReducedMotion) {
-      // Static reduced motion rendering
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, width, height);
       particles.forEach((p) => {
@@ -202,7 +221,6 @@ export default function BackgroundFlowField() {
       return () => {
         window.removeEventListener("resize", resize);
         window.removeEventListener("scroll", handleScroll);
-        cleanupObservers();
       };
     }
 
@@ -216,7 +234,7 @@ export default function BackgroundFlowField() {
         Math.sin(x * scaleX + timeScale) * Math.cos(y * scaleY - timeScale * 0.7) * Math.PI * 2 +
         Math.sin((x * 0.6 + y * 0.8) * 0.0005 + timeScale * 1.1) * Math.PI * 0.6;
 
-      const baseSpeed = 0.28 * scrollSpeedMultiplier;
+      const baseSpeed = 0.30 * scrollSpeedMultiplier;
       return {
         vx: Math.cos(angle) * baseSpeed,
         vy: Math.sin(angle) * baseSpeed,
@@ -233,58 +251,62 @@ export default function BackgroundFlowField() {
       return `${r}, ${g}, ${b}`;
     };
 
-    // Animation Loop
+    // Main Autonomous Render Loop — CONTINUOUS 60FPS REGARDLESS OF SCROLL
     const render = () => {
       time += 1;
 
-      // Smoothly interpolate theme progress (Dark <-> Light transition over ~500ms)
-      currentThemeProgress += (targetThemeProgress - currentThemeProgress) * 0.06;
+      // Evaluate chapter themes & exclusion targets based on Y position
+      evaluateChapterAndExclusion();
 
-      // Smoothly interpolate exclusion opacity (Fade out for 2 existing animations)
-      currentExclusionOpacity += (targetExclusionOpacity - currentExclusionOpacity) * 0.08;
+      // Smoothly lerp theme progress (Dark <-> Light over ~350ms)
+      currentThemeProgress += (targetThemeProgress - currentThemeProgress) * 0.045;
 
-      // Background color: #000000 (Dark) to #F3F3EF (Light: rgb 243, 243, 239)
-      const bgR = Math.round(0 + (243 - 0) * currentThemeProgress);
-      const bgG = Math.round(0 + (243 - 0) * currentThemeProgress);
-      const bgB = Math.round(0 + (239 - 0) * currentThemeProgress);
+      // Smoothly lerp intensity (Hero transition & Exclusion fade)
+      currentIntensity += (targetIntensity - currentIntensity) * 0.06;
 
-      // Fading trail effect: semi-transparent background fill on each frame
-      ctx.fillStyle = `rgba(${bgR}, ${bgG}, ${bgB}, 0.15)`;
+      // Smoothly lerp scroll speed multiplier back to 1.0 when stationary
+      scrollSpeedMultiplier += (targetScrollMultiplier - scrollSpeedMultiplier) * 0.05;
+
+      // Background color: #000000 (Dark) to #EDECE7 (Light: rgb 237, 236, 231)
+      const bgR = Math.round(0 + (237 - 0) * currentThemeProgress);
+      const bgG = Math.round(0 + (236 - 0) * currentThemeProgress);
+      const bgB = Math.round(0 + (231 - 0) * currentThemeProgress);
+
+      // Fading trail effect: semi-transparent background overlay on each frame
+      ctx.fillStyle = `rgba(${bgR}, ${bgG}, ${bgB}, 0.16)`;
       ctx.fillRect(0, 0, width, height);
 
-      // Only render particle points if global exclusion opacity > 0.01
-      if (currentExclusionOpacity > 0.01) {
-        for (let i = 0; i < particles.length; i++) {
-          const p = particles[i];
-          const flow = getFlowVector(p.x, p.y, time);
+      // Continuous Particle Simulation & Rendering
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const flow = getFlowVector(p.x, p.y, time);
 
-          // Smooth inertia speed calculation
-          const depthSpeed = 0.4 + p.depth * 0.6;
-          p.vx += (flow.vx * depthSpeed - p.vx) * 0.045;
-          p.vy += (flow.vy * depthSpeed - p.vy) * 0.045;
+        // Fluid inertia speed calculation
+        const depthSpeed = 0.45 + p.depth * 0.55;
+        p.vx += (flow.vx * depthSpeed - p.vx) * 0.05;
+        p.vy += (flow.vy * depthSpeed - p.vy) * 0.05;
 
-          p.x += p.vx;
-          p.y += p.vy;
+        p.x += p.vx;
+        p.y += p.vy;
 
-          // Rare subtle glow phase modulation
-          p.glowPhase += p.glowSpeed;
-          const glowFactor = 1 + Math.sin(p.glowPhase) * 0.2;
-          p.alpha = Math.min(1, Math.max(0.05, p.baseAlpha * glowFactor * currentExclusionOpacity));
+        // Rare subtle glow phase modulation
+        p.glowPhase += p.glowSpeed;
+        const glowFactor = 1 + Math.sin(p.glowPhase) * 0.22;
+        p.alpha = Math.min(1, Math.max(0.06, p.baseAlpha * glowFactor * currentIntensity));
 
-          // Wrap / respawn particle if out of screen bounds
-          if (p.x < -15 || p.x > width + 15 || p.y < -15 || p.y > height + 15) {
-            particles[i] = createParticle(false);
-            continue;
-          }
-
-          // Interpolate particle color based on current theme progress
-          const activeRgb = interpolateRgb(p.colorDark, p.colorLight, currentThemeProgress);
-
-          ctx.fillStyle = `rgba(${activeRgb}, ${p.alpha})`;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fill();
+        // Wrap / respawn particle if out of screen bounds
+        if (p.x < -15 || p.x > width + 15 || p.y < -15 || p.y > height + 15) {
+          particles[i] = createParticle(false);
+          continue;
         }
+
+        // Interpolate particle color based on current theme progress
+        const activeRgb = interpolateRgb(p.colorDark, p.colorLight, currentThemeProgress);
+
+        ctx.fillStyle = `rgba(${activeRgb}, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -295,7 +317,6 @@ export default function BackgroundFlowField() {
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", handleScroll);
-      cleanupObservers();
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
@@ -306,6 +327,7 @@ export default function BackgroundFlowField() {
     <div
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      style={{ width: "100vw", height: "100dvh" }}
     >
       <canvas ref={canvasRef} className="h-full w-full block" />
     </div>

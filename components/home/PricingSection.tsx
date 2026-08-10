@@ -10,14 +10,12 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      data-theme="light"
-      className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]"
+      className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]"
     >
       <SectionContainer>
         <SectionHeading
           title={content.title}
           description={content.description}
-          lightTheme
         />
         <div className="mt-14 grid items-stretch gap-6 md:mt-20 lg:grid-cols-3">
           {items.map((item) => {
@@ -28,8 +26,8 @@ export default function PricingSection() {
                 key={item.id}
                 className={`flex flex-col justify-between rounded-[16px] p-8 transition-all duration-300 backdrop-blur-md ${
                   isFeatured
-                    ? "border border-[#101114] bg-[#101114]/90 text-white shadow-2xl lg:-translate-y-6"
-                    : "border border-[#101114]/14 bg-[#FFFFFF]/80 text-[#101114] shadow-sm hover:border-[#101114]/30 hover:bg-[#FFFFFF]/95 hover:-translate-y-1"
+                    ? "border border-white/30 bg-white text-[#101114] shadow-2xl lg:-translate-y-6"
+                    : "border border-white/14 bg-[#151515]/75 text-white shadow-xl hover:border-white/30 hover:bg-[#151515]/90 hover:-translate-y-1"
                 }`}
               >
                 <div>
