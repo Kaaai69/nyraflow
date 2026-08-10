@@ -6,14 +6,14 @@ export default function CredibilitySection() {
     <section
       id="credibility"
       aria-label="Принципы работы"
-      className="py-section-mobile md:py-section-desktop bg-[#000000] text-[#FFFFFF]"
+      className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]"
     >
       <SectionContainer>
         <div className="grid gap-6 md:grid-cols-3 md:gap-8 items-stretch">
           {homeContent.credibility.items.map((item, index) => (
             <article
               key={item.id}
-              className="flex flex-col justify-between rounded-[16px] border border-white/13 bg-[#151515] p-8 md:p-10 shadow-lg transition-all duration-300 hover:border-white/30 hover:bg-[#1B1B1B] hover:-translate-y-1"
+              className="flex flex-col justify-between rounded-[16px] border border-white/14 bg-[#151515]/75 backdrop-blur-md p-8 md:p-10 shadow-2xl transition-all duration-300 hover:border-white/30 hover:bg-[#151515]/90 hover:-translate-y-1"
             >
               <div>
                 <span className="text-sm font-bold tracking-widest text-white/50 uppercase">

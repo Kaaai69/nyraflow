@@ -20,7 +20,7 @@ export default function WorkSection() {
   return (
     <section
       id="work"
-      className="py-section-mobile md:py-section-desktop bg-[#000000] text-[#FFFFFF]"
+      className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]"
     >
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />

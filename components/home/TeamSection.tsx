@@ -15,7 +15,7 @@ export default function TeamSection() {
   const teamMembers = [arseny, fedor, artem];
 
   return (
-    <section id="team" className="py-section-mobile md:py-section-desktop bg-[#000000] text-[#FFFFFF]">
+    <section id="team" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
       <SectionContainer className="grid gap-14 lg:grid-cols-12 lg:gap-12 items-center">
         {/* Left Column: Headline with generous right padding */}
         <header className="min-w-0 lg:col-span-5 lg:pr-12 xl:pr-16">
@@ -38,7 +38,7 @@ export default function TeamSection() {
             return (
               <article
                 key={member.id}
-                className={`min-w-0 group rounded-[16px] border border-white/13 bg-[#151515] overflow-hidden shadow-xl transition-all duration-300 hover:border-white/30 hover:-translate-y-1 flex flex-col justify-between ${
+                className={`min-w-0 group rounded-[16px] border border-white/14 bg-[#151515]/75 backdrop-blur-md overflow-hidden shadow-xl transition-all duration-300 hover:border-white/30 hover:bg-[#151515]/90 hover:-translate-y-1 flex flex-col justify-between ${
                   isCenter ? "md:-translate-y-6" : ""
                 }`}
               >

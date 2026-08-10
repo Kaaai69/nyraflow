@@ -13,7 +13,7 @@ export default function ServicesSection() {
   const content = homeContent.services;
 
   return (
-    <section id="services" className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]">
+    <section id="services" data-theme="light" className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]">
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} lightTheme />
 
@@ -25,10 +25,10 @@ export default function ServicesSection() {
             return (
               <article
                 key={item.id}
-                className={`relative overflow-hidden rounded-[20px] p-8 md:p-12 transition-all duration-300 shadow-md ${
+                className={`relative overflow-hidden rounded-[20px] p-8 md:p-12 transition-all duration-300 shadow-md backdrop-blur-md ${
                   isDarkCard
-                    ? "bg-[#101114] text-white border border-[#101114]"
-                    : "bg-[#FFFFFF] text-[#101114] border border-[#101114]/14"
+                    ? "bg-[#101114]/90 text-white border border-[#101114]"
+                    : "bg-[#FFFFFF]/80 text-[#101114] border border-[#101114]/14"
                 }`}
               >
                 {/* Watermark Text Background */}

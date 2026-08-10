@@ -10,7 +10,8 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]"
+      data-theme="light"
+      className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]"
     >
       <SectionContainer>
         <SectionHeading
@@ -25,10 +26,10 @@ export default function PricingSection() {
             return (
               <article
                 key={item.id}
-                className={`flex flex-col justify-between rounded-[16px] p-8 transition-all duration-300 ${
+                className={`flex flex-col justify-between rounded-[16px] p-8 transition-all duration-300 backdrop-blur-md ${
                   isFeatured
-                    ? "border border-[#101114] bg-[#101114] text-white shadow-2xl lg:-translate-y-6"
-                    : "border border-[#101114]/14 bg-[#FFFFFF] text-[#101114] shadow-sm hover:border-[#101114]/30 hover:-translate-y-1"
+                    ? "border border-[#101114] bg-[#101114]/90 text-white shadow-2xl lg:-translate-y-6"
+                    : "border border-[#101114]/14 bg-[#FFFFFF]/80 text-[#101114] shadow-sm hover:border-[#101114]/30 hover:bg-[#FFFFFF]/95 hover:-translate-y-1"
                 }`}
               >
                 <div>

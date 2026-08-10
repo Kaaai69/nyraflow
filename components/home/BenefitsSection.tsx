@@ -19,7 +19,7 @@ export default function BenefitsSection() {
   const content = homeContent.benefits;
 
   return (
-    <section id="benefits" className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]">
+    <section id="benefits" data-theme="light" className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]">
       <SectionContainer>
         <header className="border-b border-[#101114]/12 pb-8">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#101114]/50">
@@ -39,10 +39,10 @@ export default function BenefitsSection() {
             return (
               <article
                 key={item.id}
-                className={`flex flex-col justify-between rounded-[16px] p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 ${
+                className={`flex flex-col justify-between rounded-[16px] p-8 shadow-sm transition-all duration-300 backdrop-blur-md hover:-translate-y-1 ${
                   isInverted
-                    ? "bg-[#101114] text-white border border-[#101114]"
-                    : "bg-[#FFFFFF] text-[#101114] border border-[#101114]/14 hover:border-[#101114]/30"
+                    ? "bg-[#101114]/90 text-white border border-[#101114]"
+                    : "bg-[#FFFFFF]/80 text-[#101114] border border-[#101114]/14 hover:border-[#101114]/30 hover:bg-[#FFFFFF]/95"
                 }`}
               >
                 <div className="flex items-center justify-between">

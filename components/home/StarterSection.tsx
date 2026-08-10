@@ -19,10 +19,10 @@ export default function StarterSection() {
   const content = homeContent.starter;
 
   return (
-    <section id="starter" className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]">
+    <section id="starter" data-theme="light" className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]">
       <SectionContainer>
         {/* Large Elevated Container Panel */}
-        <div className="rounded-[20px] border border-[#101114]/14 bg-[#E7E7E1] p-8 md:p-12 lg:p-14 shadow-sm">
+        <div className="rounded-[20px] border border-[#101114]/14 bg-[#E7E7E1]/70 backdrop-blur-md p-8 md:p-12 lg:p-14 shadow-sm">
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
             {/* Left 30%: Headline & Price */}
             <header className="lg:col-span-4 border-b border-[#101114]/16 pb-8 lg:border-b-0 lg:pb-0 lg:border-r lg:pr-8 flex flex-col justify-between">
@@ -53,7 +53,7 @@ export default function StarterSection() {
                 return (
                   <article
                     key={item.id}
-                    className="flex flex-col justify-between rounded-[14px] border border-[#101114]/12 bg-[#FFFFFF] p-6 shadow-sm transition-all duration-300 hover:border-[#101114]/30 hover:-translate-y-1"
+                    className="flex flex-col justify-between rounded-[14px] border border-[#101114]/12 bg-[#FFFFFF]/85 backdrop-blur-md p-6 shadow-sm transition-all duration-300 hover:border-[#101114]/30 hover:bg-[#FFFFFF]/95 hover:-translate-y-1"
                   >
                     <div>
                       <div className="flex items-center justify-between">

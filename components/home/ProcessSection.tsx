@@ -5,15 +5,15 @@ export default function ProcessSection() {
   const content = homeContent.process;
 
   const stepStyles = [
-    { width: "w-full", bg: "bg-[#FFFFFF] text-[#101114] border-[#101114]/14" },
-    { width: "w-full lg:w-[90%] lg:ml-auto", bg: "bg-[#E7E7E1] text-[#101114] border-[#101114]/14" },
-    { width: "w-full lg:w-[95%]", bg: "bg-[#FFFFFF] text-[#101114] border-[#101114]/14" },
-    { width: "w-full lg:w-[85%] lg:ml-auto", bg: "bg-[#E7E7E1] text-[#101114] border-[#101114]/14" },
-    { width: "w-full", bg: "bg-[#101114] text-white border-[#101114]" },
+    { width: "w-full", bg: "bg-[#FFFFFF]/80 backdrop-blur-md text-[#101114] border-[#101114]/14" },
+    { width: "w-full lg:w-[90%] lg:ml-auto", bg: "bg-[#E7E7E1]/75 backdrop-blur-md text-[#101114] border-[#101114]/14" },
+    { width: "w-full lg:w-[95%]", bg: "bg-[#FFFFFF]/80 backdrop-blur-md text-[#101114] border-[#101114]/14" },
+    { width: "w-full lg:w-[85%] lg:ml-auto", bg: "bg-[#E7E7E1]/75 backdrop-blur-md text-[#101114] border-[#101114]/14" },
+    { width: "w-full", bg: "bg-[#101114]/90 backdrop-blur-md text-white border-[#101114]" },
   ];
 
   return (
-    <section id="process" className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]">
+    <section id="process" data-theme="light" className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]">
       <SectionContainer>
         <header className="mb-12 border-b border-[#101114]/12 pb-8">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#101114]/50">

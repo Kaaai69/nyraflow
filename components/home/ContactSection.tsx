@@ -62,7 +62,7 @@ export default function ContactSection() {
   const isSubmitting = status === "submitting";
 
   return (
-    <section id="contact" className="py-section-mobile md:py-section-desktop bg-[#000000] text-[#FFFFFF]">
+    <section id="contact" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
       <SectionContainer>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-12 items-start">
           {/* Left Column: Large Offer & Info */}
@@ -77,7 +77,7 @@ export default function ContactSection() {
               {content.description}
             </p>
 
-            <div className="mt-10 p-6 rounded-[14px] border border-white/13 bg-[#151515]">
+            <div className="mt-10 p-6 rounded-[14px] border border-white/14 bg-[#151515]/75 backdrop-blur-md">
               <p className="text-sm font-bold text-white uppercase tracking-wider">
                 Быстрый ответ
               </p>
@@ -91,7 +91,7 @@ export default function ContactSection() {
           <div className="lg:col-span-7">
             <form
               onSubmit={handleSubmit}
-              className="rounded-[16px] border border-white/14 bg-[#151515] p-8 md:p-12 shadow-2xl"
+              className="rounded-[16px] border border-white/14 bg-[#151515]/80 backdrop-blur-md p-8 md:p-12 shadow-2xl"
             >
               <div>
                 <label htmlFor="contact-name" className="form-label text-white font-semibold">

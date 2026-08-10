@@ -21,7 +21,7 @@ const footerLinkClassName =
 
 export default function SiteFooter() {
   return (
-    <footer className="pb-12 pt-10 bg-[#000000] text-[#FFFFFF]">
+    <footer className="pb-12 pt-10 bg-transparent text-[#FFFFFF]">
       <SectionContainer className="grid gap-10 border-t border-white/18 pt-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         <div>
           <a href="#" className="inline-block">

@@ -5,7 +5,7 @@ import { SectionContainer } from "./Layout";
 
 export default function FaqSection() {
   return (
-    <section id="faq" aria-label="Частые вопросы" className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]">
+    <section id="faq" data-theme="light" aria-label="Частые вопросы" className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]">
       <SectionContainer>
         <header className="mb-12 border-b border-[#101114]/12 pb-8">
           <span className="text-xs font-bold uppercase tracking-widest text-[#101114]/50">
@@ -17,7 +17,7 @@ export default function FaqSection() {
         </header>
 
         {/* Elevated White Container Panel for FAQ Accordion */}
-        <div className="rounded-[16px] border border-[#101114]/14 bg-[#FFFFFF] p-6 md:p-10 shadow-sm">
+        <div className="rounded-[16px] border border-[#101114]/14 bg-[#FFFFFF]/80 backdrop-blur-md p-6 md:p-10 shadow-sm">
           <FaqAccordion items={homeContent.faq.items} />
         </div>
       </SectionContainer>

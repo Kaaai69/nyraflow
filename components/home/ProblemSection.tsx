@@ -6,7 +6,7 @@ export default function ProblemSection() {
   const items = content.items;
 
   return (
-    <section id="problem" className="py-section-mobile md:py-section-desktop bg-[#F3F3EF] text-[#101114]">
+    <section id="problem" data-theme="light" className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]">
       <SectionContainer>
         {/* Top Header Composition */}
         <header className="border-b border-[#101114]/12 pb-10">
@@ -22,7 +22,7 @@ export default function ProblemSection() {
         <div className="mt-12 grid gap-6 md:grid-cols-3 items-stretch">
           {/* Card 1 - White Card */}
           {items[0] && (
-            <article className="flex flex-col justify-between rounded-[16px] border border-[#101114]/14 bg-[#FFFFFF] p-8 shadow-sm transition-all hover:border-[#101114]/30 hover:-translate-y-1">
+            <article className="flex flex-col justify-between rounded-[16px] border border-[#101114]/14 bg-[#FFFFFF]/80 backdrop-blur-md p-8 shadow-sm transition-all hover:border-[#101114]/30 hover:bg-[#FFFFFF]/95 hover:-translate-y-1">
               <div>
                 <span className="text-sm font-bold tracking-widest text-[#101114]/40 uppercase">
                   01
@@ -39,7 +39,7 @@ export default function ProblemSection() {
 
           {/* Card 2 - Inverted Dark Card */}
           {items[1] && (
-            <article className="flex flex-col justify-between rounded-[16px] border border-[#101114] bg-[#101114] p-8 text-white shadow-xl transition-all hover:-translate-y-1">
+            <article className="flex flex-col justify-between rounded-[16px] border border-[#101114] bg-[#101114]/90 backdrop-blur-md p-8 text-white shadow-xl transition-all hover:-translate-y-1">
               <div>
                 <span className="text-sm font-bold tracking-widest text-white/50 uppercase">
                   02
@@ -56,7 +56,7 @@ export default function ProblemSection() {
 
           {/* Card 3 - White Card */}
           {items[2] && (
-            <article className="flex flex-col justify-between rounded-[16px] border border-[#101114]/14 bg-[#FFFFFF] p-8 shadow-sm transition-all hover:border-[#101114]/30 hover:-translate-y-1">
+            <article className="flex flex-col justify-between rounded-[16px] border border-[#101114]/14 bg-[#FFFFFF]/80 backdrop-blur-md p-8 shadow-sm transition-all hover:border-[#101114]/30 hover:bg-[#FFFFFF]/95 hover:-translate-y-1">
               <div>
                 <span className="text-sm font-bold tracking-widest text-[#101114]/40 uppercase">
                   03
