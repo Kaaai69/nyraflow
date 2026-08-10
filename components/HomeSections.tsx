@@ -1,4 +1,5 @@
 import AnimatedServicesSection from "@/components/AnimatedServicesSection";
+import ScrollRevealSection from "@/components/ScrollRevealSection";
 import BenefitsSection from "./home/BenefitsSection";
 import ContactSection from "./home/ContactSection";
 import CredibilitySection from "./home/CredibilitySection";
@@ -15,19 +16,45 @@ import WorkSection from "./home/WorkSection";
 export default function HomeSections() {
   return (
     <>
-      <CredibilitySection />
-      <ProblemSection />
-      <MetricsSection />
-      <WorkSection />
-      <ServicesSection />
+      <ScrollRevealSection>
+        <CredibilitySection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <ProblemSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <MetricsSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <WorkSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <ServicesSection />
+      </ScrollRevealSection>
+      {/* EXISTING ANIMATION #2 - EXPLICITLY UNTOUCHED & UNWRAPPED */}
       <AnimatedServicesSection />
-      <StarterSection />
-      <PricingSection />
-      <TeamSection />
-      <ProcessSection />
-      <FaqSection />
-      <BenefitsSection />
-      <ContactSection />
+      <ScrollRevealSection>
+        <StarterSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <PricingSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <TeamSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <ProcessSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <FaqSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <BenefitsSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
+        <ContactSection />
+      </ScrollRevealSection>
     </>
   );
 }
+
