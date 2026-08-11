@@ -7,6 +7,7 @@ import {
 
 import { homeContent, type StarterIconName } from "../../content/home";
 import { SectionContainer } from "./Layout";
+import { MotionGrid, MotionCard } from "../ScrollRevealSection";
 
 const starterIcons = {
   structure: BrowserIcon,
@@ -21,13 +22,13 @@ export default function StarterSection() {
   return (
     <section id="starter" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
       <SectionContainer>
-        {/* Large Elevated Container Panel */}
-        <div className="rounded-[20px] border border-white/14 bg-[#151515]/75 backdrop-blur-md p-8 md:p-12 lg:p-14 shadow-2xl">
+        {/* Large Architectural Composition Frame */}
+        <div className="rounded-[22px] border border-white/14 border-t-white/30 bg-[#0E0F12]/90 backdrop-blur-md p-8 md:p-12 lg:p-14 shadow-2xl">
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
-            {/* Left 30%: Headline & Price */}
+            {/* Left 30%: Open Editorial Headline & Price */}
             <header className="lg:col-span-4 border-b border-white/16 pb-8 lg:border-b-0 lg:pb-0 lg:border-r lg:pr-8 flex flex-col justify-between">
               <div>
-                <span className="text-xs font-bold uppercase tracking-widest text-white/50">
+                <span className="text-xs font-mono font-bold uppercase tracking-widest text-white/50">
                   {content.title}
                 </span>
                 <p className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
@@ -38,46 +39,45 @@ export default function StarterSection() {
               <div className="mt-8 pt-6 border-t border-white/12 hidden lg:block">
                 <a
                   href="#contact"
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-semibold text-[#101114] hover:bg-[#F3F3EF] hover:scale-105 transition-all shadow-md"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-semibold text-[#101114] hover:bg-[#F0EFEA] hover:scale-105 transition-all shadow-md"
                 >
                   Заказать быстрый старт
                 </a>
               </div>
             </header>
 
-            {/* Right 70%: 2x2 Grid of 4 Dark Cards */}
-            <div className="lg:col-span-8 grid gap-6 sm:grid-cols-2">
+            {/* Right 70%: Open Architectural Row Grid (Horizontal Dividers, No Boxes) */}
+            <MotionGrid className="lg:col-span-8 grid gap-8 sm:grid-cols-2 divide-y sm:divide-y-0 divide-white/12">
               {content.items.map((item, index) => {
                 const Icon = starterIcons[item.icon];
 
                 return (
-                  <article
-                    key={item.id}
-                    className="flex flex-col justify-between rounded-[14px] border border-white/14 bg-[#202227]/80 backdrop-blur-md p-6 shadow-xl transition-all duration-300 hover:border-white/30 hover:bg-[#202227]/95 hover:-translate-y-1"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <Icon
-                          aria-hidden
-                          size={28}
-                          weight="regular"
-                          className="text-white"
-                        />
-                        <span className="text-xs font-bold tracking-widest text-white/50 uppercase">
-                          0{index + 1}
-                        </span>
+                  <MotionCard key={item.id}>
+                    <article className="flex h-full flex-col justify-between pt-6 sm:pt-0 group/item">
+                      <div>
+                        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                          <Icon
+                            aria-hidden
+                            size={28}
+                            weight="regular"
+                            className="text-white group-hover/item:scale-110 transition-transform duration-300"
+                          />
+                          <span className="text-xs font-mono font-bold tracking-widest text-white/50 uppercase">
+                            0{index + 1}
+                          </span>
+                        </div>
+                        <h3 className="mt-6 text-lg font-bold leading-tight text-white group-hover/item:text-white transition-colors">
+                          {item.title}
+                        </h3>
+                        <p className="mt-3 text-sm leading-relaxed text-white/75 group-hover/item:text-white/90 transition-colors">
+                          {item.description}
+                        </p>
                       </div>
-                      <h3 className="mt-6 text-lg font-bold leading-tight text-white">
-                        {item.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-white/75">
-                        {item.description}
-                      </p>
-                    </div>
-                  </article>
+                    </article>
+                  </MotionCard>
                 );
               })}
-            </div>
+            </MotionGrid>
           </div>
         </div>
       </SectionContainer>

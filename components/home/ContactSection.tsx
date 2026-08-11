@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { homeContent } from "../../content/home";
 import { SectionContainer } from "./Layout";
+import { MotionHeading } from "../ScrollRevealSection";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -50,8 +51,6 @@ export default function ContactSection() {
       setStatus("success");
       form.reset();
     } catch {
-      // Никогда не показываем успех при неудачной отправке: иначе заявка
-      // молча теряется, а посетитель уверен, что мы её получили.
       setStatus("error");
       setErrorMessage(
         "Не удалось отправить заявку. Попробуйте ещё раз или напишите нам в Telegram.",
@@ -65,19 +64,21 @@ export default function ContactSection() {
     <section id="contact" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
       <SectionContainer>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-12 items-start">
-          {/* Left Column: Large Offer & Info */}
+          {/* Left Column: Large Open Offer & Info */}
           <header className="lg:col-span-5 lg:pr-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-white/50">
-              Начать сотрудничество
-            </span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
-              {content.title}
-            </h2>
-            <p className="mt-6 text-lg leading-relaxed text-white/70">
-              {content.description}
-            </p>
+            <MotionHeading>
+              <span className="text-xs font-mono font-bold uppercase tracking-widest text-white/50">
+                Начать сотрудничество
+              </span>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
+                {content.title}
+              </h2>
+              <p className="mt-6 text-lg leading-relaxed text-white/70">
+                {content.description}
+              </p>
+            </MotionHeading>
 
-            <div className="mt-10 p-6 rounded-[14px] border border-white/14 bg-[#151515]/75 backdrop-blur-md">
+            <div className="mt-10 p-6 rounded-[16px] border border-white/14 bg-[#0E0F12]/90 backdrop-blur-md shadow-xl">
               <p className="text-sm font-bold text-white uppercase tracking-wider">
                 Быстрый ответ
               </p>
@@ -87,14 +88,14 @@ export default function ContactSection() {
             </div>
           </header>
 
-          {/* Right Column: Distinct Dark Elevated Form Panel (#151515) */}
+          {/* Right Column: Destination Inverted Warm Light Object (#F0EFEA) */}
           <div className="lg:col-span-7">
             <form
               onSubmit={handleSubmit}
-              className="rounded-[16px] border border-white/14 bg-[#151515]/80 backdrop-blur-md p-8 md:p-12 shadow-2xl"
+              className="rounded-[22px] border border-[#101114]/20 bg-[#F0EFEA] text-[#101114] p-8 md:p-12 shadow-2xl"
             >
               <div>
-                <label htmlFor="contact-name" className="form-label text-white font-semibold">
+                <label htmlFor="contact-name" className="block text-sm font-semibold text-[#101114] mb-2">
                   {nameLabel}
                 </label>
                 <input
@@ -105,11 +106,11 @@ export default function ContactSection() {
                   required
                   maxLength={200}
                   disabled={isSubmitting}
-                  className="form-field"
+                  className="w-full rounded-xl border border-[#101114]/20 bg-white px-4 py-3.5 text-[#101114] placeholder-[#101114]/40 focus:border-[#101114] focus:outline-none focus:ring-1 focus:ring-[#101114]/30 transition-all text-base shadow-sm"
                 />
               </div>
               <div className="mt-6">
-                <label htmlFor="contact-channel" className="form-label text-white font-semibold">
+                <label htmlFor="contact-channel" className="block text-sm font-semibold text-[#101114] mb-2">
                   {contactLabel}
                 </label>
                 <input
@@ -120,11 +121,11 @@ export default function ContactSection() {
                   required
                   maxLength={200}
                   disabled={isSubmitting}
-                  className="form-field"
+                  className="w-full rounded-xl border border-[#101114]/20 bg-white px-4 py-3.5 text-[#101114] placeholder-[#101114]/40 focus:border-[#101114] focus:outline-none focus:ring-1 focus:ring-[#101114]/30 transition-all text-base shadow-sm"
                 />
               </div>
               <div className="mt-6">
-                <label htmlFor="contact-message" className="form-label text-white font-semibold">
+                <label htmlFor="contact-message" className="block text-sm font-semibold text-[#101114] mb-2">
                   {messageLabel}
                 </label>
                 <textarea
@@ -134,7 +135,7 @@ export default function ContactSection() {
                   required
                   maxLength={4000}
                   disabled={isSubmitting}
-                  className="form-field resize-y"
+                  className="w-full rounded-xl border border-[#101114]/20 bg-white px-4 py-3.5 text-[#101114] placeholder-[#101114]/40 focus:border-[#101114] focus:outline-none focus:ring-1 focus:ring-[#101114]/30 transition-all text-base resize-y shadow-sm"
                 />
               </div>
 
@@ -154,7 +155,7 @@ export default function ContactSection() {
                 type="submit"
                 disabled={isSubmitting}
                 aria-describedby="contact-form-status"
-                className="mt-8 flex min-h-[3.25rem] w-full items-center justify-center rounded-full bg-white font-semibold text-[#101114] shadow-lg transition-all hover:bg-[#F3F3EF] hover:scale-105 active:scale-95 disabled:opacity-50"
+                className="mt-8 flex min-h-[3.25rem] w-full items-center justify-center rounded-full bg-[#101114] font-semibold text-white shadow-xl transition-all hover:bg-black hover:scale-[1.02] active:scale-95 disabled:opacity-50"
               >
                 {isSubmitting ? "Отправляем…" : content.cta}
               </button>
@@ -165,22 +166,22 @@ export default function ContactSection() {
                 className="mt-4 text-sm leading-relaxed"
               >
                 {status === "success" ? (
-                  <span className="text-white font-semibold">
+                  <span className="text-[#101114] font-semibold">
                     Заявка отправлена — свяжемся с вами в ближайшее время.
                   </span>
                 ) : status === "error" ? (
-                  <span className="font-semibold text-[#FF6B6B]">{errorMessage}</span>
+                  <span className="font-semibold text-[#D93838]">{errorMessage}</span>
                 ) : (
-                  <span className="text-white/60">
+                  <span className="text-[#101114]/65">
                     Обычно отвечаем в течение рабочего дня.
                   </span>
                 )}
               </p>
 
-              <p className="mt-4 text-xs leading-relaxed text-white/50">
+              <p className="mt-4 text-xs leading-relaxed text-[#101114]/55">
                 Отправляя форму, вы принимаете условия{" "}
-                <a href="/terms" className="underline hover:text-white">договора-оферты</a> и подтверждаете ознакомление с{" "}
-                <a href="/privacy" className="underline hover:text-white">политикой обработки персональных данных</a>.
+                <a href="/terms" className="underline hover:text-[#101114]">договора-оферты</a> и подтверждаете ознакомление с{" "}
+                <a href="/privacy" className="underline hover:text-[#101114]">политикой обработки персональных данных</a>.
               </p>
             </form>
           </div>

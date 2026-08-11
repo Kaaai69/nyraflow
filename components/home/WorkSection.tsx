@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { homeContent, type WorkMedia } from "../../content/home";
 import { SectionContainer, SectionHeading } from "./Layout";
+import { MotionImageReveal } from "../ScrollRevealSection";
 
 export default function WorkSection() {
   const content = homeContent.work;
@@ -31,7 +32,7 @@ export default function WorkSection() {
             const projectNumber = String(index + 1).padStart(2, "0");
 
             return (
-              <div key={project.id} className="py-2 transition-colors">
+              <div key={project.id} className="py-3 transition-colors">
                 {/* ACCORDION HEADER BUTTON */}
                 <button
                   type="button"
@@ -41,7 +42,7 @@ export default function WorkSection() {
                   className="w-full py-6 flex items-center justify-between gap-4 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg"
                 >
                   <div className="flex items-center gap-6 md:gap-10 min-w-0">
-                    <span className="text-sm font-bold tracking-widest text-white/50 shrink-0">
+                    <span className="text-sm font-mono font-bold tracking-widest text-white/50 shrink-0">
                       {projectNumber}
                     </span>
                     <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white group-hover:text-white/80 transition-colors truncate">
@@ -66,7 +67,7 @@ export default function WorkSection() {
                   </div>
                 </button>
 
-                {/* EXPANDABLE PANEL */}
+                {/* EXPANDABLE PANEL (ARCHETYPE E: Image-Led Open Layout) */}
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
@@ -77,26 +78,28 @@ export default function WorkSection() {
                       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                       className="overflow-hidden"
                     >
-                      <div className="py-6 grid gap-8 lg:grid-cols-12 lg:items-center">
-                        {/* Project Image Preview */}
-                        <div className="lg:col-span-7 aspect-[16/10] overflow-hidden rounded-xl border border-white/14 bg-[#151515]/75 backdrop-blur-md">
-                          <Image
-                            src={project.src}
-                            alt={project.alt}
-                            width={project.width}
-                            height={project.height}
-                            sizes="(max-width: 1024px) 100vw, 700px"
-                            className="h-full w-full object-cover filter grayscale contrast-[1.04] transition-all duration-500 hover:grayscale-0"
-                          />
+                      <div className="py-8 grid gap-10 lg:grid-cols-12 lg:items-center">
+                        {/* Image Dominates Directly (No Enclosing Dark Card Box) */}
+                        <div className="lg:col-span-8 aspect-[16/10] overflow-hidden rounded-xl border border-white/16 shadow-2xl group/preview">
+                          <MotionImageReveal className="h-full w-full">
+                            <Image
+                              src={project.src}
+                              alt={project.alt}
+                              width={project.width}
+                              height={project.height}
+                              sizes="(max-width: 1024px) 100vw, 800px"
+                              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover/preview:scale-[1.03]"
+                            />
+                          </MotionImageReveal>
                         </div>
 
-                        {/* Project Details */}
-                        <div className="lg:col-span-5 flex flex-col justify-between space-y-6 lg:pl-6">
+                        {/* Open Details (Outside Image Container) */}
+                        <div className="lg:col-span-4 flex flex-col justify-between space-y-6 lg:pl-4">
                           <div>
-                            <span className="text-xs font-bold uppercase tracking-widest text-white/50">
+                            <span className="text-xs font-mono font-bold uppercase tracking-widest text-white/50">
                               {project.caption}
                             </span>
-                            <h4 className="mt-2 text-3xl font-bold tracking-tight text-white">
+                            <h4 className="mt-3 text-3xl font-bold tracking-tight text-white">
                               {project.title}
                             </h4>
                             <p className="mt-4 text-base leading-relaxed text-white/75">
@@ -109,10 +112,10 @@ export default function WorkSection() {
                               href={project.href}
                               target="_blank"
                               rel="noreferrer noopener"
-                              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 font-semibold text-[#101114] hover:bg-[#F3F3EF] hover:scale-105 active:scale-95 transition-all shadow-md"
+                              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 font-semibold text-[#101114] hover:bg-[#F0EFEA] hover:scale-105 active:scale-95 transition-all shadow-md group/btn"
                             >
                               <span>Открыть проект</span>
-                              <ArrowUpRightIcon size={18} weight="bold" />
+                              <ArrowUpRightIcon size={18} weight="bold" className="transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
                             </a>
                           </div>
                         </div>

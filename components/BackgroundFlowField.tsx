@@ -88,8 +88,9 @@ export default function BackgroundFlowField() {
       width = window.innerWidth;
       height = window.innerHeight;
 
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
+      // Capped DPR High-Resolution Backing Store
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
 
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
@@ -188,7 +189,7 @@ export default function BackgroundFlowField() {
       };
     };
 
-    // Main Autonomous Render Loop — CONTINUOUS 60FPS AT ALL TIMES (Scroll or Stationary!)
+    // Main Autonomous Render Loop — CONTINUOUS 60FPS AT ALL TIMES
     const render = () => {
       time += 1;
 
@@ -204,7 +205,7 @@ export default function BackgroundFlowField() {
       ctx.fillStyle = "rgba(0, 0, 0, 0.16)";
       ctx.fillRect(0, 0, width, height);
 
-      // Continuous Particle Simulation (Runs non-stop even when stationary!)
+      // Continuous Particle Simulation
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         const flow = getFlowVector(p.x, p.y, time);

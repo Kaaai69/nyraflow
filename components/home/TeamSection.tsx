@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { homeContent } from "../../content/home";
 import { SectionContainer } from "./Layout";
+import { MotionHeading, MotionGrid, MotionCard } from "../ScrollRevealSection";
 
 export default function TeamSection() {
   const content = homeContent.team;
@@ -16,51 +17,59 @@ export default function TeamSection() {
 
   return (
     <section id="team" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
-      <SectionContainer className="grid gap-14 lg:grid-cols-12 lg:gap-12 items-center">
-        {/* Left Column: Headline with generous right padding */}
-        <header className="min-w-0 lg:col-span-5 lg:pr-12 xl:pr-16">
-          <span className="text-xs font-bold uppercase tracking-widest text-white/50">
-            Команда
-          </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl leading-tight">
-            {content.title}
-          </h2>
-          <p className="mt-6 text-base leading-relaxed text-white/70 md:text-lg">
-            {content.description}
-          </p>
+      <SectionContainer className="grid gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-14 items-center">
+        {/* Left Column: Headline with Controlled Typography & Balanced Wrapping */}
+        <header className="min-w-0 lg:col-span-5 lg:pr-2 xl:pr-6">
+          <MotionHeading>
+            <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50">
+              Команда
+            </span>
+            <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[44px] font-bold tracking-tight text-white leading-[1.18] max-w-lg">
+              {content.title}
+            </h2>
+            <p className="mt-6 text-base sm:text-lg leading-relaxed text-white/70 max-w-md">
+              {content.description}
+            </p>
+          </MotionHeading>
         </header>
 
-        {/* Right Column: 3 Portrait Cards with Fedor in Center & Staggered Higher */}
-        <div className="grid min-w-0 gap-6 sm:grid-cols-3 lg:col-span-7 items-stretch">
+        {/* Right Column: ARCHETYPE E Image-Led Portraits (Minimal Caption Slab) */}
+        <MotionGrid className="grid min-w-0 gap-5 sm:gap-6 sm:grid-cols-3 lg:col-span-7 items-stretch">
           {teamMembers.map((member, index) => {
             const isCenter = index === 1;
 
             return (
-              <article
-                key={member.id}
-                className={`min-w-0 group rounded-[16px] border border-white/14 bg-[#151515]/75 backdrop-blur-md overflow-hidden shadow-xl transition-all duration-300 hover:border-white/30 hover:bg-[#151515]/90 hover:-translate-y-1 flex flex-col justify-between ${
-                  isCenter ? "md:-translate-y-6" : ""
-                }`}
-              >
-                <div className="aspect-[4/5] overflow-hidden bg-[#000000] relative">
-                  <Image
-                    {...member.photo}
-                    sizes="(max-width: 767px) 100vw, (max-width: 1024px) 33vw, 300px"
-                    className="h-full w-full object-cover filter grayscale contrast-[1.04] transition-transform duration-500 group-hover:scale-105 group-hover:grayscale-0"
-                  />
-                </div>
-                <div className="p-5 border-t border-white/10">
-                  <h3 className="text-lg font-bold tracking-tight text-white">
-                    {member.name}
-                  </h3>
-                  <p className="mt-1 text-xs md:text-sm text-white/60">
-                    {member.role}
-                  </p>
-                </div>
-              </article>
+              <MotionCard key={member.id}>
+                <article
+                  className={`min-w-0 group overflow-hidden transition-all duration-300 flex flex-col justify-between ${
+                    isCenter ? "sm:-translate-y-4 md:-translate-y-6" : ""
+                  }`}
+                >
+                  {/* Image Dominates Directly with Emergence Gradient */}
+                  <div className="aspect-[4/5] overflow-hidden relative rounded-xl border border-white/14 bg-[#0E0F12]">
+                    <Image
+                      {...member.photo}
+                      sizes="(max-width: 767px) 100vw, (max-width: 1024px) 33vw, 300px"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                    {/* Soft Bottom Emergence Gradient */}
+                    <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#0E0F12] via-[#0E0F12]/60 to-transparent pointer-events-none" />
+                  </div>
+
+                  {/* Attached Minimal Caption Slab */}
+                  <div className="pt-4 px-1">
+                    <h3 className="text-lg font-bold tracking-tight text-white group-hover:text-white/90 transition-colors">
+                      {member.name}
+                    </h3>
+                    <p className="mt-1 text-xs md:text-sm text-white/60">
+                      {member.role}
+                    </p>
+                  </div>
+                </article>
+              </MotionCard>
             );
           })}
-        </div>
+        </MotionGrid>
       </SectionContainer>
     </section>
   );

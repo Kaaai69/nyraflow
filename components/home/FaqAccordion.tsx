@@ -12,50 +12,45 @@ export default function FaqAccordion({
   const leftColumn = items.slice(0, 3);
   const rightColumn = items.slice(3, 6);
 
+  const renderFaqItem = (item: FaqItem, indexOffset: number) => (
+    <details
+      key={item.id}
+      className="group transition-all duration-300 border-b border-white/12 pb-4 open:bg-[#0E0F12]/85 open:border open:border-white/16 open:p-6 open:rounded-xl open:shadow-xl"
+    >
+      <summary className="flex w-full items-start justify-between gap-4 text-left text-base md:text-lg font-bold leading-snug text-white transition-colors cursor-pointer select-none py-3">
+        <div className="flex items-start gap-4 pr-2">
+          <span className="text-xs font-mono font-bold tracking-widest text-white/40 uppercase mt-1 shrink-0">
+            0{indexOffset}
+          </span>
+          <span className="group-hover:text-white/80 transition-colors">{item.question}</span>
+        </div>
+        <div className="w-7 h-7 rounded-full border border-white/16 flex items-center justify-center shrink-0 mt-0.5 group-hover:border-white/40 group-open:rotate-180 group-open:bg-white/10 group-open:border-white/30 transition-all duration-300">
+          <CaretDownIcon
+            aria-hidden
+            size={16}
+            weight="bold"
+            className="text-white/80 group-hover:text-white transition-colors"
+          />
+        </div>
+      </summary>
+      <div className="mt-4 pt-3 border-t border-white/10 pl-8">
+        <p className="text-sm md:text-base leading-relaxed text-white/75">
+          {item.answer}
+        </p>
+      </div>
+    </details>
+  );
+
   return (
-    <div className="grid gap-x-16 gap-y-0 grid-cols-1 lg:grid-cols-2 items-start">
+    <div className="grid gap-8 grid-cols-1 lg:grid-cols-2 items-start">
       {/* Left Column Container */}
-      <div className="divide-y divide-white/14 border-t border-b border-white/14">
-        {leftColumn.map((item) => (
-          <details key={item.id} className="faq-details group">
-            <summary className="faq-trigger flex w-full items-center justify-between gap-4 py-6 text-left text-base md:text-lg font-bold leading-snug text-white transition-colors hover:text-white/80 cursor-pointer">
-              <span className="pr-2">{item.question}</span>
-              <CaretDownIcon
-                aria-hidden
-                size={20}
-                weight="bold"
-                className="faq-indicator mt-0.5 shrink-0 text-white"
-              />
-            </summary>
-            <div className="faq-panel">
-              <p className="pb-6 pr-6 text-sm md:text-base leading-relaxed text-white/75">
-                {item.answer}
-              </p>
-            </div>
-          </details>
-        ))}
+      <div className="space-y-4">
+        {leftColumn.map((item, idx) => renderFaqItem(item, idx + 1))}
       </div>
 
       {/* Right Column Container */}
-      <div className="divide-y divide-white/14 border-t border-b border-white/14 mt-0">
-        {rightColumn.map((item) => (
-          <details key={item.id} className="faq-details group">
-            <summary className="faq-trigger flex w-full items-center justify-between gap-4 py-6 text-left text-base md:text-lg font-bold leading-snug text-white transition-colors hover:text-white/80 cursor-pointer">
-              <span className="pr-2">{item.question}</span>
-              <CaretDownIcon
-                aria-hidden
-                size={20}
-                weight="bold"
-                className="faq-indicator mt-0.5 shrink-0 text-white"
-              />
-            </summary>
-            <div className="faq-panel">
-              <p className="pb-6 pr-6 text-sm md:text-base leading-relaxed text-white/75">
-                {item.answer}
-              </p>
-            </div>
-          </details>
-        ))}
+      <div className="space-y-4">
+        {rightColumn.map((item, idx) => renderFaqItem(item, idx + 4))}
       </div>
     </div>
   );
