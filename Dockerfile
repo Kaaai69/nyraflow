@@ -12,6 +12,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+# next.config.ts включает output: "standalone" только при DOCKER=true —
+# без этого .next/standalone не создастся и COPY ниже упадёт.
+ENV DOCKER=true
 RUN npm run build
 
 # ---- runner ----
