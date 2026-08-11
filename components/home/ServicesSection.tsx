@@ -13,9 +13,9 @@ export default function ServicesSection() {
   const content = homeContent.services;
 
   return (
-    <section id="services" data-theme="light" className="py-section-mobile md:py-section-desktop bg-transparent text-[#101114]">
+    <section id="services" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
       <SectionContainer>
-        <SectionHeading title={content.title} description={content.description} lightTheme />
+        <SectionHeading title={content.title} description={content.description} />
 
         <div className="mt-14 space-y-8 md:mt-16">
           {content.items.map((item, index) => {
@@ -24,23 +24,23 @@ export default function ServicesSection() {
             return (
               <article
                 key={item.id}
-                className="relative overflow-hidden rounded-[20px] p-8 md:p-12 transition-all duration-300 shadow-sm backdrop-blur-md bg-[#FFFFFF]/80 text-[#101114] border border-[#101114]/14 hover:bg-[#FFFFFF]/95 hover:border-[#101114]/30"
+                className="relative overflow-hidden rounded-[20px] p-8 md:p-12 transition-all duration-300 shadow-xl backdrop-blur-md bg-[#151515]/75 text-white border border-white/14 hover:bg-[#151515]/90 hover:border-white/30"
               >
                 {/* Watermark Text Background */}
                 <span
                   aria-hidden="true"
-                  className="absolute -right-4 -bottom-6 text-8xl md:text-9xl font-black tracking-widest pointer-events-none select-none text-[#101114]/4"
+                  className="absolute -right-4 -bottom-6 text-8xl md:text-9xl font-black tracking-widest pointer-events-none select-none text-white/5"
                 >
                   {watermark}
                 </span>
 
                 <div className="relative z-10 grid gap-8 lg:grid-cols-12 lg:gap-10">
                   {/* Left Column: Number & Service Title */}
-                  <div className="lg:col-span-4 border-b pb-6 lg:border-b-0 lg:pb-0 lg:border-r lg:pr-8 border-[#101114]/16">
-                    <span className="text-xs font-bold tracking-widest uppercase text-[#101114]/40">
+                  <div className="lg:col-span-4 border-b pb-6 lg:border-b-0 lg:pb-0 lg:border-r lg:pr-8 border-white/16">
+                    <span className="text-xs font-bold tracking-widest uppercase text-white/50">
                       0{index + 1}
                     </span>
-                    <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl text-[#101114]">
+                    <h3 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl text-white">
                       {item.title}
                     </h3>
                   </div>
@@ -53,7 +53,7 @@ export default function ServicesSection() {
                           key={key}
                           className={`rounded-xl p-5 ${
                             key === "businessOutcome"
-                              ? "bg-[#F3F2ED] border border-[#101114]/12"
+                              ? "bg-white/10 border border-white/15"
                               : ""
                           }`}
                         >
@@ -76,7 +76,7 @@ export default function ServicesSection() {
         <div className="mt-12 text-center md:text-left">
           <a
             href="#contact"
-            className="inline-flex h-14 items-center justify-center rounded-full bg-[#101114] px-9 text-base font-semibold text-[#FFFFFF] hover:bg-[#000000] hover:scale-105 active:scale-95 transition-all shadow-lg"
+            className="inline-flex h-14 items-center justify-center rounded-full bg-white px-9 text-base font-semibold text-[#101114] hover:bg-[#F3F3EF] hover:scale-105 active:scale-95 transition-all shadow-lg"
           >
             {content.cta}
           </a>

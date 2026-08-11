@@ -74,7 +74,7 @@ export default function NyraflowHero() {
     return (
       <section
         ref={containerRef}
-        className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center bg-[#000000] text-[#FFFFFF] px-6 text-center"
+        className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center bg-transparent text-[#FFFFFF] px-6 text-center"
       >
         <div className="mx-auto max-w-4xl">
           <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl lowercase">
@@ -99,7 +99,7 @@ export default function NyraflowHero() {
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none"
+      className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center bg-transparent text-[#FFFFFF] select-none"
     >
       {/* Top Header Logo Bar */}
       <header className="absolute top-0 left-0 right-0 z-30 flex items-center justify-start px-6 py-6 md:px-12 md:py-8 max-w-7xl mx-auto w-full">

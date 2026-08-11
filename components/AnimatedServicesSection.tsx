@@ -66,7 +66,7 @@ export default function AnimatedServicesSection() {
     <section
       ref={sectionRef}
       id="animated-services-section"
-      className="relative flex min-h-[50vh] w-full flex-col justify-center overflow-hidden bg-[#000000] text-[#FFFFFF] select-none py-24"
+      className="relative flex min-h-[50vh] w-full flex-col justify-center bg-transparent text-[#FFFFFF] select-none py-24"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col items-start justify-center px-6 md:px-12">
         <div className="flex flex-col sm:flex-row items-baseline justify-start gap-4 md:gap-6 w-full text-center sm:text-left">
