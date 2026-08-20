@@ -91,6 +91,57 @@ describe("parseAnalysis", () => {
     expect(parseAnalysis(JSON.stringify(mixed))?.structure).toHaveLength(4);
   });
 
+  // Живой прогон показал: промпт запрещает эти темы, но модель их всё равно
+  // выдаёт. Фильтр — гарантия там, где инструкция лишь намерение.
+  it("выбрасывает риск про ограниченный бюджет", () => {
+    const bad = {
+      ...validPayload,
+      risks: [
+        { risk: "Ограниченный бюджет до 400 000 ₽ ограничит функциональность", mitigation: "Сократить объём" },
+        ...validPayload.risks,
+      ],
+    };
+    const result = parseAnalysis(JSON.stringify(bad));
+    expect(result?.risks.some((r) => /ограниченн/i.test(r.risk))).toBe(false);
+    expect(result?.risks.length).toBe(2);
+  });
+
+  it("выбрасывает риск про сжатые сроки", () => {
+    const bad = {
+      ...validPayload,
+      risks: [
+        { risk: "Сжатые сроки могут помешать запуску", mitigation: "Начать раньше" },
+        ...validPayload.risks,
+      ],
+    };
+    expect(parseAnalysis(JSON.stringify(bad))?.risks.some((r) => /сжат/i.test(r.risk))).toBe(false);
+  });
+
+  it("выбрасывает вопрос про рекламный бюджет", () => {
+    const bad = {
+      ...validPayload,
+      questions: [
+        "Какой рекламный бюджет вы планируете?",
+        "Кто принимает решение?",
+        "Что считаете целевым обращением?",
+      ],
+    };
+    const result = parseAnalysis(JSON.stringify(bad));
+    expect(result?.questions.some((q) => /рекламн/i.test(q))).toBe(false);
+    expect(result?.questions.length).toBe(2);
+  });
+
+  it("отбраковывает ответ, если после фильтра рисков не осталось", () => {
+    const bad = {
+      ...validPayload,
+      risks: [
+        { risk: "Ограниченный бюджет мешает", mitigation: "Урезать" },
+        { risk: "Сжатые сроки давят", mitigation: "Ускориться" },
+      ],
+    };
+    expect(parseAnalysis(JSON.stringify(bad))).toBeNull();
+  });
+
   it("не падает на мусоре вместо JSON", () => {
     expect(parseAnalysis("извините, я не могу помочь")).toBeNull();
     expect(parseAnalysis("")).toBeNull();

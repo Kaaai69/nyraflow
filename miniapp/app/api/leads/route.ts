@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/auth/session";
 import { countLeadsByStatus, listLeads, LEAD_STATUSES, type LeadStatus } from "@/lib/db/leads";
+import { calculatePriority } from "@/lib/leads/priority";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,6 +35,13 @@ export async function GET(request: Request) {
     items: items.map((lead) => ({
       id: lead.id,
       status: lead.status,
+      // Приоритет считается на сервере: правило должно быть одно для всех,
+      // а не зависеть от версии приложения на телефоне.
+      priority: calculatePriority({
+        answers: lead.answers,
+        recommendedProduct: lead.recommended_product,
+        hasResponded: lead.status !== "new",
+      }),
       createdAt: lead.created_at,
       contact: lead.contact,
       name: lead.first_name ?? lead.username ?? `id ${lead.telegram_id}`,

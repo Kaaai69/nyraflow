@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { api, ApiRequestError } from "@/lib/api-client";
 import { haptic, initTelegram } from "@/lib/telegram/webapp";
@@ -14,9 +14,18 @@ import { LeadCard } from "@/components/admin/LeadCard";
 
 type LeadStatus = "new" | "qualified" | "in_work" | "won" | "lost";
 
+type Priority = {
+  level: "high" | "medium" | "low";
+  score: number;
+  reasons: string[];
+  budget: number | null;
+  termDays: number | null;
+};
+
 type LeadItem = {
   id: string;
   status: LeadStatus;
+  priority: Priority;
   createdAt: string;
   contact: string | null;
   name: string;
@@ -47,6 +56,27 @@ const PRODUCT_LABELS: Record<string, string> = {
   ai_automation: "AI-автоматизация",
 };
 
+// Приоритет показывается формой, а не только словом: три уровня различаются
+// заливкой, поэтому лента читается взглядом, без вчитывания.
+const PRIORITY_STYLE: Record<Priority["level"], { label: string; className: string }> = {
+  high: { label: "Высокий приоритет", className: "bg-white text-black" },
+  medium: { label: "Средний приоритет", className: "bg-white/15 text-white" },
+  low: { label: "Низкий приоритет", className: "bg-white/[0.06] text-white/45" },
+};
+
+function formatMoney(value: number): string {
+  return value >= 1_000_000
+    ? `${(value / 1_000_000).toFixed(value % 1_000_000 === 0 ? 0 : 1)} млн ₽`
+    : `${Math.round(value / 1000)} тыс ₽`;
+}
+
+function formatTerm(days: number): string {
+  if (days <= 10) return `${days} дн`;
+  if (days < 30) return `${Math.round(days / 7)} нед`;
+  const months = days / 30;
+  return months % 1 === 0 ? `${months} мес` : `${months.toFixed(1).replace(".", ",")} мес`;
+}
+
 const STATUS_LABELS: Record<LeadStatus, string> = {
   new: "Новая",
   qualified: "В диалоге",
@@ -70,7 +100,7 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
 }
 
-export function LeadFeed() {
+export function LeadFeed({ switcher }: { switcher?: ReactNode }) {
   const [filter, setFilter] = useState<LeadStatus | "all">("all");
   const [data, setData] = useState<FeedResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -106,6 +136,8 @@ export function LeadFeed() {
     void load(filter);
   }, [filter, load]);
 
+  // Карточка занимает экран целиком вместе с нижней панелью статусов,
+  // поэтому переключатели режимов на ней не показываются.
   if (openId) {
     return (
       <LeadCard
@@ -119,7 +151,9 @@ export function LeadFeed() {
   return (
     <main className="flex min-h-dvh flex-col">
       <header className="px-5 pt-6 pb-4">
-        <p className="text-xs tracking-[0.2em] text-white/40 uppercase">nyraflow desk</p>
+        {/* Без uppercase: бренд пишется строчными, а CSS-трансформация
+            превращала его в NYRAFLOW DESK. */}
+        <p className="text-xs tracking-[0.2em] text-white/40">nyraflow desk</p>
         <h1 className="mt-1 text-2xl font-medium">Заявки</h1>
       </header>
 
@@ -184,6 +218,26 @@ export function LeadFeed() {
                     </span>
                   </div>
 
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                        PRIORITY_STYLE[lead.priority.level].className
+                      }`}
+                    >
+                      {PRIORITY_STYLE[lead.priority.level].label}
+                    </span>
+                    {lead.priority.budget ? (
+                      <span className="text-xs text-white/50 tabular-nums">
+                        {formatMoney(lead.priority.budget)}
+                      </span>
+                    ) : null}
+                    {lead.priority.termDays ? (
+                      <span className="text-xs text-white/50 tabular-nums">
+                        · {formatTerm(lead.priority.termDays)}
+                      </span>
+                    ) : null}
+                  </div>
+
                   {lead.summary ? (
                     <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-white/55">
                       {lead.summary}
@@ -219,6 +273,8 @@ export function LeadFeed() {
           </ul>
         )}
       </div>
+
+      {switcher}
     </main>
   );
 }

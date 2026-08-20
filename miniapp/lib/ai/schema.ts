@@ -21,6 +21,38 @@ export type BriefAnalysis = {
 
 const PRODUCTS: readonly ProductId[] = ["landing", "web_service", "ai_automation"];
 
+/**
+ * Темы, которых в разборе быть не должно.
+ *
+ * Всё это запрещено в промпте, но модель такого размера правила забывает: на
+ * живом прогоне она выдала риск «Ограниченный бюджет до 400 000 ₽ может
+ * ограничить функциональность» — то есть и шаблонную формулировку, и подачу
+ * бюджета как проблемы. Промпт задаёт намерение, фильтр даёт гарантию.
+ *
+ * Окончания слов ловятся через \S*, а не \w*: \w в JavaScript — это
+ * [A-Za-z0-9_], кириллицу он не покрывает, и «сжатые сроки» мимо \w* не
+ * проходило. Та же ловушка, что с \b в разборе бюджета.
+ */
+const FORBIDDEN_TOPICS: readonly RegExp[] = [
+  /a\/b|а\/б/i,
+  /тестирован/i,
+  /гипотез/i,
+  /оптимизаци\S*\s+конверси/i,
+  /прогрев/i,
+  /рекламн\S*\s+(бюджет|кампан|канал)/i,
+  /seo-?продвижен/i,
+  // Фильтр применяется только к рискам и вопросам, поэтому запрет безопасен:
+  // в summary и оффере «трафик» остаётся допустимым словом.
+  /трафик/i,
+  /ограниченн\S*\s+бюджет/i,
+  /сжат\S*\s+срок/i,
+  /бюджет\s+(до|в|около)?\s*[\d\s]+\s*(₽|руб|тыс|млн)/i,
+];
+
+function isForbidden(text: string): boolean {
+  return FORBIDDEN_TOPICS.some((pattern) => pattern.test(text));
+}
+
 const LIMITS = {
   summary: 600,
   offer: 400,
@@ -90,13 +122,17 @@ export function parseAnalysis(raw: string): BriefAnalysis | null {
   const risks = pairs<AnalysisRisk>(obj.risks, 2, 5, (item) => {
     const risk = text(item.risk ?? item.title, LIMITS.risk);
     const mitigation = text(item.mitigation ?? item.solution, LIMITS.mitigation);
-    return risk && mitigation ? { risk, mitigation } : null;
+    if (!risk || !mitigation) return null;
+    // Пункт выбрасывается целиком: полуправленный риск читается хуже, чем
+    // отсутствующий, а минимум схемы всё равно проверяется ниже.
+    if (isForbidden(risk) || isForbidden(mitigation)) return null;
+    return { risk, mitigation };
   });
 
   const questions = Array.isArray(obj.questions)
     ? obj.questions
         .map((q) => text(q, LIMITS.question))
-        .filter((q): q is string => q !== null)
+        .filter((q): q is string => q !== null && !isForbidden(q))
         .slice(0, 5)
     : null;
 

@@ -6,6 +6,8 @@ import "@fontsource-variable/onest";
 
 import "./globals.css";
 
+import { Background } from "@/components/Background";
+
 export const metadata: Metadata = {
   title: "nyraflow desk",
   description: "Смета, бриф и статус проекта — внутри Telegram.",
@@ -30,7 +32,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
             через него приходят initData, тема и управление интерфейсом. */}
         <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
       </head>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        {/* Фон общий для всех экранов — единый визуальный язык с сайтом. */}
+        <Background />
+        <div className="relative z-10">{children}</div>
+      </body>
     </html>
   );
 }

@@ -30,7 +30,10 @@ function firstSentence(value: string | undefined, fallback: string): string {
   const trimmed = value?.trim();
   if (!trimmed) return fallback;
   const sentence = trimmed.split(/(?<=[.!?])\s/)[0] ?? trimmed;
-  return sentence.length > 220 ? `${sentence.slice(0, 219)}…` : sentence;
+  const clipped = sentence.length > 220 ? `${sentence.slice(0, 219)}…` : sentence;
+  // Точка в конце обязательна: куски склеиваются в один абзац, и без неё
+  // получалось «четыре кресла Люди находят нас в поиске».
+  return /[.!?…]$/.test(clipped) ? clipped : `${clipped}.`;
 }
 
 const ALWAYS_RELEVANT_RISKS: readonly { risk: string; mitigation: string }[] = [

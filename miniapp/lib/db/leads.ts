@@ -21,6 +21,7 @@ export const LEAD_STATUSES: readonly LeadStatus[] = [
 export type LeadListItem = {
   id: string;
   status: LeadStatus;
+  answers: BriefAnswers | null;
   contact: string | null;
   created_at: Date;
   telegram_id: string;
@@ -52,13 +53,14 @@ const LIST_SELECT = `
          u.first_name,
          u.username,
          b.id as brief_id,
+         b.answers,
          a.payload ->> 'summary' as summary,
          a.payload ->> 'recommendedProduct' as recommended_product,
          a.is_fallback
     from leads l
     join users u on u.id = l.user_id
     left join lateral (
-      select id from briefs where lead_id = l.id order by id desc limit 1
+      select id, answers from briefs where lead_id = l.id order by id desc limit 1
     ) b on true
     left join lateral (
       select payload, is_fallback from brief_analyses

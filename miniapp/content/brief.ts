@@ -31,7 +31,9 @@ export const briefQuestions: readonly BriefQuestion[] = [
     hint: "Что продаёте, где работаете, сколько человек в команде.",
     placeholder: "Студия ремонта кофемашин в Москве, 4 мастера",
     required: true,
-    minLength: 15,
+    // «Автосервис» — законный ответ, и отбивать его на первом же экране
+    // значит терять клиента до того, как он начал.
+    minLength: 8,
   },
   {
     id: "audience",
@@ -39,7 +41,7 @@ export const briefQuestions: readonly BriefQuestion[] = [
     hint: "Если сегментов несколько — укажите примерные доли.",
     placeholder: "Кофейни — примерно 60%, частники с дорогой техникой — 40%",
     required: true,
-    minLength: 15,
+    minLength: 10,
   },
   {
     id: "goal",
@@ -47,7 +49,7 @@ export const briefQuestions: readonly BriefQuestion[] = [
     hint: "Главная причина, по которой вы сейчас это делаете.",
     placeholder: "Заявки идут только из сарафана, с сайта — ноль",
     required: true,
-    minLength: 15,
+    minLength: 10,
   },
   {
     id: "current_state",
@@ -63,7 +65,7 @@ export const briefQuestions: readonly BriefQuestion[] = [
     hint: "Только то, что можно проверить. Без «высокого качества и индивидуального подхода».",
     placeholder: "Выезд в день обращения, оригинальные запчасти, гарантия год",
     required: true,
-    minLength: 15,
+    minLength: 10,
   },
   {
     id: "success_metric",

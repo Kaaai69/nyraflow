@@ -30,6 +30,8 @@ export class ProviderError extends Error {
     message: string,
     readonly provider: string,
     readonly status?: number,
+    /** Сколько ждать до повтора, если провайдер это подсказал. */
+    readonly retryAfterMs?: number,
   ) {
     super(message);
     this.name = "ProviderError";
@@ -44,12 +46,44 @@ type ChatOptions = {
   json?: boolean;
 };
 
+/**
+ * Сколько ждать после отказа по лимиту.
+ *
+ * На бесплатном тарифе Groq минутный лимит — 6000 токенов, а один разбор
+ * съедает около 3500. Два клиента, отправивших бриф подряд, упираются в него
+ * штатно. Без ретрая второй получал бы шаблон вместо разбора.
+ */
+const RATE_LIMIT_RETRIES = 2;
+const RATE_LIMIT_PAUSE_MS = 4000;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 type CompletionResponse = {
   choices?: { message?: { content?: string } }[];
   usage?: { prompt_tokens?: number; completion_tokens?: number };
 };
 
 export async function chat(
+  config: ProviderConfig,
+  messages: readonly ChatMessage[],
+  options: ChatOptions = {},
+): Promise<ChatResult> {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await chatOnce(config, messages, options);
+    } catch (error) {
+      const rateLimited = error instanceof ProviderError && error.status === 429;
+      if (!rateLimited || attempt >= RATE_LIMIT_RETRIES) throw error;
+
+      // Провайдер иногда подсказывает, сколько ждать; если нет — пауза по умолчанию.
+      const wait = error.retryAfterMs ?? RATE_LIMIT_PAUSE_MS * (attempt + 1);
+      console.warn(`[ai] ${config.name}: лимит, повтор через ${wait} мс`);
+      await sleep(wait);
+    }
+  }
+}
+
+async function chatOnce(
   config: ProviderConfig,
   messages: readonly ChatMessage[],
   options: ChatOptions = {},
@@ -87,10 +121,14 @@ export async function chat(
 
   if (!response.ok) {
     const detail = (await response.text().catch(() => "")).slice(0, 300);
+    const retryAfter = response.headers.get("retry-after");
+    const retryAfterMs = retryAfter ? Number.parseFloat(retryAfter) * 1000 : undefined;
+
     throw new ProviderError(
       `${config.name}: HTTP ${response.status} ${detail}`,
       config.name,
       response.status,
+      Number.isFinite(retryAfterMs) ? retryAfterMs : undefined,
     );
   }
 

@@ -6,6 +6,7 @@ import { briefQuestions, MAX_ANSWER_LENGTH, type BriefAnswers } from "@/content/
 import { api, ApiRequestError } from "@/lib/api-client";
 import type { BriefAnalysis } from "@/lib/ai/schema";
 import { bindBackButton, haptic, hapticSuccess, initTelegram, isInsideTelegram } from "@/lib/telegram/webapp";
+import { watchViewportHeight } from "@/lib/telegram/viewport";
 import { AnalysisView } from "@/components/brief/AnalysisView";
 
 // Бриф по одному вопросу на экран.
@@ -97,6 +98,9 @@ export function BriefFlow() {
   useEffect(() => {
     initTelegram();
     setAnswers(loadSaved());
+    // Следим за реальной высотой: без этого нижняя панель прыгает, когда
+    // выезжает клавиатура.
+    return watchViewportHeight();
   }, []);
 
   useEffect(() => {
@@ -208,8 +212,14 @@ export function BriefFlow() {
   }
 
   return (
-    <main className="flex min-h-dvh flex-col">
-      <div className="flex items-center gap-3 px-5 pt-5">
+    // Высота — ровно видимая область. Прокручивается только середина, а панель
+    // кнопок остаётся последним элементом колонки: ей незачем быть sticky, и
+    // поэтому она не пересчитывает своё положение при движении клавиатуры.
+    <main
+      className="flex flex-col overflow-hidden"
+      style={{ height: "var(--app-vh, 100dvh)" }}
+    >
+      <div className="flex shrink-0 items-center gap-3 px-5 pt-5">
         <div className="h-px flex-1 bg-white/10">
           <div
             className="h-px bg-white transition-all duration-300"
@@ -221,7 +231,7 @@ export function BriefFlow() {
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 px-5 pt-10">
+      <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-5 pt-10">
         <h1 className="text-2xl leading-snug font-medium">{question.title}</h1>
         <p className="text-sm leading-relaxed text-white/50">{question.hint}</p>
 
@@ -256,7 +266,7 @@ export function BriefFlow() {
         ) : null}
       </div>
 
-      <div className="sticky bottom-0 flex gap-3 border-t border-white/10 bg-black/95 px-5 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur">
+      <div className="flex shrink-0 gap-3 border-t border-white/10 bg-black/80 px-5 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur">
         {step > 0 && !isInsideTelegram() ? (
           <button
             type="button"
