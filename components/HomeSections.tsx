@@ -1,6 +1,7 @@
 import AnimatedServicesSection from "@/components/AnimatedServicesSection";
 import Marquee from "@/components/Marquee";
 import ScrollRevealSection from "@/components/ScrollRevealSection";
+import AutomationSection from "./home/AutomationSection";
 import BenefitsSection from "./home/BenefitsSection";
 import ContactSection from "./home/ContactSection";
 import CredibilitySection from "./home/CredibilitySection";
@@ -35,6 +36,9 @@ export default function HomeSections() {
       </ScrollRevealSection>
       {/* EXISTING ANIMATION #2 - EXPLICITLY UNTOUCHED & UNWRAPPED */}
       <AnimatedServicesSection />
+      <ScrollRevealSection>
+        <AutomationSection />
+      </ScrollRevealSection>
       <ScrollRevealSection>
         <StarterSection />
       </ScrollRevealSection>

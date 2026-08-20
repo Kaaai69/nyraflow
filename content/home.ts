@@ -4,6 +4,7 @@ export type HomeSectionId =
   | "problem"
   | "metrics"
   | "work"
+  | "automation"
   | "starter"
   | "pricing"
   | "services"
@@ -62,6 +63,14 @@ type BenefitItem = TextItem & {
   icon: BenefitIconName;
 };
 
+export type AutomationStep = {
+  id: string;
+  title: string;
+  description: string;
+  /** Факт, который делает шаг проверяемым: время, гарантия, поведение при сбое. */
+  proof: string;
+};
+
 export type PricingItem = {
   id: string;
   title: string;
@@ -118,6 +127,17 @@ export type HomeContent = {
     title: string;
     description: string;
     media: readonly WorkMedia[];
+  };
+  automation: {
+    id: "automation";
+    eyebrow: string;
+    title: string;
+    description: string;
+    steps: readonly AutomationStep[];
+    note: string;
+    cta: string;
+    ctaHref: string;
+    secondaryCta: string;
   };
   starter: {
     id: "starter";
@@ -178,6 +198,7 @@ export const homeSectionOrder = [
   "problem",
   "metrics",
   "work",
+  "automation",
   "starter",
   "pricing",
   "services",
@@ -398,6 +419,51 @@ export const homeContent = {
         cta: "Открыть проект",
       },
     ],
+  },
+  automation: {
+    id: "automation",
+    eyebrow: "Автоматизация в работе",
+    title: "Мы собрали это себе. Так же соберём вам.",
+    description:
+      "Наш пресейл работает без ручной обработки: клиент отвечает на восемь вопросов в Telegram, разбор задачи готовится за пару секунд, заявка попадает в работу с приоритетом и уходит в сценарии n8n. Ниже — та же система, которую мы ставим клиентам.",
+    steps: [
+      {
+        id: "brief",
+        title: "Бриф вместо анкеты",
+        description:
+          "Восемь вопросов по одному на экран. Ответы сохраняются на каждом шаге, поэтому закрытое приложение не стоит клиенту заполненной формы.",
+        proof: "8 вопросов · 2 минуты",
+      },
+      {
+        id: "analysis",
+        title: "Разбор задачи",
+        description:
+          "Языковая модель по нашей методике собирает структуру будущего сайта, гипотезу оффера и вопросы, которых клиент себе не задавал. Если модель недоступна, разбор собирается по правилам — пустого экрана не бывает.",
+        proof: "около 2 секунд",
+      },
+      {
+        id: "priority",
+        title: "Заявка с приоритетом",
+        description:
+          "Бюджет и срок вычитываются из ответов, к ним добавляются формат задачи и реакция клиента. В ленте видно, с кем говорить первым и на каком основании.",
+        proof: "бюджет · срок · формат",
+      },
+      {
+        id: "delivery",
+        title: "Сценарии n8n",
+        description:
+          "Каждое событие уходит в автоматизацию подписанным запросом: уведомление команде, саммари разбора, напоминание через сутки. Если сценарий недоступен, события копятся и доставляются повторами.",
+        proof: "доставка с повторами",
+      },
+    ],
+    note:
+      "Это не демонстрационный стенд: студия ведёт через эту систему собственные заявки каждый день.",
+    cta: "Пройти бриф в Telegram",
+    // Прямая ссылка на мини-апп появится, когда в BotFather будет заведено
+    // короткое имя через /newapp. Пока ведём в чат с ботом — эта ссылка
+    // работает всегда и не может отдать 404.
+    ctaHref: "https://t.me/nyrabusinessbot?start=site_automation",
+    secondaryCta: "Обсудить проект",
   },
   starter: {
     id: "starter",
