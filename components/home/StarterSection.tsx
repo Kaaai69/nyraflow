@@ -20,7 +20,7 @@ export default function StarterSection() {
   const content = homeContent.starter;
 
   return (
-    <section id="starter" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="starter" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         {/* Large Architectural Composition Frame */}
         <div className="rounded-[22px] border border-white/14 border-t-white/30 bg-[#0E0F12]/90 backdrop-blur-md p-8 md:p-12 lg:p-14 shadow-2xl">

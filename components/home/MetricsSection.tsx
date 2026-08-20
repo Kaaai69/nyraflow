@@ -9,7 +9,7 @@ export default function MetricsSection() {
     <section
       id="metrics"
       aria-label="Опыт и результаты"
-      className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]"
+      className="py-section-mobile md:py-section-desktop bg-transparent text-white"
     >
       <SectionContainer>
         {/* Open Editorial Typography Floating in Space (No Truncation / No Ellipsis) */}

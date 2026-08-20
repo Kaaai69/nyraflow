@@ -20,7 +20,7 @@ export default function BenefitsSection() {
   const content = homeContent.benefits;
 
   return (
-    <section id="benefits" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="benefits" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         <header className="border-b border-white/14 pb-8">
           <MotionHeading>

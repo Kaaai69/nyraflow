@@ -6,7 +6,7 @@ export default function ProcessSection() {
   const content = homeContent.process;
 
   return (
-    <section id="process" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="process" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         <header className="mb-12 border-b border-white/14 pb-8">
           <MotionHeading>

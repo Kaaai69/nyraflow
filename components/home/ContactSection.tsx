@@ -61,7 +61,7 @@ export default function ContactSection() {
   const isSubmitting = status === "submitting";
 
   return (
-    <section id="contact" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="contact" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-12 items-start">
           {/* Left Column: Large Open Offer & Info */}

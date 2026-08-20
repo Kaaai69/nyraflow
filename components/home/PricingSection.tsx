@@ -11,7 +11,7 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]"
+      className="py-section-mobile md:py-section-desktop bg-transparent text-white"
     >
       <SectionContainer>
         <SectionHeading

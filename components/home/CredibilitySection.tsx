@@ -9,7 +9,7 @@ export default function CredibilitySection() {
     <section
       id="credibility"
       aria-label="Принципы работы"
-      className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]"
+      className="py-section-mobile md:py-section-desktop bg-transparent text-white"
     >
       <SectionContainer>
         {/* Open Editorial / Architectural Layout (No Outer Card / No Dark Box Background) */}

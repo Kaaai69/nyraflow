@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       <BackgroundWaves />
-      <main className="site-main relative z-10 w-full overflow-x-clip bg-transparent text-[#F1F5F9]">
+      <main className="site-main relative z-10 w-full overflow-x-clip bg-transparent text-white">
         {/* EXISTING ANIMATION #1 - EXPLICITLY UNTOUCHED & UNWRAPPED */}
         <ResponsiveHero />
         <HomeSections />

@@ -66,12 +66,12 @@ export default function AnimatedServicesSection() {
     <section
       ref={sectionRef}
       id="animated-services-section"
-      className="relative flex min-h-[50vh] w-full flex-col justify-center bg-transparent text-[#FFFFFF] select-none py-24"
+      className="relative flex min-h-[50vh] w-full flex-col justify-center bg-transparent text-white select-none py-24"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col items-start justify-center px-6 md:px-12">
         <div className="flex flex-col sm:flex-row items-baseline justify-start gap-4 md:gap-6 w-full text-center sm:text-left">
           {/* STATIC PHRASE - EXACT BASELINE ALIGNMENT */}
-          <span className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap">
+          <span className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl shrink-0 whitespace-nowrap">
             Мы создаём
           </span>
 
@@ -87,7 +87,7 @@ export default function AnimatedServicesSection() {
                   duration: 0.65,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="text-4xl font-bold tracking-tight text-[#FFFFFF] sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap inline-block text-white"
+                className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl whitespace-nowrap inline-block text-white"
               >
                 {SERVICES[currentIndex]}
               </motion.span>

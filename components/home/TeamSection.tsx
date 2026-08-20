@@ -16,7 +16,7 @@ export default function TeamSection() {
   const teamMembers = [arseny, fedor, artem];
 
   return (
-    <section id="team" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="team" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer className="grid gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-14 items-center">
         {/* Left Column: Headline with Controlled Typography & Balanced Wrapping */}
         <header className="min-w-0 lg:col-span-5 lg:pr-2 xl:pr-6">

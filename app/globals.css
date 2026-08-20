@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 @theme {
+  /* Softened off-white: #FFFFFF on pure black is the harshest contrast
+     available and reads as glare on large surfaces. */
+  --color-white: #ECEEF2;
   --color-canvas: #000000;
   --color-surface: #101114;
   --color-surface-paper: #F3F3EF;
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-primary: #ECEEF2;
+  --color-text-secondary: rgba(236, 238, 242, 0.6);
   --color-line: rgba(255, 255, 255, 0.14);
   --color-line-strong: rgba(255, 255, 255, 0.25);
   --font-sans: "Onest Variable", Arial, Helvetica, sans-serif;
@@ -32,11 +35,11 @@
 
   --paper: #F3F3EF;
   --paper-2: #E7E7E1;
-  --white: #FFFFFF;
+  --white: #ECEEF2;
 
   --ink: #101114;
 
-  --text-light: #FFFFFF;
+  --text-light: #ECEEF2;
   --text-light-muted: rgba(255, 255, 255, 0.58);
 
   --text-dark: #101114;
@@ -62,7 +65,7 @@ body {
 body {
   margin: 0;
   background: #000000;
-  color: #FFFFFF;
+  color: #ECEEF2;
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
 }
@@ -101,7 +104,7 @@ body {
   summary,
   [tabindex]:not([tabindex="-1"])
 ):focus-visible {
-  outline: 2px solid #FFFFFF;
+  outline: 2px solid #ECEEF2;
   outline-offset: 3px;
 }
 
@@ -113,7 +116,7 @@ body {
   border-radius: 0.5rem;
   background: rgba(0, 0, 0, 0.4);
   padding: 0.75rem 0.875rem;
-  color: #FFFFFF;
+  color: #ECEEF2;
   transition: border-color var(--duration-fast) var(--ease-premium);
 }
 
@@ -122,7 +125,7 @@ body {
 }
 
 .form-field:focus {
-  border-color: #FFFFFF;
+  border-color: #ECEEF2;
   outline: none;
 }
 

@@ -14,7 +14,7 @@ export default function ServicesSection() {
   const content = homeContent.services;
 
   return (
-    <section id="services" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="services" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
 

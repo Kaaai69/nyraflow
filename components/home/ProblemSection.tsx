@@ -6,7 +6,7 @@ export default function ProblemSection() {
   const items = homeContent.problem.items;
 
   return (
-    <section id="problem" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="problem" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         {/* Editorial Problem Header */}
         <header className="pb-12 md:pb-16 border-b border-white/14">

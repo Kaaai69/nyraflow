@@ -35,7 +35,7 @@ type RootLayoutProps = Readonly<{
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ru" className="dark">
-      <body className="bg-[#000000] text-[#FFFFFF] antialiased selection:bg-white/20 selection:text-white">
+      <body className="bg-[#000000] text-white antialiased selection:bg-white/20 selection:text-white">
         {children}
       </body>
     </html>
