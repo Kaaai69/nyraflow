@@ -77,6 +77,10 @@ export const env = {
   get aiDeepModel(): string {
     return optional("AI_DEEP_MODEL");
   },
+  /** Общий токен для входящего API: им n8n двигает заявки и проекты. */
+  get adminApiToken(): string {
+    return optional("ADMIN_API_TOKEN");
+  },
   get aiTimeoutMs(): number {
     const raw = Number.parseInt(optional("AI_TIMEOUT_MS", "25000"), 10);
     return Number.isFinite(raw) && raw > 0 ? raw : 25_000;

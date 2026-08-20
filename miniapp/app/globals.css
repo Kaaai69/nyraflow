@@ -20,3 +20,14 @@ body {
   color: var(--tg-theme-text-color, #ffffff);
   overscroll-behavior-y: none;
 }
+
+/* Горизонтальные ленты фильтров прокручиваются пальцем — полоса прокрутки
+   в них только мешает. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

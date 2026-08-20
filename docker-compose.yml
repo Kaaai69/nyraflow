@@ -94,6 +94,16 @@ services:
       GENERIC_TIMEZONE: Europe/Moscow
       TZ: Europe/Moscow
       N8N_DIAGNOSTICS_ENABLED: "false"
+      # Блок Code по умолчанию работает в песочнице без встроенных модулей.
+      # crypto нужен, чтобы сценарии могли проверять HMAC-подпись событий.
+      NODE_FUNCTION_ALLOW_BUILTIN: crypto
+      # Доступ к переменным окружения из блока Code. Значение по умолчанию
+      # менялось между версиями n8n, поэтому задаём явно: без него сценарий
+      # не получает секрет подписи и считает все события неподписанными.
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      # Тот же секрет, которым воркер подписывает события: сценарии проверяют
+      # им заголовок x-nyraflow-signature. Без него подпись не сойдётся.
+      N8N_WEBHOOK_SECRET: ${N8N_WEBHOOK_SECRET:?N8N_WEBHOOK_SECRET должен быть задан в .env}
     volumes:
       - n8n_data:/home/node/.n8n
     expose:

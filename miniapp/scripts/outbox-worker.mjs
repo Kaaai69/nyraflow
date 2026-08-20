@@ -49,7 +49,7 @@ async function connect(connectionString) {
   throw new Error("unreachable");
 }
 
-async function deliver(webhookUrl, secret, event) {
+async function deliverTo(webhookUrl, secret, event) {
   const body = JSON.stringify({
     id: String(event.id),
     type: event.type,
@@ -83,10 +83,34 @@ async function deliver(webhookUrl, secret, event) {
 }
 
 /**
+ * Доставка во все настроенные адреса. Сценариев в n8n несколько, у каждого
+ * свой вебхук, и событие нужно каждому из них.
+ *
+ * Событие считается доставленным, только когда приняли все адреса. Если один
+ * отказал, повтор уйдёт снова во все — поэтому сценарии обязаны быть
+ * идемпотентными и опираться на x-nyraflow-event-id.
+ */
+async function deliver(webhookUrls, secret, event) {
+  const failures = [];
+
+  for (const url of webhookUrls) {
+    try {
+      await deliverTo(url, secret, event);
+    } catch (error) {
+      failures.push(`${new URL(url).pathname}: ${error.message}`);
+    }
+  }
+
+  if (failures.length > 0) {
+    throw new Error(failures.join(" | "));
+  }
+}
+
+/**
  * Один цикл: забирает пачку готовых к отправке событий и пытается доставить.
  * Возвращает количество обработанных — ноль означает, что можно поспать.
  */
-async function tick(pool, webhookUrl, secret) {
+async function tick(pool, webhookUrls, secret) {
   const client = await pool.connect();
   let handled = 0;
 
@@ -106,7 +130,7 @@ async function tick(pool, webhookUrl, secret) {
     for (const event of rows) {
       handled += 1;
       try {
-        await deliver(webhookUrl, secret, event);
+        await deliver(webhookUrls, secret, event);
         await client.query(
           `update outbox_events
               set status = 'sent', sent_at = now(), attempts = attempts + 1, last_error = null
@@ -155,17 +179,22 @@ async function main() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) throw new Error("DATABASE_URL не задан");
 
-  const webhookUrl = process.env.N8N_WEBHOOK_URL ?? "";
+  // Адресов может быть несколько через запятую — по одному на сценарий.
+  const webhookUrls = (process.env.N8N_WEBHOOK_URL ?? "")
+    .split(",")
+    .map((url) => url.trim())
+    .filter(Boolean);
   const secret = process.env.N8N_WEBHOOK_SECRET ?? "";
 
   const pool = await connect(connectionString);
 
-  if (!webhookUrl) {
+  if (webhookUrls.length === 0) {
     // Это нормальное состояние до подъёма n8n: события копятся в базе и
     // уедут все разом, как только появится адрес. Ничего не теряется.
     log("N8N_WEBHOOK_URL не задан — события копятся, доставка выключена");
   } else {
-    log(`доставка включена: ${webhookUrl}`);
+    log(`доставка включена, адресов: ${webhookUrls.length}`);
+    for (const url of webhookUrls) log(`  → ${url}`);
     if (!secret) log("ВНИМАНИЕ: N8N_WEBHOOK_SECRET пуст, запросы уйдут без подписи");
   }
 
@@ -178,8 +207,8 @@ async function main() {
   process.on("SIGINT", () => stop("SIGINT"));
 
   while (running) {
-    if (webhookUrl) {
-      const handled = await tick(pool, webhookUrl, secret);
+    if (webhookUrls.length > 0) {
+      const handled = await tick(pool, webhookUrls, secret);
       // Разгребаем очередь без пауз, пока в ней что-то есть.
       if (handled === BATCH_SIZE) continue;
     }

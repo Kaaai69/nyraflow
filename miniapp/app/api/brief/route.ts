@@ -81,13 +81,18 @@ export async function POST(request: Request) {
   }
 
   const contact = user.username ? `@${user.username}` : `tg:${user.telegram_id}`;
-  const { leadId, briefId } = await createBriefWithLead(user.id, contact, validation.answers);
+  const { leadId, briefId } = await createBriefWithLead(
+    user.id,
+    user.telegram_id,
+    contact,
+    validation.answers,
+  );
 
   // Разбор идёт вне транзакции: держать соединение с базой открытым на время
   // сетевого запроса к модели незачем.
   try {
     const outcome = await analyzeBrief(validation.answers);
-    await saveAnalysis(briefId, leadId, outcome);
+    await saveAnalysis(briefId, leadId, user.telegram_id, outcome);
 
     if (outcome.attempts.length > 0) {
       console.warn("[brief] провайдеры с ошибками:", outcome.attempts.join(" | "));

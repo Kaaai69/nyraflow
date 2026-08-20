@@ -1,0 +1,142 @@
+{
+  "name": "nyraflow — уведомления о заявках",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nyraflow-events",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "name": "Событие из мини-аппа",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-260, 300],
+      "webhookId": "nyraflow-events"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Проверяем подпись и готовим текст сообщения.\n//\n// Воркер мини-аппа подписывает тело события ключом N8N_WEBHOOK_SECRET и\n// кладёт подпись в заголовок x-nyraflow-signature. Без проверки любой, кто\n// узнает адрес вебхука, сможет слать сюда что угодно.\n\nconst crypto = require('crypto');\n\nconst item = $input.first().json;\nconst headers = item.headers || {};\nconst body = item.body || {};\n\nconst secret = $env.N8N_WEBHOOK_SECRET || '';\nconst received = String(headers['x-nyraflow-signature'] || '');\nconst expected = secret\n  ? crypto.createHmac('sha256', secret).update(JSON.stringify(body)).digest('hex')\n  : '';\n\nlet valid = false;\nif (secret && received.length === expected.length && received.length > 0) {\n  valid = crypto.timingSafeEqual(Buffer.from(received), Buffer.from(expected));\n}\n\nconst type = String(body.type || 'unknown');\nconst payload = body.payload || {};\nconst eventId = String(headers['x-nyraflow-event-id'] || body.id || '');\n\n// Тексты сообщений. Правьте прямо здесь — это обычный JavaScript.\nconst PRODUCTS = {\n  landing: 'Лендинг (от 30 000 ₽)',\n  web_service: 'Веб-сервис или Mini App (от 60 000 ₽)',\n  ai_automation: 'Сайт с AI-автоматизацией (от 120 000 ₽)',\n};\n\nlet text = '';\nlet notify = true;\n\nif (type === 'lead.created') {\n  text =\n    '🟢 <b>Новая заявка из мини-аппа</b>\\n\\n' +\n    'Заявка №' + (payload.leadId || '—') + '\\n' +\n    (payload.intent === 'discuss' ? 'Клиент нажал «обсудить разбор»' : 'Клиент заполнил бриф');\n} else if (type === 'brief.analyzed') {\n  text =\n    '📋 <b>Разбор брифа готов</b>\\n\\n' +\n    'Заявка №' + (payload.leadId || '—') + '\\n' +\n    'Формат: ' + (PRODUCTS[payload.recommendedProduct] || payload.recommendedProduct || '—') + '\\n' +\n    (payload.isFallback ? '⚠️ Разбор собран шаблоном — модель была недоступна' : 'Модель: ' + (payload.model || '—'));\n} else {\n  // Событие известного типа, но уведомлять о нём не нужно.\n  notify = false;\n  text = 'Событие ' + type + ' получено и пропущено';\n}\n\nreturn [{ json: { valid, notify, type, eventId, text } }];"
+      },
+      "id": "a1000000-0000-4000-8000-000000000002",
+      "name": "Проверить подпись",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-40, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.valid }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "a1000000-0000-4000-8000-000000000003",
+      "name": "Подпись верна?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [180, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.notify }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "a1000000-0000-4000-8000-000000000004",
+      "name": "Нужно уведомление?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [400, 200]
+    },
+    {
+      "parameters": {
+        "chatId": "1098997456",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "a1000000-0000-4000-8000-000000000005",
+      "name": "Сообщение команде",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [620, 120]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, eventId: $('Проверить подпись').first().json.eventId }) }}",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000006",
+      "name": "Ответить 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [860, 200]
+    },
+    {
+      "parameters": {},
+      "id": "a1000000-0000-4000-8000-000000000007",
+      "name": "Пропустить",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [620, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: 'bad_signature' }) }}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "a1000000-0000-4000-8000-000000000008",
+      "name": "Ответить 401",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [400, 440]
+    }
+  ],
+  "connections": {
+    "Событие из мини-аппа": {
+      "main": [[{ "node": "Проверить подпись", "type": "main", "index": 0 }]]
+    },
+    "Проверить подпись": {
+      "main": [[{ "node": "Подпись верна?", "type": "main", "index": 0 }]]
+    },
+    "Подпись верна?": {
+      "main": [
+        [{ "node": "Нужно уведомление?", "type": "main", "index": 0 }],
+        [{ "node": "Ответить 401", "type": "main", "index": 0 }]
+      ]
+    },
+    "Нужно уведомление?": {
+      "main": [
+        [{ "node": "Сообщение команде", "type": "main", "index": 0 }],
+        [{ "node": "Пропустить", "type": "main", "index": 0 }]
+      ]
+    },
+    "Сообщение команде": {
+      "main": [[{ "node": "Ответить 200", "type": "main", "index": 0 }]]
+    },
+    "Пропустить": {
+      "main": [[{ "node": "Ответить 200", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

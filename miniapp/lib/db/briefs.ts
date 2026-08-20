@@ -15,6 +15,7 @@ export type BriefRow = {
 /** Заявка и бриф создаются одной транзакцией вместе с событием для n8n. */
 export async function createBriefWithLead(
   userId: string,
+  telegramId: string,
   contact: string | null,
   answers: BriefAnswers,
 ): Promise<{ leadId: string; briefId: string }> {
@@ -32,8 +33,10 @@ export async function createBriefWithLead(
     );
     const briefId = brief.rows[0]!.id;
 
-    await enqueueEvent(client, "lead.created", { leadId, userId, source: "miniapp" });
-    await enqueueEvent(client, "brief.submitted", { leadId, briefId, userId });
+    // telegramId в payload — чтобы сценарий мог написать клиенту напрямую,
+    // не обращаясь за ним в наш API.
+    await enqueueEvent(client, "lead.created", { leadId, userId, telegramId, source: "miniapp" });
+    await enqueueEvent(client, "brief.submitted", { leadId, briefId, userId, telegramId });
 
     return { leadId, briefId };
   });
@@ -43,6 +46,7 @@ export async function createBriefWithLead(
 export async function saveAnalysis(
   briefId: string,
   leadId: string,
+  telegramId: string,
   outcome: AnalysisOutcome,
 ): Promise<string> {
   return transaction(async (client) => {
@@ -68,10 +72,16 @@ export async function saveAnalysis(
     await enqueueEvent(client, "brief.analyzed", {
       leadId,
       briefId,
+      telegramId,
       provider: outcome.provider,
       model: outcome.model,
       isFallback: outcome.isFallback,
       recommendedProduct: outcome.analysis.recommendedProduct,
+      // Короткая выжимка прямо в событии: сценарию не нужно ходить в API,
+      // чтобы отправить команде осмысленное сообщение.
+      summary: outcome.analysis.summary,
+      offerHypothesis: outcome.analysis.offerHypothesis,
+      topQuestion: outcome.analysis.questions[0] ?? null,
     });
 
     return inserted.rows[0]!.id;
