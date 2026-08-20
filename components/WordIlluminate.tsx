@@ -7,7 +7,7 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 
 /**
  * Text that lights up word by word as it scrolls through the viewport, as on
@@ -39,10 +39,7 @@ function Word({
   const opacity = useTransform(progress, [start, start + WORD_WINDOW], [DIM, 1]);
 
   return (
-    <motion.span
-      style={{ opacity }}
-      className="inline-block will-change-[opacity] mr-[0.28em]"
-    >
+    <motion.span style={{ opacity }} className="inline-block will-change-[opacity]">
       {word}
     </motion.span>
   );
@@ -80,13 +77,15 @@ export default function WordIlluminate({
   return (
     <Tag ref={ref as React.Ref<never>} className={className}>
       {words.map((word, index) => (
-        <Word
-          key={`${word}-${index}`}
-          word={word}
-          index={index}
-          total={words.length}
-          progress={scrollYProgress}
-        />
+        <Fragment key={`${word}-${index}`}>
+          <Word
+            word={word}
+            index={index}
+            total={words.length}
+            progress={scrollYProgress}
+          />
+          {index < words.length - 1 ? " " : null}
+        </Fragment>
       ))}
     </Tag>
   );
