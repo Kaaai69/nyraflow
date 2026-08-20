@@ -16,7 +16,7 @@ export default function MetricsSection() {
         <MotionGrid className="grid gap-12 md:grid-cols-3 md:gap-8 items-stretch border-y border-white/14 py-12 md:py-16" staggerDelay={0.12}>
           {/* Metric 1 - 2+ */}
           {items[0] && (
-            <MotionCard>
+            <MotionCard tilt={false}>
               <div className="flex h-full flex-col justify-between border-b border-white/14 pb-10 md:border-b-0 md:border-r md:pb-0 md:pr-6 lg:pr-10 min-w-0">
                 <span className="text-6xl sm:text-7xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tight text-white block whitespace-nowrap">
                   {items[0].value}
@@ -35,7 +35,7 @@ export default function MetricsSection() {
 
           {/* Metric 2 - 20+ */}
           {items[1] && (
-            <MotionCard>
+            <MotionCard tilt={false}>
               <div className="flex h-full flex-col justify-between border-b border-white/14 pb-10 md:border-b-0 md:border-r md:pb-0 md:px-6 lg:px-10 min-w-0">
                 <span className="text-6xl sm:text-7xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tight text-white block whitespace-nowrap">
                   {items[1].value}
@@ -54,7 +54,7 @@ export default function MetricsSection() {
 
           {/* Metric 3 - 100% (Guaranteed No Ellipsis / Full Visibility) */}
           {items[2] && (
-            <MotionCard>
+            <MotionCard tilt={false}>
               <div className="flex h-full flex-col justify-between md:pl-6 lg:pl-10 min-w-0">
                 <span className="text-6xl sm:text-7xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tight text-white block whitespace-nowrap">
                   {items[2].value}

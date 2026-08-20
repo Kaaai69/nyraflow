@@ -39,11 +39,13 @@ export default function TeamSection() {
             const isCenter = index === 1;
 
             return (
-              <MotionCard key={member.id}>
+              <MotionCard
+                key={member.id}
+                radius="12px"
+                className={isCenter ? "sm:-mt-4 sm:mb-4 md:-mt-6 md:mb-6" : ""}
+              >
                 <article
-                  className={`min-w-0 group overflow-hidden transition-all duration-300 flex flex-col justify-between ${
-                    isCenter ? "sm:-translate-y-4 md:-translate-y-6" : ""
-                  }`}
+                  className="min-w-0 group overflow-hidden transition-all duration-300 flex flex-col justify-between h-full"
                 >
                   {/* Image Dominates Directly with Emergence Gradient */}
                   <div className="aspect-[4/5] overflow-hidden relative rounded-xl border border-white/14 bg-[#0E0F12]">

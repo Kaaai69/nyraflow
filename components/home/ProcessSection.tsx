@@ -25,7 +25,7 @@ export default function ProcessSection() {
             const stepNumber = String(index + 1).padStart(2, "0");
 
             return (
-              <MotionCard key={item.id}>
+              <MotionCard key={item.id} tilt={false} radius="12px">
                 <div className="py-8 md:py-10 grid gap-6 md:grid-cols-12 md:items-center group/step hover:bg-white/[0.015] px-2 md:px-4 rounded-xl transition-colors">
                   {/* Number & Step Title */}
                   <div className="md:col-span-5 flex items-center gap-6">

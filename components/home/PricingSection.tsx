@@ -24,11 +24,15 @@ export default function PricingSection() {
             const isFeatured = item.featured;
 
             return (
-              <MotionCard key={item.id}>
+              <MotionCard
+                key={item.id}
+                tone={isFeatured ? "dark" : "light"}
+                className={isFeatured ? "lg:-mt-6 lg:mb-6" : ""}
+              >
                 <article
                   className={`flex h-full flex-col justify-between rounded-[22px] p-8 md:p-10 transition-all duration-300 ${
                     isFeatured
-                      ? "bg-[#F0EFEA] text-[#101114] border border-[#101114]/20 shadow-2xl lg:-translate-y-6 hover:scale-[1.01]"
+                      ? "bg-[#F0EFEA] text-[#101114] border border-[#101114]/20 shadow-2xl hover:scale-[1.01]"
                       : "bg-[#0E0F12]/90 text-white border border-white/14 backdrop-blur-md shadow-xl hover:border-white/28 hover:bg-[#0E0F12]/95 hover:scale-[1.01]"
                   }`}
                 >

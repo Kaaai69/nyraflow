@@ -41,7 +41,12 @@ export default function BenefitsSection() {
               const isTop = index < 2;
 
               return (
-                <MotionCard key={item.id} className={!isTop ? "md:border-t md:border-white/14" : ""}>
+                <MotionCard
+                  key={item.id}
+                  tilt={false}
+                  radius="12px"
+                  className={!isTop ? "md:border-t md:border-white/14" : ""}
+                >
                   <article className="flex h-full flex-col justify-between p-6 lg:p-8 group/benefit transition-colors hover:bg-white/[0.02] rounded-xl">
                     <div className="flex items-center justify-between border-b border-white/10 pb-4">
                       <Icon

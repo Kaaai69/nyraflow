@@ -26,7 +26,11 @@ export default function ServicesSection() {
             const isSystemDark = watermark === "SYSTEM";
 
             return (
-              <MotionSlab key={item.id} delay={index * 0.1}>
+              <MotionSlab
+                key={item.id}
+                delay={index * 0.1}
+                tone={isAiInverted ? "dark" : "light"}
+              >
                 <article
                   className={`relative overflow-hidden rounded-[22px] p-8 md:p-12 transition-all duration-500 shadow-2xl ${
                     isAiInverted

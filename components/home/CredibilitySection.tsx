@@ -16,7 +16,7 @@ export default function CredibilitySection() {
         <div className="border-y border-white/14 py-10 md:py-14">
           <MotionGrid className="grid gap-8 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/14 items-stretch" staggerDelay={0.1}>
             {items.map((item, index) => (
-              <MotionCard key={item.id}>
+              <MotionCard key={item.id} tilt={false}>
                 <article className="flex h-full flex-col justify-between pt-6 md:pt-0 md:px-6 lg:px-8 first:md:pl-0 last:md:pr-0 group/benefit">
                   <div>
                     {/* Mono Label & Horizontal Rule: 01 ───── */}

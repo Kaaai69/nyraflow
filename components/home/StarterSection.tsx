@@ -52,7 +52,7 @@ export default function StarterSection() {
                 const Icon = starterIcons[item.icon];
 
                 return (
-                  <MotionCard key={item.id}>
+                  <MotionCard key={item.id} tilt={false}>
                     <article className="flex h-full flex-col justify-between pt-6 sm:pt-0 group/item">
                       <div>
                         <div className="flex items-center justify-between border-b border-white/10 pb-4">

@@ -27,7 +27,7 @@ export default function ProblemSection() {
               const rowNumber = String(index + 1).padStart(2, "0");
 
               return (
-                <MotionCard key={item.id}>
+                <MotionCard key={item.id} tilt={false} radius="12px">
                   <div className="py-10 md:py-14 grid gap-6 lg:grid-cols-12 items-start group/row transition-colors hover:bg-white/[0.015] px-2 md:px-4 rounded-xl">
                     {/* Oversized Low-Contrast Mono Index Number */}
                     <div className="lg:col-span-2">
