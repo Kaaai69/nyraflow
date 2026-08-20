@@ -65,10 +65,8 @@ export default function ServicesSection() {
                         (key) => (
                           <div
                             key={key}
-                            className={`rounded-xl p-5 ${
-                              key === "businessOutcome"
-                                ? "border border-white/15 bg-white/10"
-                                : ""
+                            className={`p-5 ${
+                              key === "businessOutcome" ? "card-inset" : ""
                             }`}
                           >
                             <p

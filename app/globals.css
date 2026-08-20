@@ -129,93 +129,126 @@ body {
   outline: none;
 }
 
-/* ---------- glass card surface ---------- */
-/* Near-transparent so the wave field still reads through the card, with a
-   hairline gradient edge that catches light along the top. The depth comes
-   from the shadow and that edge, not from an opaque fill. */
-.card-glass {
-  position: relative;
-  border-radius: 22px;
-  background:
-    linear-gradient(
-      165deg,
-      rgba(236, 238, 242, 0.055) 0%,
-      rgba(236, 238, 242, 0.022) 45%,
-      rgba(236, 238, 242, 0.012) 100%
-    );
-  backdrop-filter: blur(20px) saturate(115%);
-  -webkit-backdrop-filter: blur(20px) saturate(115%);
-  box-shadow:
-    0 28px 80px rgba(0, 0, 0, 0.55),
-    0 2px 10px rgba(0, 0, 0, 0.35);
-  transition: box-shadow 0.5s var(--ease-premium),
-    background 0.5s var(--ease-premium);
+/* ---------- card surface ---------- */
+/*
+ * Depth on a black page does not come from drop shadows: a black shadow on a
+ * black background is invisible. It comes from how the edge catches light.
+ * So the weight here is in the inset highlight along the top edge and the
+ * corner sheen, with the outer shadow only separating the card from the
+ * moving wave field behind it.
+ *
+ * Shape lock for the whole page: cards 20px, elements inside a card 12px,
+ * anything interactive is a full pill. No other radii.
+ */
+:root {
+  --surface-radius: 20px;
+  --surface-radius-inset: 12px;
+
+  --card-top: rgba(236, 238, 242, 0.055);
+  --card-bottom: rgba(236, 238, 242, 0.014);
+  --card-edge: rgba(236, 238, 242, 0.1);
+  --card-edge-lit: rgba(236, 238, 242, 0.22);
 }
 
-/* The border itself is a gradient, which a plain border-color cannot do:
-   a 1px ring is painted and its interior masked away. */
-.card-glass::after {
+.card-glass {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--surface-radius);
+  border: 1px solid var(--card-edge);
+  background: linear-gradient(
+    180deg,
+    var(--card-top) 0%,
+    var(--card-bottom) 100%
+  );
+  backdrop-filter: blur(22px) saturate(112%);
+  -webkit-backdrop-filter: blur(22px) saturate(112%);
+  box-shadow:
+    /* the lit top edge: this is what reads as a physical pane */
+    inset 0 1px 0 0 var(--card-edge-lit),
+    /* thickness under the top edge */
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.5),
+    /* separation from the moving field behind */
+    0 24px 60px -20px rgba(0, 0, 0, 0.85);
+  transition:
+    border-color 0.45s var(--ease-premium),
+    box-shadow 0.45s var(--ease-premium),
+    background 0.45s var(--ease-premium);
+}
+
+/* Corner sheen, as if the light source sits above and to the left. Sits under
+   the content, never over it. */
+.card-glass::before {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: -1;
   border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    160deg,
-    rgba(236, 238, 242, 0.38) 0%,
-    rgba(236, 238, 242, 0.1) 32%,
-    rgba(236, 238, 242, 0.03) 60%,
-    rgba(236, 238, 242, 0.14) 100%
+  background: radial-gradient(
+    120% 90% at 8% 0%,
+    rgba(236, 238, 242, 0.09) 0%,
+    rgba(236, 238, 242, 0.02) 38%,
+    transparent 70%
   );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
   pointer-events: none;
-  transition: opacity 0.5s var(--ease-premium);
 }
 
 .card-glass:hover {
-  background:
-    linear-gradient(
-      165deg,
-      rgba(236, 238, 242, 0.075) 0%,
-      rgba(236, 238, 242, 0.03) 45%,
-      rgba(236, 238, 242, 0.015) 100%
-    );
+  border-color: rgba(236, 238, 242, 0.2);
   box-shadow:
-    0 34px 90px rgba(0, 0, 0, 0.6),
-    0 2px 12px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 0 rgba(236, 238, 242, 0.32),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.5),
+    0 30px 70px -20px rgba(0, 0, 0, 0.9);
 }
 
-/* The one card per group that should carry weight: a brighter ring and a lift,
-   replacing the cream fill that used to mark it. */
-.card-glass-featured::after {
+/* One card per group carries weight. It is marked by a brighter edge and a
+   denser fill, never by a different colour. */
+.card-glass-featured {
+  border-color: rgba(236, 238, 242, 0.26);
   background: linear-gradient(
-    160deg,
-    rgba(236, 238, 242, 0.75) 0%,
-    rgba(236, 238, 242, 0.24) 30%,
-    rgba(236, 238, 242, 0.08) 62%,
-    rgba(236, 238, 242, 0.3) 100%
+    180deg,
+    rgba(236, 238, 242, 0.1) 0%,
+    rgba(236, 238, 242, 0.028) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 0 rgba(236, 238, 242, 0.42),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.5),
+    0 34px 80px -20px rgba(0, 0, 0, 0.9);
+}
+
+.card-glass-featured::before {
+  background: radial-gradient(
+    120% 90% at 8% 0%,
+    rgba(236, 238, 242, 0.16) 0%,
+    rgba(236, 238, 242, 0.04) 38%,
+    transparent 70%
   );
 }
 
-.card-glass-featured {
-  background:
-    linear-gradient(
-      165deg,
-      rgba(236, 238, 242, 0.1) 0%,
-      rgba(236, 238, 242, 0.04) 45%,
-      rgba(236, 238, 242, 0.02) 100%
-    );
-  box-shadow:
-    0 36px 100px rgba(0, 0, 0, 0.62),
-    0 0 0 1px rgba(236, 238, 242, 0.04),
-    0 2px 12px rgba(0, 0, 0, 0.4);
+.card-glass-featured:hover {
+  border-color: rgba(236, 238, 242, 0.34);
+}
+
+/* Elements nested inside a card. */
+.card-inset {
+  border-radius: var(--surface-radius-inset);
+  border: 1px solid rgba(236, 238, 242, 0.1);
+  background: rgba(236, 238, 242, 0.04);
+  box-shadow: inset 0 1px 0 0 rgba(236, 238, 242, 0.08);
+}
+
+/* Blur is a preference, not a given. Without it the cards must still be
+   readable over a moving background, so fall back to an opaque fill. */
+@media (prefers-reduced-transparency: reduce) {
+  .card-glass,
+  .card-glass-featured {
+    background: #0c0d10;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .card-glass::before {
+    display: none;
+  }
 }
 
 /* Outline lettering: stroked glyphs with nothing inside, for accent words. */
@@ -223,6 +256,17 @@ body {
   color: transparent;
   -webkit-text-stroke: 1px rgba(236, 238, 242, 0.5);
   paint-order: stroke fill;
+}
+
+/* An open FAQ row lifts onto the same inset surface the cards use. A Tailwind
+   open: variant cannot do this, because variants only apply to utilities. */
+.faq-item[open] {
+  border-bottom-color: transparent;
+  border-radius: var(--surface-radius-inset);
+  border: 1px solid rgba(236, 238, 242, 0.1);
+  background: rgba(236, 238, 242, 0.04);
+  box-shadow: inset 0 1px 0 0 rgba(236, 238, 242, 0.08);
+  padding: 1.5rem;
 }
 
 /* ---------- marquee band ---------- */

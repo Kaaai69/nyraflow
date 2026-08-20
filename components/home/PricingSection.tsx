@@ -70,7 +70,7 @@ export default function PricingSection() {
 
                       {item.optional?.length ? (
                         <div
-                          className="mt-6 rounded-xl border border-white/14 bg-white/5 p-4 text-xs text-white"
+                          className="card-inset mt-6 p-4 text-xs text-white"
                         >
                           <p className="mb-2 font-bold uppercase tracking-wider text-white/60">
                             Опционально

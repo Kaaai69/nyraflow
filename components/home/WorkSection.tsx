@@ -39,7 +39,7 @@ export default function WorkSection() {
                   onClick={() => toggleProject(project.id)}
                   aria-expanded={isOpen}
                   aria-controls={`project-panel-${project.id}`}
-                  className="w-full py-6 flex items-center justify-between gap-4 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg"
+                  className="w-full py-6 flex items-center justify-between gap-4 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-xl"
                 >
                   <div className="flex items-center gap-6 md:gap-10 min-w-0">
                     <span className="text-sm font-mono font-bold tracking-widest text-white/50 shrink-0">

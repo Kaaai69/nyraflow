@@ -78,7 +78,7 @@ export default function ContactSection() {
               </p>
             </MotionHeading>
 
-            <div className="mt-10 p-6 rounded-[16px] border border-white/14 bg-[#0E0F12]/90 backdrop-blur-md shadow-xl">
+            <div className="card-inset mt-10 p-6">
               <p className="text-sm font-bold text-white uppercase tracking-wider">
                 Быстрый ответ
               </p>
