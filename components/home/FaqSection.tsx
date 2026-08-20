@@ -13,7 +13,7 @@ export default function FaqSection() {
             <span className="text-xs font-mono font-bold uppercase tracking-widest text-white/50">
               Информация
             </span>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
+            <h2 className="text-display mt-2 font-bold text-white">
               Частые вопросы
             </h2>
           </MotionHeading>

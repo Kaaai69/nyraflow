@@ -4,7 +4,6 @@ import {
   motion,
   useReducedMotion,
   useScroll,
-  useSpring,
   useTransform,
 } from "framer-motion";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -45,7 +44,7 @@ export default function ProcessSection() {
         <p className="text-xs font-mono font-bold uppercase tracking-[0.16em] text-white/50">
           {content.eyebrow}
         </p>
-        <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
+        <h2 className="text-display mt-3 font-bold text-white">
           {content.title}
         </h2>
       </MotionHeading>
@@ -148,28 +147,19 @@ function HorizontalProcess({
     offset: ["start start", "end end"],
   });
 
-  // Mapping raw scroll straight onto x reproduces every jitter of the wheel and
-  // snaps hard when the pin releases. A spring gives the track its own inertia
-  // so it glides instead.
-  const smooth = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 26,
-    mass: 0.35,
-    restDelta: 0.0005,
-  });
+  // Position is a pure function of scroll position, with no spring in between.
+  // The spring here was the bug: Lenis already smooths the scroll, so a second
+  // smoothing layer only added lag, and on a fast flick the track was still
+  // catching up when the pin released, leaving the last cards never reached.
+  // Mapped directly, the track sits exactly where the scroll says it does, at
+  // any scroll speed.
+  const x = useTransform(scrollYProgress, [0, 1], [0, -distance]);
 
-  // The track finishes its travel at 88% and holds, so there is a beat of
-  // stillness before the section unpins rather than the motion changing
-  // direction mid-stride.
-  const x = useTransform(smooth, [0, 0.88, 1], [0, -distance, -distance]);
-
-  // Pin for the sideways travel plus one screen to pin against. The travel is
-  // divided by 0.88 because the track finishes at that point — without it the
-  // hold at the end would be stolen from the travel and speed the track up.
-  // Measured after mount rather than read during render, so the server and the
-  // first client pass agree.
+  // Pin for the sideways travel plus one screen to pin against, so the travel
+  // tracks the scroll one to one. Measured after mount rather than read during
+  // render, so the server and the first client pass agree.
   const measured = viewportHeight > 0;
-  const pinHeight = Math.round(distance / 0.88) + viewportHeight;
+  const pinHeight = distance + viewportHeight;
 
   return (
     <section

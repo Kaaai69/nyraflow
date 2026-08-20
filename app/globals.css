@@ -70,6 +70,22 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Section headings. This class was referenced across the site but never
+   defined, so every heading that used it fell back to the browser default
+   h2 size, about 24px. That is why the page read quieter than it should. */
+.text-display {
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+/* One step down, for headings inside a section. */
+.text-display-sm {
+  font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
 .text-display-hero {
   font-size: clamp(42px, 5.4vw, 86px);
   line-height: 0.98;
@@ -283,7 +299,14 @@ body {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee-scroll 42s linear infinite;
+  /* Held until the component says fonts are ready, so the run cannot change
+     width underneath a percentage-based translation. */
+  animation: marquee-scroll 42s linear infinite paused;
+  will-change: transform;
+}
+
+.marquee-track.is-running {
+  animation-play-state: running;
 }
 
 /* Pause on hover so a word can actually be read. */
@@ -317,8 +340,11 @@ body {
 /* Two identical runs; sliding exactly half the track lands the second copy
    where the first started, so the loop has no visible seam. */
 @keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 

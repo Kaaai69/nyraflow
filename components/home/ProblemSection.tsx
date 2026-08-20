@@ -19,7 +19,7 @@ export default function ProblemSection() {
           {/* The page's statement line: lights up word by word on scroll. */}
           <WordIlluminate
             text="Почему сайт не превращает трафик в заявки?"
-            className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl"
+            className="text-display mt-4 max-w-4xl font-bold text-white"
           />
         </header>
 

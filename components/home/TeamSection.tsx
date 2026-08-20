@@ -24,7 +24,7 @@ export default function TeamSection() {
             <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50">
               Команда
             </span>
-            <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[44px] font-bold tracking-tight text-white leading-[1.18] max-w-lg">
+            <h2 className="text-display mt-4 max-w-lg font-bold text-white">
               {content.title}
             </h2>
             <p className="mt-6 text-base sm:text-lg leading-relaxed text-white/70 max-w-md">

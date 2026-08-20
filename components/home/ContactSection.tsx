@@ -70,7 +70,7 @@ export default function ContactSection() {
               <span className="text-xs font-mono font-bold uppercase tracking-widest text-white/50">
                 Начать сотрудничество
               </span>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
+              <h2 className="text-display mt-3 font-bold text-white">
                 {content.title}
               </h2>
               <p className="mt-6 text-lg leading-relaxed text-white/70">

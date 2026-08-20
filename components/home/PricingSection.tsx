@@ -18,41 +18,86 @@ export default function PricingSection() {
           title={content.title}
           description={content.description}
         />
-        {/* ARCHETYPE D: Featured Inverted Accent Card */}
-        <MotionGrid className="mt-14 grid items-stretch gap-8 md:mt-20 lg:grid-cols-3" staggerDelay={0.12}>
+        {/*
+          Asymmetric composition rather than three identical columns: the
+          featured tier takes a wide panel down the left across both rows, the
+          other two stack compactly beside it. The hierarchy is in the layout,
+          not in a badge.
+        */}
+        <MotionGrid
+          className="mt-14 grid items-stretch gap-6 md:mt-20 lg:grid-cols-12 lg:grid-rows-2"
+          staggerDelay={0.12}
+        >
           {items.map((item) => {
             const isFeatured = item.featured;
+            // Position of this tier among the non-featured ones, which decides
+            // which of the two right-hand rows it lands in.
+            const minorIndex = items
+              .filter((tier) => !tier.featured)
+              .findIndex((tier) => tier.id === item.id);
 
             return (
               <MotionCard
                 key={item.id}
-                className={isFeatured ? "lg:-mt-6 lg:mb-6" : ""}
+                className={
+                  isFeatured
+                    ? "lg:col-start-1 lg:col-span-7 lg:row-start-1 lg:row-span-2"
+                    : `lg:col-start-8 lg:col-span-5 ${
+                        minorIndex === 0 ? "lg:row-start-1" : "lg:row-start-2"
+                      }`
+                }
               >
                 <article
-                  className={`card-glass flex h-full flex-col justify-between p-8 text-white md:p-10 ${
-                    isFeatured ? "card-glass-featured" : ""
+                  className={`card-glass flex h-full flex-col justify-between text-white ${
+                    isFeatured
+                      ? "card-glass-featured p-8 md:p-12"
+                      : "p-8 md:p-9"
                   }`}
                 >
-                  <div>
-                    {isFeatured && (
-                      <span className="mb-6 inline-block rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
-                        Популярный выбор
-                      </span>
-                    )}
+                  {/* The wide featured panel splits into two columns; the
+                      narrow tiers stay a single stack. */}
+                  <div
+                    className={
+                      isFeatured ? "lg:grid lg:grid-cols-2 lg:gap-12" : ""
+                    }
+                  >
+                    <div>
+                      {isFeatured && (
+                        <span className="mb-6 inline-block rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
+                          Популярный выбор
+                        </span>
+                      )}
 
-                    <h3 className="text-2xl font-bold tracking-tight text-white">
-                      {item.title}
-                    </h3>
+                      <h3
+                        className={`font-bold tracking-tight text-white ${
+                          isFeatured ? "text-display-sm" : "text-2xl"
+                        }`}
+                      >
+                        {item.title}
+                      </h3>
 
-                    <p className="mt-4 text-4xl font-black tracking-tight text-white sm:text-5xl">
-                      {item.price}
-                    </p>
+                      <p
+                        className={`mt-4 font-black tracking-tight text-white ${
+                          isFeatured
+                            ? "text-5xl lg:text-6xl"
+                            : "text-4xl sm:text-5xl"
+                        }`}
+                      >
+                        {item.price}
+                      </p>
 
-                    <p className="mt-4 leading-relaxed text-white/75">
-                      {item.description}
-                    </p>
+                      <p className="mt-4 leading-relaxed text-white/75">
+                        {item.description}
+                      </p>
+                    </div>
 
-                    <div className="mt-8 space-y-3.5 border-t border-white/14 pt-6">
+                    <div
+                      className={`space-y-3.5 ${
+                        isFeatured
+                          ? "mt-8 border-t border-white/14 pt-6 lg:mt-0 lg:border-t-0 lg:pt-0"
+                          : "mt-8 border-t border-white/14 pt-6"
+                      }`}
+                    >
                       {item.included.map((line) => (
                         <p
                           key={line}

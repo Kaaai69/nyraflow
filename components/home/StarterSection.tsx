@@ -31,7 +31,7 @@ export default function StarterSection() {
                 <span className="text-xs font-mono font-bold uppercase tracking-widest text-white/50">
                   {content.title}
                 </span>
-                <p className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
+                <p className="text-display mt-4 font-bold text-white">
                   {content.price}
                 </p>
               </div>
