@@ -15,11 +15,109 @@ services:
     networks:
       - web
 
+  # nyraflow desk — Telegram Mini App. Отдельный образ и отдельный контейнер:
+  # лендинг ничего о нём не знает и не падает вместе с ним.
+  miniapp:
+    build:
+      context: ./miniapp
+      dockerfile: Dockerfile
+    image: nyraflow-miniapp:latest
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "3000"
+    networks:
+      - web
+      - data
+
+  # Доставка событий из outbox в n8n. Отдельный процесс на том же образе:
+  # перезапуск доставки не трогает приложение, а падение приложения не
+  # останавливает доставку. Пока N8N_WEBHOOK_URL пуст — события копятся в базе.
+  outbox:
+    build:
+      context: ./miniapp
+      dockerfile: Dockerfile
+    image: nyraflow-miniapp:latest
+    restart: unless-stopped
+    command: ["node", "scripts/outbox-worker.mjs"]
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - data
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nyraflow}
+      POSTGRES_USER: ${POSTGRES_USER:-nyraflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD должен быть задан в .env}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nyraflow} -d ${POSTGRES_DB:-nyraflow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    # Порт наружу намеренно не публикуется: база доступна только контейнерам
+    # в сети data (сюда же позже подключится n8n).
+    networks:
+      - data
+
+  # Автоматизация. Отдельный контейнер со своим хранилищем: обновление или
+  # падение n8n не трогает ни мини-апп, ни базу. Связь с нашей половиной —
+  # только по HTTP: воркер шлёт события сюда, n8n ходит в API мини-аппа.
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: unless-stopped
+    environment:
+      N8N_HOST: n8n.nyraflow.ru
+      N8N_PORT: 5678
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: https://n8n.nyraflow.ru/
+      # Caddy — единственный прокси перед n8n; без этого он не доверяет
+      # заголовкам X-Forwarded-* и ругается на небезопасные куки.
+      N8N_PROXY_HOPS: 1
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:?N8N_ENCRYPTION_KEY должен быть задан в .env}
+      GENERIC_TIMEZONE: Europe/Moscow
+      TZ: Europe/Moscow
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      # Блок Code по умолчанию работает в песочнице без встроенных модулей.
+      # crypto нужен, чтобы сценарии могли проверять HMAC-подпись событий.
+      NODE_FUNCTION_ALLOW_BUILTIN: crypto
+      # Доступ к переменным окружения из блока Code. Значение по умолчанию
+      # менялось между версиями n8n, поэтому задаём явно: без него сценарий
+      # не получает секрет подписи и считает все события неподписанными.
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      # Тот же секрет, которым воркер подписывает события: сценарии проверяют
+      # им заголовок x-nyraflow-signature. Без него подпись не сойдётся.
+      N8N_WEBHOOK_SECRET: ${N8N_WEBHOOK_SECRET:?N8N_WEBHOOK_SECRET должен быть задан в .env}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    expose:
+      - "5678"
+    networks:
+      - web
+      - data
+
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
     depends_on:
       - app
+      - miniapp
     ports:
       - "80:80"
       - "443:443"
@@ -32,7 +130,10 @@ services:
 
 networks:
   web:
+  data:
 
 volumes:
   caddy_data:
   caddy_config:
+  pgdata:
+  n8n_data:

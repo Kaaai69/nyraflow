@@ -17,3 +17,15 @@ nyraflow.ru {
 www.nyraflow.ru {
 	redir https://nyraflow.ru{uri} permanent
 }
+
+# nyraflow desk — Telegram Mini App.
+app.nyraflow.ru {
+	encode zstd gzip
+	reverse_proxy miniapp:3000
+}
+
+# n8n — автоматизация сценариев.
+n8n.nyraflow.ru {
+	encode zstd gzip
+	reverse_proxy n8n:5678
+}
