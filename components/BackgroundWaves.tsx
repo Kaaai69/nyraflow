@@ -58,6 +58,29 @@ float fbm(vec2 p) {
   return v;
 }
 
+// Sparse twinkling points. Only the top decile of cells gets one, so they read
+// as scattered dust rather than a grid.
+float starLayer(vec2 uv, float scale, float t) {
+  vec2 p = uv * scale;
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  float h = hash21(i);
+  if (h < 0.90) return 0.0;
+  vec2 sp = vec2(hash21(i + 7.13), hash21(i + 13.71));
+  float d = length(f - sp);
+  float tw = 0.55 + 0.45 * sin(t * (0.6 + h * 2.4) + h * 43.7);
+  return smoothstep(0.10, 0.0, d) * tw;
+}
+
+// Distance from p to the segment ab — draws the meteor as a short streak
+// rather than a dot.
+float segDist(vec2 p, vec2 a, vec2 b) {
+  vec2 pa = p - a;
+  vec2 ba = b - a;
+  float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return length(pa - ba * h);
+}
+
 void main() {
   vec2 uv = (gl_FragCoord.xy * 2.0 - uRes) / min(uRes.x, uRes.y);
   float t = uTime * 0.05;
@@ -92,6 +115,31 @@ void main() {
   wave = pow(max(wave, 0.0), 2.6) * smoothstep(0.20, 0.75, f) * 0.070;
 
   float lum = haze + crest + wave;
+
+  // Two star layers at different densities, drifting at different rates so the
+  // field has depth. They sit slightly against the mouse for parallax.
+  vec2 suv = uv - uMouse * 0.03;
+  float stars = starLayer(suv + vec2(t * 0.01, 0.0), 14.0, uTime);
+  stars += starLayer(suv * 1.7 + vec2(0.0, t * 0.015), 22.0, uTime * 1.3) * 0.7;
+  lum += stars * 0.34;
+
+  // A meteor crosses every CYCLE seconds, lit only over the first 7% of it.
+  // floor(uTime / CYCLE) seeds the hashes, so each pass takes a new path.
+  float cycle = 9.0;
+  float ft = fract(uTime / cycle);
+  float id = floor(uTime / cycle);
+  if (ft < 0.10) {
+    float pr = ft / 0.10;
+    vec2 dir = normalize(vec2(0.8 + 0.3 * hash21(vec2(id, 3.0)), -0.5));
+    vec2 start = vec2(-1.2 + 2.4 * hash21(vec2(id, 1.0)), 0.9);
+    vec2 pos = start + dir * pr * 1.9;
+    float dd = segDist(uv, pos - dir * 0.40, pos);
+    // A tight core inside a wider halo, so the streak reads at a glance
+    // without turning into a hard white line.
+    float core = smoothstep(0.006, 0.0, dd);
+    float halo = smoothstep(0.030, 0.0, dd);
+    lum += (core * 0.85 + halo * 0.30) * (1.0 - pr);
+  }
 
   // Soft pool of light trailing the cursor.
   vec2 mp = uMouse * vec2(uRes.x, uRes.y) / min(uRes.x, uRes.y);
