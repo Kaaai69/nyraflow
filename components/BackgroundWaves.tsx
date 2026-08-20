@@ -141,9 +141,16 @@ void main() {
     lum += (core * 0.85 + halo * 0.30) * (1.0 - pr);
   }
 
-  // Soft pool of light trailing the cursor.
+  // Pool of light trailing the cursor. It has to sit in the same range as the
+  // wave crests (~0.15) to register at all — an order of magnitude below that
+  // and moving the mouse changes nothing you can see.
   vec2 mp = uMouse * vec2(uRes.x, uRes.y) / min(uRes.x, uRes.y);
-  lum += exp(-2.6 * length(uv - mp)) * 0.022;
+  float pool = exp(-2.1 * length(uv - mp));
+  lum += pool * 0.10;
+
+  // The same pool also lifts whatever is already there, so the field brightens
+  // under the cursor instead of just having a disc laid over it.
+  lum *= 1.0 + pool * 0.9;
 
   // Vignette keeps the edges of the page black.
   float vig = smoothstep(2.05, 0.30, length(uv));

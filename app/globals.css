@@ -129,13 +129,72 @@ body {
   outline: none;
 }
 
+/* ---------- marquee band ---------- */
+.marquee {
+  border-top: 1px solid rgba(236, 238, 242, 0.14);
+  border-bottom: 1px solid rgba(236, 238, 242, 0.14);
+  overflow: hidden;
+  padding: 22px 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 42s linear infinite;
+}
+
+/* Pause on hover so a word can actually be read. */
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-run {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.marquee-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 52px;
+  padding-right: 52px;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(236, 238, 242, 0.55);
+}
+
+.marquee-sep {
+  font-style: normal;
+  color: rgba(236, 238, 242, 0.28);
+}
+
+/* Two identical runs; sliding exactly half the track lands the second copy
+   where the first started, so the loop has no visible seam. */
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
 /* ---------- oversized footer wordmark ---------- */
 .footer-wordmark {
   display: block;
   text-align: center;
   font-weight: 800;
-  text-transform: uppercase;
-  font-size: clamp(2rem, 14.5vw, 15rem);
+  text-transform: lowercase;
+  font-size: clamp(2.5rem, 17vw, 17rem);
   white-space: nowrap;
   line-height: 0.9;
   letter-spacing: 0.02em;

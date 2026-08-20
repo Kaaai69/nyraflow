@@ -1,6 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { homeContent } from "../../content/home";
@@ -141,27 +147,43 @@ function HorizontalProcess({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
-  const x = useTransform(scrollYProgress, [0, 1], [0, -distance]);
 
-  // The section is as tall as the sideways travel plus one screen to pin
-  // against, so the horizontal motion tracks the scroll one-to-one. Measured
-  // after mount rather than read during render, so the server and the first
-  // client pass agree.
+  // Mapping raw scroll straight onto x reproduces every jitter of the wheel and
+  // snaps hard when the pin releases. A spring gives the track its own inertia
+  // so it glides instead.
+  const smooth = useSpring(scrollYProgress, {
+    stiffness: 80,
+    damping: 26,
+    mass: 0.35,
+    restDelta: 0.0005,
+  });
+
+  // The track finishes its travel at 88% and holds, so there is a beat of
+  // stillness before the section unpins rather than the motion changing
+  // direction mid-stride.
+  const x = useTransform(smooth, [0, 0.88, 1], [0, -distance, -distance]);
+
+  // Pin for the sideways travel plus one screen to pin against. The travel is
+  // divided by 0.88 because the track finishes at that point — without it the
+  // hold at the end would be stolen from the travel and speed the track up.
+  // Measured after mount rather than read during render, so the server and the
+  // first client pass agree.
   const measured = viewportHeight > 0;
+  const pinHeight = Math.round(distance / 0.88) + viewportHeight;
 
   return (
     <section
       id="process"
       ref={sectionRef}
       className="relative bg-transparent text-white"
-      style={measured ? { height: `${distance + viewportHeight}px` } : undefined}
+      style={measured ? { height: `${pinHeight}px` } : undefined}
     >
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
         <SectionContainer>{header}</SectionContainer>
 
         <motion.div
           ref={trackRef}
-          style={{ x }}
+          style={{ x, willChange: "transform" }}
           className="flex w-max gap-6 px-gutter-mobile md:px-gutter-tablet xl:px-gutter-desktop"
         >
           {items.map((item, index) => (

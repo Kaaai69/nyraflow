@@ -33,6 +33,8 @@ export default function CustomCursor() {
 
     let targetX = -100;
     let targetY = -100;
+    let dotX = -100;
+    let dotY = -100;
     let ringX = -100;
     let ringY = -100;
     let frameId = 0;
@@ -48,7 +50,6 @@ export default function CustomCursor() {
     const handleMove = (event: PointerEvent) => {
       targetX = event.clientX;
       targetY = event.clientY;
-      dot.style.transform = `translate(${targetX}px, ${targetY}px)`;
       show();
     };
 
@@ -69,9 +70,15 @@ export default function CustomCursor() {
       ring.style.opacity = "0";
     };
 
+    // Both are eased, and the gap between the two rates is deliberately small:
+    // an instant dot outruns the ring far enough that they stop reading as one
+    // cursor.
     const loop = () => {
-      ringX += (targetX - ringX) * 0.16;
-      ringY += (targetY - ringY) * 0.16;
+      dotX += (targetX - dotX) * 0.42;
+      dotY += (targetY - dotY) * 0.42;
+      ringX += (targetX - ringX) * 0.24;
+      ringY += (targetY - ringY) * 0.24;
+      dot.style.transform = `translate(${dotX}px, ${dotY}px)`;
       ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
       frameId = requestAnimationFrame(loop);
     };
