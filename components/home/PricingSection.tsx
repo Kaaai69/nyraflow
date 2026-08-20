@@ -20,12 +20,12 @@ export default function PricingSection() {
         />
         {/*
           Asymmetric composition rather than three identical columns: the
-          featured tier takes a wide panel down the left across both rows, the
-          other two stack compactly beside it. The hierarchy is in the layout,
-          not in a badge.
+          featured tier runs full width across the top with its content in
+          three columns, the other two sit side by side beneath it. The
+          hierarchy is in the layout, not in a badge.
         */}
         <MotionGrid
-          className="mt-14 grid items-stretch gap-6 md:mt-20 lg:grid-cols-12 lg:grid-rows-2"
+          className="mt-14 grid items-stretch gap-6 md:mt-20 lg:grid-cols-12"
           staggerDelay={0.12}
         >
           {items.map((item) => {
@@ -41,9 +41,9 @@ export default function PricingSection() {
                 key={item.id}
                 className={
                   isFeatured
-                    ? "lg:col-start-1 lg:col-span-7 lg:row-start-1 lg:row-span-2"
-                    : `lg:col-start-8 lg:col-span-5 ${
-                        minorIndex === 0 ? "lg:row-start-1" : "lg:row-start-2"
+                    ? "lg:col-start-1 lg:col-span-12 lg:row-start-1"
+                    : `lg:col-span-6 lg:row-start-2 ${
+                        minorIndex === 0 ? "lg:col-start-1" : "lg:col-start-7"
                       }`
                 }
               >
@@ -58,7 +58,9 @@ export default function PricingSection() {
                       narrow tiers stay a single stack. */}
                   <div
                     className={
-                      isFeatured ? "lg:grid lg:grid-cols-2 lg:gap-12" : ""
+                      isFeatured
+                        ? "lg:grid lg:grid-cols-[1.15fr_1fr] lg:gap-14"
+                        : ""
                     }
                   >
                     <div>
@@ -134,7 +136,7 @@ export default function PricingSection() {
                     href="#contact"
                     className={`mt-10 flex h-13 w-full items-center justify-center rounded-full font-semibold transition-all duration-200 hover:scale-105 active:scale-95 ${
                       isFeatured
-                        ? "bg-white text-[#101114] shadow-md hover:bg-white/90"
+                        ? "bg-white text-[#101114] shadow-md hover:bg-white/90 lg:max-w-sm"
                         : "border border-white/20 bg-white/10 text-white hover:bg-white/20"
                     }`}
                   >
