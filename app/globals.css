@@ -129,6 +129,94 @@ body {
   outline: none;
 }
 
+/* ---------- oversized footer wordmark ---------- */
+.footer-wordmark {
+  display: block;
+  text-align: center;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(2rem, 14.5vw, 15rem);
+  white-space: nowrap;
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  user-select: none;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(236, 238, 242, 0.22);
+  transition: color 0.8s var(--ease-premium),
+    -webkit-text-stroke-color 0.8s var(--ease-premium);
+}
+
+.footer-wordmark:hover {
+  color: rgba(236, 238, 242, 0.92);
+  -webkit-text-stroke-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-wordmark {
+    transition: none;
+  }
+}
+
+/* ---------- custom cursor (dot + ring) ---------- */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 120;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  margin-left: -3px;
+  margin-top: -3px;
+}
+
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: #ECEEF2;
+}
+
+.cursor-ring {
+  width: 38px;
+  height: 38px;
+  margin-left: -19px;
+  margin-top: -19px;
+  border: 1px solid rgba(236, 238, 242, 0.55);
+  transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    margin 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.35s, background-color 0.35s;
+}
+
+.cursor-ring.is-hot {
+  width: 64px;
+  height: 64px;
+  margin-left: -32px;
+  margin-top: -32px;
+  border-color: rgba(236, 238, 242, 0.9);
+  background-color: rgba(236, 238, 242, 0.08);
+}
+
+/* Only hide the native cursor once ours is actually running, so a failed
+   mount can never leave the page with no pointer at all. */
+.has-custom-cursor,
+.has-custom-cursor a,
+.has-custom-cursor button,
+.has-custom-cursor input,
+.has-custom-cursor textarea,
+.has-custom-cursor select,
+.has-custom-cursor summary,
+.has-custom-cursor label {
+  cursor: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-ring {
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

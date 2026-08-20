@@ -1,6 +1,7 @@
 import { homeContent } from "../../content/home";
 import { SectionContainer } from "./Layout";
 import { MotionHeading, MotionGrid, MotionCard } from "../ScrollRevealSection";
+import WordIlluminate from "../WordIlluminate";
 
 export default function ProblemSection() {
   const items = homeContent.problem.items;
@@ -14,10 +15,12 @@ export default function ProblemSection() {
             <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50">
               ПРОБЛЕМА
             </span>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl">
-              Почему сайт не превращает трафик в заявки?
-            </h2>
           </MotionHeading>
+          {/* The page's statement line: lights up word by word on scroll. */}
+          <WordIlluminate
+            text="Почему сайт не превращает трафик в заявки?"
+            className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl"
+          />
         </header>
 
         {/* Open Editorial Rows (3 Problem Points) */}

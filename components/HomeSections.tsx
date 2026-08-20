@@ -42,9 +42,9 @@ export default function HomeSections() {
       <ScrollRevealSection>
         <TeamSection />
       </ScrollRevealSection>
-      <ScrollRevealSection>
-        <ProcessSection />
-      </ScrollRevealSection>
+      {/* Not wrapped: ProcessSection pins itself with position:sticky, and a
+          transformed ancestor interferes with that. It brings its own reveals. */}
+      <ProcessSection />
       <ScrollRevealSection>
         <FaqSection />
       </ScrollRevealSection>

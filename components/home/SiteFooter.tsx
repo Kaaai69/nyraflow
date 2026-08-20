@@ -21,8 +21,17 @@ const footerLinkClassName =
 
 export default function SiteFooter() {
   return (
-    <footer className="pb-12 pt-10 bg-transparent text-white">
-      <SectionContainer className="grid gap-10 border-t border-white/18 pt-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+    <footer className="overflow-hidden pb-12 pt-10 bg-transparent text-white">
+      {/* Outline wordmark that fills with light on hover. Deliberately outside
+          SectionContainer: it is sized against the viewport, not the 77.5rem
+          content column. */}
+      <div className="w-full px-4">
+        <span aria-hidden="true" className="footer-wordmark" data-cursor="hot">
+          nyraflow
+        </span>
+      </div>
+
+      <SectionContainer className="mt-10 grid gap-10 border-t border-white/18 pt-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         <div>
           <a href="#" className="inline-block">
             <Image
