@@ -66,26 +66,32 @@ void main() {
   vec2 muv = uv + uMouse * 0.05;
   muv.y += uScroll * 0.55;
 
+  // Squashed vertically so the noise stretches into horizontal bands: this is
+  // what separates a wave field from isotropic smoke.
+  vec2 wuv = muv * vec2(0.85, 2.1);
+
   // Domain warping: q distorts rr, rr distorts the final field.
   vec2 q = vec2(
-    fbm(muv * 1.5 + vec2(0.0, t)),
-    fbm(muv * 1.5 + vec2(5.2, 1.3) - t * 0.6)
+    fbm(wuv * 1.5 + vec2(0.0, t)),
+    fbm(wuv * 1.5 + vec2(5.2, 1.3) - t * 0.6)
   );
   vec2 rr = vec2(
-    fbm(muv * 1.5 + q * 1.6 + vec2(1.7, 9.2) + t * 0.3),
-    fbm(muv * 1.5 + q * 1.6 + vec2(8.3, 2.8) - t * 0.2)
+    fbm(wuv * 1.5 + q * 1.6 + vec2(1.7, 9.2) + t * 0.3),
+    fbm(wuv * 1.5 + q * 1.6 + vec2(8.3, 2.8) - t * 0.2)
   );
-  float f = fbm(muv * 1.5 + rr * 1.8);
+  float f = fbm(wuv * 1.5 + rr * 1.8);
 
   // Broad haze, then a second brighter pass on the crests only.
-  float haze = smoothstep(0.30, 0.92, f) * 0.052;
-  float crest = smoothstep(0.58, 1.00, f) * 0.055;
+  float haze = smoothstep(0.28, 0.90, f) * 0.075;
+  float crest = smoothstep(0.55, 1.00, f) * 0.075;
 
-  // Ridge lines running through the field give the bands a wave-like read.
-  float ridge = 1.0 - abs(sin(f * 9.0 + rr.x * 2.2 + t * 1.6));
-  ridge = pow(max(ridge, 0.0), 3.2) * smoothstep(0.34, 0.80, f) * 0.030;
+  // Crests of travelling waves. The warped field bends the phase, so the
+  // bands undulate instead of reading as straight stripes.
+  float phase = muv.y * 5.2 + f * 5.5 + rr.x * 2.6 - uTime * 0.28;
+  float wave = 1.0 - abs(sin(phase));
+  wave = pow(max(wave, 0.0), 2.6) * smoothstep(0.20, 0.75, f) * 0.070;
 
-  float lum = haze + crest + ridge;
+  float lum = haze + crest + wave;
 
   // Soft pool of light trailing the cursor.
   vec2 mp = uMouse * vec2(uRes.x, uRes.y) / min(uRes.x, uRes.y);
