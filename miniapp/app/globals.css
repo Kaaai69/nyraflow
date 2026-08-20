@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Onest Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  /* Telegram отдаёт палитру клиента в CSS-переменных — используем их, если
+     мини-апп открыт в Telegram, и падаем в свои цвета в обычном браузере. */
+  background: var(--tg-theme-bg-color, #000000);
+  color: var(--tg-theme-text-color, #ffffff);
+  overscroll-behavior-y: none;
+}
