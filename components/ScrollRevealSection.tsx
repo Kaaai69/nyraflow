@@ -4,11 +4,14 @@ import { motion, useReducedMotion, useSpring } from "framer-motion";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 // Reveal timing ported from the reference landing (gsap power3.out, 1.1s,
-// 50px of travel, firing once when the element reaches 86% of the viewport).
+// 50px of travel, triggering when the element reaches 86% of the viewport).
+//
+// once:false on purpose, unlike the reference: scrolling back up should reset
+// the reveals so the page replays instead of going flat once seen.
 const REVEAL_EASE: [number, number, number, number] = [0.165, 0.84, 0.44, 1];
 const REVEAL_DURATION = 1.1;
 const REVEAL_DISTANCE = 50;
-const REVEAL_VIEWPORT = { once: true, margin: "0px 0px -14% 0px" } as const;
+const REVEAL_VIEWPORT = { once: false, margin: "0px 0px -14% 0px" } as const;
 
 // Tilt angles from the reference: rotateX (py - 0.5) * -8, rotateY (px - 0.5) * 10.
 const TILT_X = 8;

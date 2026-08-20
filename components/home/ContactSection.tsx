@@ -88,14 +88,14 @@ export default function ContactSection() {
             </div>
           </header>
 
-          {/* Right Column: Destination Inverted Warm Light Object (#F0EFEA) */}
+          {/* Right Column: the form sits on the same glass surface as the cards. */}
           <div className="lg:col-span-7">
             <form
               onSubmit={handleSubmit}
-              className="rounded-[22px] border border-[#101114]/20 bg-[#F0EFEA] text-[#101114] p-8 md:p-12 shadow-2xl"
+              className="card-glass p-8 text-white md:p-12"
             >
               <div>
-                <label htmlFor="contact-name" className="block text-sm font-semibold text-[#101114] mb-2">
+                <label htmlFor="contact-name" className="mb-2 block text-sm font-semibold text-white">
                   {nameLabel}
                 </label>
                 <input
@@ -106,11 +106,11 @@ export default function ContactSection() {
                   required
                   maxLength={200}
                   disabled={isSubmitting}
-                  className="w-full rounded-xl border border-[#101114]/20 bg-white px-4 py-3.5 text-[#101114] placeholder-[#101114]/40 focus:border-[#101114] focus:outline-none focus:ring-1 focus:ring-[#101114]/30 transition-all text-base shadow-sm"
+                  className="w-full rounded-xl border border-white/18 bg-black/35 px-4 py-3.5 text-base text-white transition-all placeholder-white/40 focus:border-white focus:outline-none focus:ring-1 focus:ring-white/30"
                 />
               </div>
               <div className="mt-6">
-                <label htmlFor="contact-channel" className="block text-sm font-semibold text-[#101114] mb-2">
+                <label htmlFor="contact-channel" className="mb-2 block text-sm font-semibold text-white">
                   {contactLabel}
                 </label>
                 <input
@@ -121,11 +121,11 @@ export default function ContactSection() {
                   required
                   maxLength={200}
                   disabled={isSubmitting}
-                  className="w-full rounded-xl border border-[#101114]/20 bg-white px-4 py-3.5 text-[#101114] placeholder-[#101114]/40 focus:border-[#101114] focus:outline-none focus:ring-1 focus:ring-[#101114]/30 transition-all text-base shadow-sm"
+                  className="w-full rounded-xl border border-white/18 bg-black/35 px-4 py-3.5 text-base text-white transition-all placeholder-white/40 focus:border-white focus:outline-none focus:ring-1 focus:ring-white/30"
                 />
               </div>
               <div className="mt-6">
-                <label htmlFor="contact-message" className="block text-sm font-semibold text-[#101114] mb-2">
+                <label htmlFor="contact-message" className="mb-2 block text-sm font-semibold text-white">
                   {messageLabel}
                 </label>
                 <textarea
@@ -135,7 +135,7 @@ export default function ContactSection() {
                   required
                   maxLength={4000}
                   disabled={isSubmitting}
-                  className="w-full rounded-xl border border-[#101114]/20 bg-white px-4 py-3.5 text-[#101114] placeholder-[#101114]/40 focus:border-[#101114] focus:outline-none focus:ring-1 focus:ring-[#101114]/30 transition-all text-base resize-y shadow-sm"
+                  className="w-full resize-y rounded-xl border border-white/18 bg-black/35 px-4 py-3.5 text-base text-white transition-all placeholder-white/40 focus:border-white focus:outline-none focus:ring-1 focus:ring-white/30"
                 />
               </div>
 
@@ -155,7 +155,7 @@ export default function ContactSection() {
                 type="submit"
                 disabled={isSubmitting}
                 aria-describedby="contact-form-status"
-                className="mt-8 flex min-h-[3.25rem] w-full items-center justify-center rounded-full bg-[#101114] font-semibold text-white shadow-xl transition-all hover:bg-black hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+                className="mt-8 flex min-h-[3.25rem] w-full items-center justify-center rounded-full bg-white font-semibold text-[#101114] shadow-xl transition-all hover:bg-white/90 hover:scale-[1.02] active:scale-95 disabled:opacity-50"
               >
                 {isSubmitting ? "Отправляем…" : content.cta}
               </button>
@@ -166,22 +166,22 @@ export default function ContactSection() {
                 className="mt-4 text-sm leading-relaxed"
               >
                 {status === "success" ? (
-                  <span className="text-[#101114] font-semibold">
+                  <span className="font-semibold text-white">
                     Заявка отправлена — свяжемся с вами в ближайшее время.
                   </span>
                 ) : status === "error" ? (
                   <span className="font-semibold text-[#D93838]">{errorMessage}</span>
                 ) : (
-                  <span className="text-[#101114]/65">
+                  <span className="text-white/65">
                     Обычно отвечаем в течение рабочего дня.
                   </span>
                 )}
               </p>
 
-              <p className="mt-4 text-xs leading-relaxed text-[#101114]/55">
+              <p className="mt-4 text-xs leading-relaxed text-white/55">
                 Отправляя форму, вы принимаете условия{" "}
-                <a href="/terms" className="underline hover:text-[#101114]">договора-оферты</a> и подтверждаете ознакомление с{" "}
-                <a href="/privacy" className="underline hover:text-[#101114]">политикой обработки персональных данных</a>.
+                <a href="/terms" className="underline hover:text-white">договора-оферты</a> и подтверждаете ознакомление с{" "}
+                <a href="/privacy" className="underline hover:text-white">политикой обработки персональных данных</a>.
               </p>
             </form>
           </div>

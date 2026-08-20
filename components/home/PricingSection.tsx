@@ -26,46 +26,43 @@ export default function PricingSection() {
             return (
               <MotionCard
                 key={item.id}
-                tone={isFeatured ? "dark" : "light"}
                 className={isFeatured ? "lg:-mt-6 lg:mb-6" : ""}
               >
                 <article
-                  className={`flex h-full flex-col justify-between rounded-[22px] p-8 md:p-10 transition-all duration-300 ${
-                    isFeatured
-                      ? "bg-[#F0EFEA] text-[#101114] border border-[#101114]/20 shadow-2xl hover:scale-[1.01]"
-                      : "bg-[#0E0F12]/90 text-white border border-white/14 backdrop-blur-md shadow-xl hover:border-white/28 hover:bg-[#0E0F12]/95 hover:scale-[1.01]"
+                  className={`card-glass flex h-full flex-col justify-between p-8 text-white md:p-10 ${
+                    isFeatured ? "card-glass-featured" : ""
                   }`}
                 >
                   <div>
                     {isFeatured && (
-                      <span className="inline-block rounded-full bg-[#101114] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white mb-6">
+                      <span className="mb-6 inline-block rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
                         Популярный выбор
                       </span>
                     )}
 
-                    <h3 className={`text-2xl font-bold tracking-tight ${isFeatured ? "text-[#101114]" : "text-white"}`}>
+                    <h3 className="text-2xl font-bold tracking-tight text-white">
                       {item.title}
                     </h3>
 
-                    <p className={`mt-4 text-4xl sm:text-5xl font-black tracking-tight ${isFeatured ? "text-[#101114]" : "text-white"}`}>
+                    <p className="mt-4 text-4xl font-black tracking-tight text-white sm:text-5xl">
                       {item.price}
                     </p>
 
-                    <p className={`mt-4 leading-relaxed ${isFeatured ? "text-[#101114]/75" : "text-white/75"}`}>
+                    <p className="mt-4 leading-relaxed text-white/75">
                       {item.description}
                     </p>
 
-                    <div className={`mt-8 space-y-3.5 border-t pt-6 ${isFeatured ? "border-[#101114]/15" : "border-white/14"}`}>
+                    <div className="mt-8 space-y-3.5 border-t border-white/14 pt-6">
                       {item.included.map((line) => (
                         <p
                           key={line}
-                          className={`flex gap-3 leading-relaxed text-sm ${isFeatured ? "text-[#101114]/85" : "text-white/85"}`}
+                          className="flex gap-3 text-sm leading-relaxed text-white/85"
                         >
                           <CheckIcon
                             aria-hidden
                             size={18}
                             weight="bold"
-                            className={`mt-0.5 shrink-0 ${isFeatured ? "text-[#101114]" : "text-white"}`}
+                            className="mt-0.5 shrink-0 text-white"
                           />
                           <span>{line}</span>
                         </p>
@@ -73,17 +70,13 @@ export default function PricingSection() {
 
                       {item.optional?.length ? (
                         <div
-                          className={`mt-6 rounded-xl p-4 text-xs ${
-                            isFeatured
-                              ? "border border-[#101114]/15 bg-[#101114]/5 text-[#101114]"
-                              : "border border-white/14 bg-white/5 text-white"
-                          }`}
+                          className="mt-6 rounded-xl border border-white/14 bg-white/5 p-4 text-xs text-white"
                         >
-                          <p className={`font-bold uppercase tracking-wider mb-2 ${isFeatured ? "text-[#101114]/60" : "text-white/60"}`}>
+                          <p className="mb-2 font-bold uppercase tracking-wider text-white/60">
                             Опционально
                           </p>
                           {item.optional.map((line) => (
-                            <p key={line} className={`mt-1 leading-relaxed ${isFeatured ? "text-[#101114]/75" : "text-white/75"}`}>
+                            <p key={line} className="mt-1 leading-relaxed text-white/75">
                               {line}
                             </p>
                           ))}
@@ -94,10 +87,10 @@ export default function PricingSection() {
 
                   <a
                     href="#contact"
-                    className={`mt-10 flex h-13 w-full items-center justify-center rounded-full font-semibold transition-all duration-200 ${
+                    className={`mt-10 flex h-13 w-full items-center justify-center rounded-full font-semibold transition-all duration-200 hover:scale-105 active:scale-95 ${
                       isFeatured
-                        ? "bg-[#101114] text-white hover:bg-black hover:scale-105 active:scale-95 shadow-md"
-                        : "border border-white/20 bg-white/10 text-white hover:bg-white/20 hover:scale-105 active:scale-95 shadow-sm"
+                        ? "bg-white text-[#101114] shadow-md hover:bg-white/90"
+                        : "border border-white/20 bg-white/10 text-white hover:bg-white/20"
                     }`}
                   >
                     {content.cta}

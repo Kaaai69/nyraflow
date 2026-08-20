@@ -184,15 +184,15 @@ function HorizontalProcess({
         <motion.div
           ref={trackRef}
           style={{ x, willChange: "transform" }}
-          className="flex w-max gap-6 px-gutter-mobile md:px-gutter-tablet xl:px-gutter-desktop"
+          className="flex w-max gap-6 px-[max(1.5rem,18vw)]"
         >
           {items.map((item, index) => (
             <article
               key={item.id}
-              className="flex w-[min(78vw,420px)] shrink-0 flex-col justify-between rounded-[22px] border border-white/14 bg-[#0E0F12]/80 p-8 backdrop-blur-md lg:p-10"
+              className="card-glass flex w-[clamp(320px,26vw,560px)] shrink-0 flex-col justify-between p-8 lg:p-10"
             >
               <div>
-                <span className="text-5xl font-mono font-bold text-white/25">
+                <span className="text-outline font-mono text-6xl font-bold lg:text-7xl">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <h3 className="mt-8 text-2xl font-bold tracking-tight text-white lg:text-3xl">

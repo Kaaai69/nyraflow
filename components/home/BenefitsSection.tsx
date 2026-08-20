@@ -34,7 +34,7 @@ export default function BenefitsSection() {
         </header>
 
         {/* 2x2 Open Editorial Grid Frame with Cross Dividers (No Floating Boxes) */}
-        <div className="mt-12 rounded-[22px] border border-white/14 border-t-white/30 bg-[#0E0F12]/90 backdrop-blur-md p-6 sm:p-10 shadow-2xl">
+        <div className="card-glass mt-12 p-6 sm:p-10">
           <MotionGrid className="grid gap-0 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/14 items-stretch">
             {content.items.map((item, index) => {
               const Icon = benefitIcons[item.icon];

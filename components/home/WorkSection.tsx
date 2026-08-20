@@ -112,7 +112,7 @@ export default function WorkSection() {
                               href={project.href}
                               target="_blank"
                               rel="noreferrer noopener"
-                              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 font-semibold text-[#101114] hover:bg-[#F0EFEA] hover:scale-105 active:scale-95 transition-all shadow-md group/btn"
+                              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 font-semibold text-[#101114] hover:bg-white/90 hover:scale-105 active:scale-95 transition-all shadow-md group/btn"
                             >
                               <span>Открыть проект</span>
                               <ArrowUpRightIcon size={18} weight="bold" className="transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />

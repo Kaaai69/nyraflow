@@ -23,7 +23,7 @@ export default function StarterSection() {
     <section id="starter" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         {/* Large Architectural Composition Frame */}
-        <div className="rounded-[22px] border border-white/14 border-t-white/30 bg-[#0E0F12]/90 backdrop-blur-md p-8 md:p-12 lg:p-14 shadow-2xl">
+        <div className="card-glass p-8 md:p-12 lg:p-14">
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
             {/* Left 30%: Open Editorial Headline & Price */}
             <header className="lg:col-span-4 border-b border-white/16 pb-8 lg:border-b-0 lg:pb-0 lg:border-r lg:pr-8 flex flex-col justify-between">
@@ -39,7 +39,7 @@ export default function StarterSection() {
               <div className="mt-8 pt-6 border-t border-white/12 hidden lg:block">
                 <a
                   href="#contact"
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-semibold text-[#101114] hover:bg-[#F0EFEA] hover:scale-105 transition-all shadow-md"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-semibold text-[#101114] hover:bg-white/90 hover:scale-105 transition-all shadow-md"
                 >
                   Заказать быстрый старт
                 </a>
