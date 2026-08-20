@@ -18,6 +18,7 @@ export default function ProblemSection() {
           </MotionHeading>
           {/* The page's statement line: lights up word by word on scroll. */}
           <WordIlluminate
+            as="h2"
             text="Почему сайт не превращает трафик в заявки?"
             className="text-display mt-4 max-w-4xl font-bold text-white"
           />

@@ -26,9 +26,9 @@ export default function CredibilitySection() {
                     </div>
 
                     {/* Title */}
-                    <h2 className="mt-6 text-2xl sm:text-3xl font-bold leading-snug tracking-tight text-white group-hover/benefit:text-white transition-colors">
+                    <h3 className="mt-6 text-2xl sm:text-3xl font-bold leading-snug tracking-tight text-white group-hover/benefit:text-white transition-colors">
                       {item.title}
-                    </h2>
+                    </h3>
 
                     {/* Body */}
                     <p className="mt-4 text-base leading-relaxed text-white/75 group-hover/benefit:text-white/90 transition-colors">

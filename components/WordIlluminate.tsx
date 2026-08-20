@@ -51,11 +51,15 @@ function Word({
 export default function WordIlluminate({
   text,
   className = "",
+  as: Tag = "p",
 }: {
   text: string;
   className?: string;
+  /** The element to render. Headings must stay headings: this component
+   *  replaced an h2 and silently turned it into a paragraph. */
+  as?: "p" | "h1" | "h2" | "h3";
 }) {
-  const ref = useRef<HTMLParagraphElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
   const { scrollYProgress } = useScroll({
@@ -67,14 +71,14 @@ export default function WordIlluminate({
 
   if (prefersReducedMotion) {
     return (
-      <p ref={ref} className={className}>
+      <Tag ref={ref as React.Ref<never>} className={className}>
         {text}
-      </p>
+      </Tag>
     );
   }
 
   return (
-    <p ref={ref} className={className}>
+    <Tag ref={ref as React.Ref<never>} className={className}>
       {words.map((word, index) => (
         <Word
           key={`${word}-${index}`}
@@ -84,6 +88,6 @@ export default function WordIlluminate({
           progress={scrollYProgress}
         />
       ))}
-    </p>
+    </Tag>
   );
 }
