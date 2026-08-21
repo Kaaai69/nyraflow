@@ -56,6 +56,9 @@ TELEGRAM_BOT_TOKEN=123456:AA...
 TELEGRAM_CHAT_ID=1098997456
 ```
 
+The same `.env` also feeds the mini app and Postgres containers — see
+[miniapp/.env.example](miniapp/.env.example) for the full list.
+
 The recipient must have pressed **/start** on the bot at least once, otherwise
 Telegram refuses the message. Outbound requests to `api.telegram.org` go through
 the server's VPN egress (which is how they reach Telegram from Russia).
@@ -95,6 +98,32 @@ docker compose down               # stop everything
 Both containers use `restart: unless-stopped` and start automatically on boot
 (the Docker service is enabled).
 
+## Telegram Mini App (nyraflow desk)
+
+`miniapp/` is a second Next.js app served at **https://app.nyraflow.ru** from
+its own container, with Postgres alongside it. It shares this repo, this
+`docker-compose.yml`, this Caddy instance and `/opt/myland/.env` — but nothing
+in the landing depends on it, and a broken mini app cannot take the site down.
+
+Before the first deploy:
+
+1. `A` record `app.nyraflow.ru` → server IP.
+2. Add `POSTGRES_PASSWORD`, `DATABASE_URL` and `TELEGRAM_ADMIN_IDS` to
+   `/opt/myland/.env` (`docker compose` refuses to start without the password).
+3. In BotFather, point the existing bot's menu button at `https://app.nyraflow.ru`.
+
+Deploy is the same rsync + `docker compose up -d --build`. Schema migrations run
+automatically in the mini app container before the server starts; if a migration
+fails the container stays down instead of serving an unknown schema.
+
+```bash
+curl -s https://app.nyraflow.ru/api/health     # {"ok":true,"db":"up",...}
+docker compose logs -f miniapp                 # app + migration logs
+docker compose exec db psql -U nyraflow -d nyraflow   # psql into the database
+```
+
+Details and architecture: [miniapp/README.md](miniapp/README.md).
+
 ## VPN (full-tunnel egress)
 
 All server-originated traffic (host **and** containers) egresses through the
@@ -114,5 +143,17 @@ Implementation lives in `/usr/local/sbin/vpn-{up,down,exempt}.sh` and
 ## HTTPS / domains
 
 Domains and automatic HTTPS are configured in `Caddyfile`. To add or change a
-domain, edit `Caddyfile`, copy it to `/opt/myland/Caddyfile`, then
-`docker compose restart caddy`.
+domain, edit `Caddyfile`, copy it to `/opt/myland/Caddyfile`, then **recreate**
+the container:
+
+```bash
+docker compose up -d --force-recreate caddy
+```
+
+`--force-recreate` is not optional here. The Caddyfile is bind-mounted as a
+single file, so the container holds its **inode** — and `rsync` (like most
+editors) writes a new file and renames it over the old one. After a deploy the
+container is therefore still reading the previous version: `caddy reload` and
+`docker compose restart caddy` both report success and change nothing, and
+`caddy validate` inside the container validates the stale file. Only recreating
+the container re-resolves the mount.

@@ -1,0 +1,182 @@
+{
+  "name": "nyraflow — напоминание через сутки",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nyraflow-followup",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c3000000-0000-4000-8000-000000000001",
+      "name": "Событие из мини-аппа",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-380, 300],
+      "webhookId": "nyraflow-followup"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Проверяем подпись. Реагируем только на готовый разбор: именно после\n// него клиент либо нажимает «обсудить», либо пропадает.\n\nconst crypto = require('crypto');\n\nconst item = $input.first().json;\nconst headers = item.headers || {};\nconst body = item.body || {};\n\nconst secret = $env.N8N_WEBHOOK_SECRET || '';\nconst received = String(headers['x-nyraflow-signature'] || '');\nconst expected = secret\n  ? crypto.createHmac('sha256', secret).update(JSON.stringify(body)).digest('hex')\n  : '';\n\nlet valid = false;\nif (secret && received.length === expected.length && received.length > 0) {\n  valid = crypto.timingSafeEqual(Buffer.from(received), Buffer.from(expected));\n}\n\nconst p = body.payload || {};\nconst relevant = String(body.type || '') === 'brief.analyzed';\n\nreturn [{\n  json: {\n    valid,\n    relevant,\n    leadId: p.leadId || null,\n    telegramId: p.telegramId || null,\n  },\n}];"
+      },
+      "id": "c3000000-0000-4000-8000-000000000002",
+      "name": "Проверить подпись",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-160, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.valid && $json.relevant && !!$json.telegramId }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "c3000000-0000-4000-8000-000000000003",
+      "name": "Брать в работу?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [80, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, scheduled: true }) }}",
+        "options": {}
+      },
+      "id": "c3000000-0000-4000-8000-000000000004",
+      "name": "Ответить 200 сразу",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [320, 180]
+    },
+    {
+      "parameters": {
+        "amount": 24,
+        "unit": "hours"
+      },
+      "id": "c3000000-0000-4000-8000-000000000005",
+      "name": "Подождать сутки",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [560, 180],
+      "webhookId": "nyraflow-followup-wait"
+    },
+    {
+      "parameters": {
+        "url": "=https://app.nyraflow.ru/api/admin/leads/{{ $json.leadId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": { "timeout": 15000 }
+      },
+      "id": "c3000000-0000-4000-8000-000000000006",
+      "name": "Клиент откликнулся?",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [800, 180]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.lead.isResponded }}",
+              "value2": false
+            }
+          ]
+        }
+      },
+      "id": "c3000000-0000-4000-8000-000000000007",
+      "name": "Молчит?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1040, 180]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.lead.telegramId }}",
+        "text": "=Добрый день! Вчера вы прошли бриф в нашем мини-приложении, и мы подготовили разбор задачи.\n\nЕсли остались вопросы или хотите обсудить проект — просто ответьте на это сообщение. Разбор в приложении сохранён, он никуда не денется.",
+        "additionalFields": {
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "c3000000-0000-4000-8000-000000000008",
+      "name": "Написать клиенту",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1280, 100]
+    },
+    {
+      "parameters": {
+        "chatId": "1098997456",
+        "text": "=🔔 Напоминание отправлено по заявке №{{ $('Проверить подпись').first().json.leadId }} — клиент сутки не отвечал.",
+        "additionalFields": {
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "c3000000-0000-4000-8000-000000000009",
+      "name": "Уведомить команду",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1520, 100]
+    },
+    {
+      "parameters": {},
+      "id": "c3000000-0000-4000-8000-000000000010",
+      "name": "Клиент уже на связи",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1280, 280]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: 'ignored' }) }}",
+        "options": {}
+      },
+      "id": "c3000000-0000-4000-8000-000000000011",
+      "name": "Ответить 200 без действий",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [320, 420]
+    }
+  ],
+  "connections": {
+    "Событие из мини-аппа": {
+      "main": [[{ "node": "Проверить подпись", "type": "main", "index": 0 }]]
+    },
+    "Проверить подпись": {
+      "main": [[{ "node": "Брать в работу?", "type": "main", "index": 0 }]]
+    },
+    "Брать в работу?": {
+      "main": [
+        [{ "node": "Ответить 200 сразу", "type": "main", "index": 0 }],
+        [{ "node": "Ответить 200 без действий", "type": "main", "index": 0 }]
+      ]
+    },
+    "Ответить 200 сразу": {
+      "main": [[{ "node": "Подождать сутки", "type": "main", "index": 0 }]]
+    },
+    "Подождать сутки": {
+      "main": [[{ "node": "Клиент откликнулся?", "type": "main", "index": 0 }]]
+    },
+    "Клиент откликнулся?": {
+      "main": [[{ "node": "Молчит?", "type": "main", "index": 0 }]]
+    },
+    "Молчит?": {
+      "main": [
+        [{ "node": "Написать клиенту", "type": "main", "index": 0 }],
+        [{ "node": "Клиент уже на связи", "type": "main", "index": 0 }]
+      ]
+    },
+    "Написать клиенту": {
+      "main": [[{ "node": "Уведомить команду", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}

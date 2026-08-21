@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Onest Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+html {
+  /* Чёрный красит html, а не body: под body лежит канвас с частицами, и
+     непрозрачный body его бы перекрыл. */
+  background: #000000;
+}
+
+body {
+  background: transparent;
+  color: var(--tg-theme-text-color, #ffffff);
+  overscroll-behavior-y: none;
+}
+
+/* Горизонтальные ленты фильтров прокручиваются пальцем — полоса прокрутки
+   в них только мешает. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Появление приветственного экрана: короткое и без резких движений. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Название студии проявляется из размытия и слегка сводит разрядку —
+   так появление читается как проявление, а не как включение. */
+@keyframes emerge {
+  from {
+    opacity: 0;
+    filter: blur(12px);
+    letter-spacing: 0.22em;
+    transform: translateY(6px);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    letter-spacing: -0.01em;
+    transform: none;
+  }
+}
+
+/* Содержимое проявляется из глубины, а не включается.
+   Одной прозрачности мало: без движения и расфокуса переход читается как
+   подмена кадра — интерфейс «щёлкает» и кажется плоской наклейкой. */
+@keyframes surface {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    filter: blur(6px);
+  }
+  55% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* Заставка уходит вглубь: чуть увеличивается и размывается, поэтому кажется,
+   что она пропускает интерфейс вперёд, а не выключается. */
+@keyframes recede {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.06);
+    filter: blur(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -14,8 +14,9 @@ Docker + Caddy, весь исходящий трафик сервера чере
 | [02-vpn-full-tunnel.md](02-vpn-full-tunnel.md) | Прокинуть весь исходящий трафик через VPN, не потеряв доступ |
 | [03-docker-deploy.md](03-docker-deploy.md) | **Главное.** Общие правила деплоя любого лендинга |
 | [04-deploy-checklist.md](04-deploy-checklist.md) | Чек-лист: пошагово запустить новый лендинг |
+| [05-ssh-and-tls-checks.md](05-ssh-and-tls-checks.md) | Работа с сервером по ssh, проверки DNS, TLS и деплоя |
 | [prompts.md](prompts.md) | Готовые промты для ИИ-агента |
-| [templates/](templates/) | Готовые файлы: Dockerfile, compose, Caddyfile, скрипты VPN |
+| [templates/](templates/) | Готовые файлы: Dockerfile, compose, Caddyfile, скрипты VPN, srv.sh |
 
 ## Порядок работы
 
@@ -25,6 +26,10 @@ Docker + Caddy, весь исходящий трафик сервера чере
 
 **Новый лендинг** (каждый проект):
 3. [03-docker-deploy.md](03-docker-deploy.md) + [04-deploy-checklist.md](04-deploy-checklist.md)
+
+**Каждый раз при работе с сервером:**
+[05-ssh-and-tls-checks.md](05-ssh-and-tls-checks.md) — постоянная ssh-сессия,
+проверки DNS через DoH, валидация Caddy без даунтайма, диагностика TLS.
 
 Один сервер спокойно держит несколько лендингов: у каждого свой каталог,
 свой compose-проект и свой домен в общем Caddy.

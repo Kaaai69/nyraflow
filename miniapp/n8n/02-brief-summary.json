@@ -1,0 +1,92 @@
+{
+  "name": "nyraflow — саммари разбора в чат команды",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nyraflow-brief-summary",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b2000000-0000-4000-8000-000000000001",
+      "name": "Событие из мини-аппа",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-260, 300],
+      "webhookId": "nyraflow-brief-summary"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Проверяем подпись и собираем сообщение для команды.\n\nconst crypto = require('crypto');\n\nconst item = $input.first().json;\nconst headers = item.headers || {};\nconst body = item.body || {};\n\nconst secret = $env.N8N_WEBHOOK_SECRET || '';\nconst received = String(headers['x-nyraflow-signature'] || '');\nconst expected = secret\n  ? crypto.createHmac('sha256', secret).update(JSON.stringify(body)).digest('hex')\n  : '';\n\nlet valid = false;\nif (secret && received.length === expected.length && received.length > 0) {\n  valid = crypto.timingSafeEqual(Buffer.from(received), Buffer.from(expected));\n}\n\nconst type = String(body.type || '');\nconst p = body.payload || {};\n\n// Этот сценарий реагирует только на готовый разбор.\nconst relevant = type === 'brief.analyzed';\n\nconst PRODUCTS = {\n  landing: 'Лендинг · от 30 000 ₽',\n  web_service: 'Веб-сервис или Mini App · от 60 000 ₽',\n  ai_automation: 'Сайт с AI-автоматизацией · от 120 000 ₽',\n};\n\nconst esc = (s) => String(s == null ? '' : s)\n  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\n\nconst text = relevant\n  ? '📋 <b>Разбор готов — заявка №' + esc(p.leadId) + '</b>\\n\\n' +\n    esc(p.summary) + '\\n\\n' +\n    '<b>Формат:</b> ' + esc(PRODUCTS[p.recommendedProduct] || p.recommendedProduct) + '\\n\\n' +\n    '<b>Гипотеза оффера</b>\\n<i>' + esc(p.offerHypothesis) + '</i>\\n\\n' +\n    (p.topQuestion ? '<b>Главный вопрос к клиенту</b>\\n' + esc(p.topQuestion) + '\\n\\n' : '') +\n    (p.isFallback\n      ? '⚠️ Собрано шаблоном — модель была недоступна'\n      : '🤖 ' + esc(p.model))\n  : '';\n\nreturn [{ json: { valid, relevant, text, leadId: p.leadId || null } }];"
+      },
+      "id": "b2000000-0000-4000-8000-000000000002",
+      "name": "Проверить подпись",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-40, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.valid && $json.relevant }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "b2000000-0000-4000-8000-000000000003",
+      "name": "Подпись верна и это разбор?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "1098997456",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "b2000000-0000-4000-8000-000000000004",
+      "name": "Саммари в чат команды",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [440, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}",
+        "options": {}
+      },
+      "id": "b2000000-0000-4000-8000-000000000005",
+      "name": "Ответить 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [700, 300]
+    }
+  ],
+  "connections": {
+    "Событие из мини-аппа": {
+      "main": [[{ "node": "Проверить подпись", "type": "main", "index": 0 }]]
+    },
+    "Проверить подпись": {
+      "main": [[{ "node": "Подпись верна и это разбор?", "type": "main", "index": 0 }]]
+    },
+    "Подпись верна и это разбор?": {
+      "main": [
+        [{ "node": "Саммари в чат команды", "type": "main", "index": 0 }],
+        [{ "node": "Ответить 200", "type": "main", "index": 0 }]
+      ]
+    },
+    "Саммари в чат команды": {
+      "main": [[{ "node": "Ответить 200", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
