@@ -4,6 +4,8 @@ import { briefQuestions, MAX_ANSWER_LENGTH, type BriefAnswers, type BriefQuestio
 import { analyzeBrief } from "@/lib/ai/analyze";
 import { authenticate } from "@/lib/auth/session";
 import { countRecentBriefs, createBriefWithLead, markBriefFailed, saveAnalysis } from "@/lib/db/briefs";
+import { openAppKeyboard, sendMessage } from "@/lib/telegram/bot";
+import { analysisFailedMessage, analysisReadyMessage } from "@/lib/telegram/messages";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -98,6 +100,21 @@ export async function POST(request: Request) {
       console.warn("[brief] провайдеры с ошибками:", outcome.attempts.join(" | "));
     }
 
+    // В чат уходит отметка о событии, а не сам разбор.
+    //
+    // Мини-апп закрывают сразу после отправки, и без сообщения в переписке не
+    // остаётся ни следа заявки. Но разбор целиком в чате выглядел бы рассылкой:
+    // читать его человек возвращается в приложение, там же он видит и статус
+    // заявки. Недоставленное сообщение брифу не мешает — он уже сохранён.
+    const delivered = await sendMessage({
+      chatId: user.telegram_id,
+      text: analysisReadyMessage(),
+      replyMarkup: openAppKeyboard("Открыть разбор"),
+    });
+    if (!delivered) {
+      console.error(`[brief] уведомление о разборе ${briefId} не доставлено в чат ${user.telegram_id}`);
+    }
+
     return NextResponse.json({
       ok: true,
       briefId,
@@ -113,6 +130,13 @@ export async function POST(request: Request) {
     // Сюда попадаем только при сбое БД: сам разбор фолбэком не бросает.
     console.error("[brief] не удалось сохранить разбор", error);
     await markBriefFailed(briefId).catch(() => {});
+    // На экране в этот момент ошибка, и молчание в чате читалось бы как
+    // потерянная заявка. Она не потеряна: бриф записан до разбора.
+    await sendMessage({
+      chatId: user.telegram_id,
+      text: analysisFailedMessage(),
+      replyMarkup: openAppKeyboard(),
+    });
     return NextResponse.json({ ok: false, error: "analysis_failed", briefId }, { status: 500 });
   }
 }

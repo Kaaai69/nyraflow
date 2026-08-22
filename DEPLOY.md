@@ -111,10 +111,27 @@ Before the first deploy:
 2. Add `POSTGRES_PASSWORD`, `DATABASE_URL` and `TELEGRAM_ADMIN_IDS` to
    `/opt/myland/.env` (`docker compose` refuses to start without the password).
 3. In BotFather, point the existing bot's menu button at `https://app.nyraflow.ru`.
+4. Add `TELEGRAM_WEBHOOK_SECRET` (any random string, e.g. `openssl rand -hex 32`)
+   to `/opt/myland/.env`.
 
 Deploy is the same rsync + `docker compose up -d --build`. Schema migrations run
 automatically in the mini app container before the server starts; if a migration
 fails the container stays down instead of serving an unknown schema.
+
+The bot receives updates by **long polling**, not by webhook. A webhook is
+impossible here: Telegram cannot reach a Russian IP — every delivery attempt
+ends in `Connection timed out` and nothing ever reaches Caddy, while the same
+host answers an external request in 0.2s. It is the same blockage that forces
+outbound calls to `api.telegram.org` through the VPN.
+
+So the `bot` container (`scripts/bot-worker.mjs`) polls Telegram through the VPN
+and POSTs each update into the app's own `/api/telegram/webhook` over the
+internal network, authenticated with `TELEGRAM_WEBHOOK_SECRET`. It also sets the
+command list and the menu button on every start — no manual step to forget.
+
+```bash
+docker compose logs --tail 20 bot     # "опрашиваю Telegram, доставка в ..."
+```
 
 ```bash
 curl -s https://app.nyraflow.ru/api/health     # {"ok":true,"db":"up",...}

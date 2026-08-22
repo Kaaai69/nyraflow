@@ -54,6 +54,25 @@ services:
     networks:
       - data
 
+  # Входящие апдейты бота. Вебхук на этом сервере невозможен: Telegram не
+  # доходит до российского IP (проверено — таймаут на каждой попытке, до Caddy
+  # не долетает ничего). Поэтому апдейты забираются поллингом через VPN и
+  # приносятся в тот же эндпоинт приложения, что принимал бы вебхук.
+  bot:
+    build:
+      context: ./miniapp
+      dockerfile: Dockerfile
+    image: nyraflow-miniapp:latest
+    restart: unless-stopped
+    command: ["node", "scripts/bot-worker.mjs"]
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      - miniapp
+    networks:
+      - web
+
   db:
     image: postgres:17-alpine
     restart: unless-stopped

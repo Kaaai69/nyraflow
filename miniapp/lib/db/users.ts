@@ -58,3 +58,12 @@ export async function upsertUser(
 
   return row;
 }
+
+/**
+ * Пользователь по Telegram id. Нужен вебхуку бота: там нет initData, есть
+ * только id отправителя, а поздороваться хочется по-разному с тем, кто пришёл
+ * впервые, и с тем, у кого уже лежит заявка.
+ */
+export async function findUserByTelegramId(telegramId: number | string): Promise<UserRow | null> {
+  return queryOne<UserRow>("select * from users where telegram_id = $1", [String(telegramId)]);
+}

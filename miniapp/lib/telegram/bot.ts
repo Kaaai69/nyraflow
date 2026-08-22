@@ -52,3 +52,14 @@ export async function sendMessage({
 export function escapeHtml(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
+
+/**
+ * Клавиатура с одной кнопкой — открыть мини-апп.
+ *
+ * Кнопка `web_app` открывает приложение прямо из чата и приносит подписанную
+ * initData, поэтому человек попадает внутрь уже узнанным. Работает только в
+ * личной переписке — там бот с клиентом и разговаривает.
+ */
+export function openAppKeyboard(label = "Открыть nyraflow desk"): unknown {
+  return { inline_keyboard: [[{ text: label, web_app: { url: env.publicUrl } }]] };
+}

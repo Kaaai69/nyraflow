@@ -58,6 +58,15 @@ export const env = {
       .map((part) => Number.parseInt(part.trim(), 10))
       .filter((id) => Number.isFinite(id) && id > 0);
   },
+  /**
+   * Общий секрет вебхука бота. Telegram присылает его в заголовке
+   * `X-Telegram-Bot-Api-Secret-Token` — по нему чужой POST на наш адрес
+   * отличается от настоящего апдейта. Пустое значение проверку отключает:
+   * так вебхук поднимается и на стенде, где секрета ещё нет.
+   */
+  get botWebhookSecret(): string {
+    return optional("TELEGRAM_WEBHOOK_SECRET");
+  },
   /** Максимальный возраст initData, после которого требуется перезапуск аппы. */
   get initDataMaxAgeSeconds(): number {
     const raw = Number.parseInt(optional("INIT_DATA_MAX_AGE_SECONDS", "86400"), 10);
