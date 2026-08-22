@@ -142,3 +142,58 @@ export async function updateLeadStatus(
     [id, status],
   );
 }
+
+// Состояние заявки для самого клиента.
+//
+// Мини-апп открывается заново после каждого выхода, и без этой выборки человек
+// видит пустой бриф — как будто отправленного не было. Берётся последняя заявка:
+// вторую задачу приносят поверх первой, и ждать ответа человек будет по ней.
+
+export type UserLeadState = {
+  leadId: string;
+  status: LeadStatus;
+  createdAt: Date;
+  briefId: string | null;
+  briefStatus: "draft" | "submitted" | "analyzed" | "failed" | null;
+  hasAnalysis: boolean;
+};
+
+export async function getLatestLeadForUser(userId: string): Promise<UserLeadState | null> {
+  const row = await queryOne<{
+    lead_id: string;
+    status: LeadStatus;
+    created_at: Date;
+    brief_id: string | null;
+    brief_status: UserLeadState["briefStatus"];
+    has_analysis: boolean;
+  }>(
+    `select l.id as lead_id,
+            l.status,
+            l.created_at,
+            b.id as brief_id,
+            b.status as brief_status,
+            (a.id is not null) as has_analysis
+       from leads l
+       left join lateral (
+         select id, status from briefs where lead_id = l.id order by id desc limit 1
+       ) b on true
+       left join lateral (
+         select id from brief_analyses where brief_id = b.id order by created_at desc limit 1
+       ) a on true
+      where l.user_id = $1
+      order by l.created_at desc, l.id desc
+      limit 1`,
+    [userId],
+  );
+
+  if (!row) return null;
+
+  return {
+    leadId: row.lead_id,
+    status: row.status,
+    createdAt: row.created_at,
+    briefId: row.brief_id,
+    briefStatus: row.brief_status,
+    hasAnalysis: row.has_analysis,
+  };
+}

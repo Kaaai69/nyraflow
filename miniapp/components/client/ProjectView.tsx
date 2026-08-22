@@ -142,7 +142,7 @@ export function ProjectView({ onOpenBrief }: Props) {
 
   if (!data) {
     return (
-      <main className="flex min-h-dvh items-center justify-center">
+      <main className="flex min-h-full items-center justify-center">
         <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/20 border-t-white" />
       </main>
     );
@@ -150,7 +150,7 @@ export function ProjectView({ onOpenBrief }: Props) {
 
   if (!data.project) {
     return (
-      <main className="flex min-h-dvh flex-col items-center justify-center gap-5 px-8 text-center">
+      <main className="flex min-h-full flex-col items-center justify-center gap-5 px-8 text-center">
         <p className="text-[15px] leading-relaxed text-white/70">
           Активных проектов пока нет.
         </p>
@@ -171,7 +171,7 @@ export function ProjectView({ onOpenBrief }: Props) {
   const pendingApprovals = approvals.filter((approval) => approval.status === "pending");
 
   return (
-    <main className="flex min-h-dvh flex-col gap-9 px-5 pt-6 pb-12">
+    <main className="flex min-h-full flex-col gap-9 px-5 pt-6 pb-12">
       <header className="flex flex-col gap-2">
         <p className="text-xs tracking-[0.2em] text-white/40 uppercase">Ваш проект</p>
         <h1 className="text-2xl leading-snug font-medium">{project.title}</h1>

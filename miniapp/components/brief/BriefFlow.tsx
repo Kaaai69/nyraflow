@@ -6,8 +6,9 @@ import { briefQuestions, MAX_ANSWER_LENGTH, type BriefAnswers } from "@/content/
 import { api, ApiRequestError } from "@/lib/api-client";
 import type { BriefAnalysis } from "@/lib/ai/schema";
 import { bindBackButton, haptic, hapticSuccess, initTelegram, isInsideTelegram } from "@/lib/telegram/webapp";
-import { watchViewportHeight } from "@/lib/telegram/viewport";
+import { useKeyboardOpen } from "@/lib/telegram/viewport";
 import { AnalysisView } from "@/components/brief/AnalysisView";
+import { WaitingMark } from "@/components/brief/WaitingMark";
 
 // Бриф по одному вопросу на экран.
 //
@@ -88,6 +89,10 @@ export function BriefFlow() {
   const [touched, setTouched] = useState(false);
   const [discussState, setDiscussState] = useState<"idle" | "sending" | "sent">("idle");
   const fieldRef = useRef<HTMLTextAreaElement>(null);
+  // Клавиатура съедает больше половины экрана. Пока она открыта, вопрос и
+  // подсказка ужимаются, а поле отдаёт место кнопке — вместо того чтобы
+  // выталкивать её за нижний край.
+  const keyboardOpen = useKeyboardOpen();
 
   const question = briefQuestions[step]!;
   const value = answers[question.id] ?? "";
@@ -98,10 +103,13 @@ export function BriefFlow() {
   useEffect(() => {
     initTelegram();
     setAnswers(loadSaved());
-    // Следим за реальной высотой: без этого нижняя панель прыгает, когда
-    // выезжает клавиатура.
-    return watchViewportHeight();
   }, []);
+
+  // Новый вопрос — новый текст: поле прокручивается к началу, иначе ответ на
+  // следующий вопрос начинается с середины предыдущей прокрутки.
+  useEffect(() => {
+    if (fieldRef.current) fieldRef.current.scrollTop = 0;
+  }, [step]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -153,13 +161,28 @@ export function BriefFlow() {
     setTouched(false);
 
     if (isLast) {
+      // Здесь клавиатура больше не нужна — дальше идёт разбор.
+      fieldRef.current?.blur();
       void submit(answers);
       return;
     }
 
+    // Фокус намеренно остаётся в поле: клавиатура не закрывается между
+    // вопросами. Раньше она уезжала и тут же выезжала обратно, и раскладка
+    // дёргалась на каждом шаге — экран прыгал вверх-вниз посреди разговора.
     setStep((current) => current + 1);
-    fieldRef.current?.blur();
   }, [answers, isLast, submit, tooShort]);
+
+  /**
+   * Нажатие мимо поля.
+   *
+   * Отменённый mousedown не переводит фокус на кнопку, поэтому клавиатура
+   * остаётся на месте, а клик всё равно происходит. Иначе каждое касание
+   * «Дальше» закрывало клавиатуру и следом открывало её снова.
+   */
+  const keepFocus = useCallback((event: { preventDefault: () => void }) => {
+    event.preventDefault();
+  }, []);
 
   const discuss = useCallback(async () => {
     if (stage.name !== "done") return;
@@ -175,17 +198,19 @@ export function BriefFlow() {
 
   if (stage.name === "submitting") {
     return (
-      <main className="flex min-h-dvh flex-col items-center justify-center gap-4 px-8 text-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-        <p className="text-[15px] text-white/70">Разбираем задачу</p>
-        <p className="text-sm text-white/40">Это занимает пару секунд</p>
+      <main className="flex min-h-full flex-col items-center justify-center gap-6 px-8 text-center">
+        <WaitingMark />
+        <div className="flex flex-col gap-2">
+          <p className="text-waiting text-[17px]">Разбираем задачу</p>
+          <p className="text-sm text-white/40">Это занимает пару секунд</p>
+        </div>
       </main>
     );
   }
 
   if (stage.name === "done") {
     return (
-      <main className="min-h-dvh">
+      <main className="min-h-full">
         <AnalysisView
           analysis={stage.analysis}
           isFallback={stage.isFallback}
@@ -198,7 +223,7 @@ export function BriefFlow() {
 
   if (stage.name === "error") {
     return (
-      <main className="flex min-h-dvh flex-col items-center justify-center gap-5 px-8 text-center">
+      <main className="flex min-h-full flex-col items-center justify-center gap-5 px-8 text-center">
         <p className="text-[15px] leading-relaxed text-white/80">{stage.message}</p>
         <button
           type="button"
@@ -215,10 +240,9 @@ export function BriefFlow() {
     // Высота — ровно видимая область. Прокручивается только середина, а панель
     // кнопок остаётся последним элементом колонки: ей незачем быть sticky, и
     // поэтому она не пересчитывает своё положение при движении клавиатуры.
-    <main
-      className="flex flex-col overflow-hidden"
-      style={{ height: "var(--app-vh, 100dvh)" }}
-    >
+    // Высоту даёт родитель: над брифом может стоять полоса переключения
+    // режимов, и занимать весь экран самому больше нельзя.
+    <main className="flex h-full flex-col overflow-hidden">
       <div className="flex shrink-0 items-center gap-3 px-5 pt-5">
         <div className="h-px flex-1 bg-white/10">
           <div
@@ -231,9 +255,34 @@ export function BriefFlow() {
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-5 pt-10">
-        <h1 className="text-2xl leading-snug font-medium">{question.title}</h1>
-        <p className="text-sm leading-relaxed text-white/50">{question.hint}</p>
+      {/* Середина отдаёт место клавиатуре сама: заголовок и подсказка ужимаются,
+          поле занимает остаток. Раскладке не приходится выталкивать панель
+          кнопок за край, поэтому её и не подбрасывает. */}
+      <div
+        className={`flex min-h-0 flex-1 flex-col px-5 transition-[padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          keyboardOpen ? "pt-5" : "pt-10"
+        }`}
+      >
+        {/* Пока человек пишет, вопрос ему нужен как напоминание, а не как
+            заголовок экрана: он становится меньше и отдаёт место ответу. */}
+        <h1
+          key={question.id}
+          className={`shrink-0 animate-[fade-up_450ms_cubic-bezier(0.22,1,0.36,1)_both] leading-snug font-medium transition-[font-size] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            keyboardOpen ? "text-xl" : "text-2xl"
+          }`}
+        >
+          {question.title}
+        </h1>
+
+        {/* Подсказка нужна до того, как человек начал писать. Дальше она только
+            занимает место, поэтому уезжает вместе с выездом клавиатуры. */}
+        <p
+          className={`shrink-0 overflow-hidden text-sm leading-relaxed text-white/50 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            keyboardOpen ? "mt-0 max-h-0 opacity-0" : "mt-3 max-h-24 opacity-100"
+          }`}
+        >
+          {question.hint}
+        </p>
 
         <textarea
           ref={fieldRef}
@@ -246,31 +295,45 @@ export function BriefFlow() {
           }
           placeholder={question.placeholder}
           rows={5}
-          className="mt-4 w-full resize-none rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-[15px] leading-relaxed outline-none placeholder:text-white/25 focus:border-white/30"
+          autoCapitalize="sentences"
+          autoCorrect="on"
+          className={`mt-4 w-full flex-1 resize-none rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-[15px] leading-relaxed outline-none placeholder:text-white/25 focus:border-white/30 ${
+            keyboardOpen ? "min-h-24" : "min-h-28"
+          }`}
         />
 
-        {touched && tooShort ? (
-          <p className="text-sm text-white/50">
-            Пары слов не хватит — чем конкретнее ответ, тем точнее разбор.
-          </p>
-        ) : null}
+        <div className="flex shrink-0 flex-col gap-3 pt-3">
+          {touched && tooShort ? (
+            <p className="text-sm text-white/50">
+              Пары слов не хватит — чем конкретнее ответ, тем точнее разбор.
+            </p>
+          ) : null}
 
-        {!question.required ? (
-          <button
-            type="button"
-            onClick={next}
-            className="self-start text-sm text-white/40 underline underline-offset-4"
-          >
-            Пропустить
-          </button>
-        ) : null}
+          {!question.required ? (
+            <button
+              type="button"
+              onClick={next}
+              onMouseDown={keepFocus}
+              className="self-start text-sm text-white/40 underline underline-offset-4"
+            >
+              Пропустить
+            </button>
+          ) : null}
+        </div>
       </div>
 
-      <div className="flex shrink-0 gap-3 border-t border-white/10 bg-black/80 px-5 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur">
+      {/* Отступ под жестовую полосу нужен, только когда её видно: под открытой
+          клавиатурой он превращается в пустую щель между кнопкой и клавишами. */}
+      <div
+        className={`flex shrink-0 gap-3 border-t border-white/10 bg-black/80 px-5 pt-4 backdrop-blur transition-[padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          keyboardOpen ? "pb-4" : "pb-[calc(1rem+env(safe-area-inset-bottom))]"
+        }`}
+      >
         {step > 0 && !isInsideTelegram() ? (
           <button
             type="button"
             onClick={goBack}
+            onMouseDown={keepFocus}
             className="rounded-xl border border-white/15 px-5 py-4 text-[15px] text-white/70"
           >
             Назад
@@ -279,6 +342,7 @@ export function BriefFlow() {
         <button
           type="button"
           onClick={next}
+          onMouseDown={keepFocus}
           className="flex-1 rounded-xl bg-white py-4 text-[15px] font-medium text-black transition active:scale-[0.99] disabled:opacity-40"
           disabled={tooShort && touched}
         >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { api, ApiRequestError } from "@/lib/api-client";
 import { haptic, initTelegram } from "@/lib/telegram/webapp";
@@ -100,7 +100,7 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
 }
 
-export function LeadFeed({ switcher }: { switcher?: ReactNode }) {
+export function LeadFeed() {
   const [filter, setFilter] = useState<LeadStatus | "all">("all");
   const [data, setData] = useState<FeedResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -149,7 +149,7 @@ export function LeadFeed({ switcher }: { switcher?: ReactNode }) {
   }
 
   return (
-    <main className="flex min-h-dvh flex-col">
+    <main className="flex min-h-full flex-col">
       <header className="px-5 pt-6 pb-4">
         {/* Без uppercase: бренд пишется строчными, а CSS-трансформация
             превращала его в NYRAFLOW DESK. */}
@@ -273,8 +273,6 @@ export function LeadFeed({ switcher }: { switcher?: ReactNode }) {
           </ul>
         )}
       </div>
-
-      {switcher}
     </main>
   );
 }

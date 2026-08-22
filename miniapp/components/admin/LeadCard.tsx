@@ -126,7 +126,7 @@ export function LeadCard({ leadId, onBack, onStatusChanged }: Props) {
 
   if (error) {
     return (
-      <main className="flex min-h-dvh flex-col items-center justify-center gap-4 px-8 text-center">
+      <main className="flex min-h-full flex-col items-center justify-center gap-4 px-8 text-center">
         <p className="text-[15px] text-white/70">Не удалось открыть заявку.</p>
         <button type="button" onClick={onBack} className="rounded-xl border border-white/20 px-5 py-3 text-sm">
           К списку
@@ -137,7 +137,7 @@ export function LeadCard({ leadId, onBack, onStatusChanged }: Props) {
 
   if (!data) {
     return (
-      <main className="flex min-h-dvh items-center justify-center">
+      <main className="flex min-h-full items-center justify-center">
         <div className="h-7 w-7 animate-spin rounded-full border-2 border-white/20 border-t-white" />
       </main>
     );
@@ -149,7 +149,7 @@ export function LeadCard({ leadId, onBack, onStatusChanged }: Props) {
     : undefined;
 
   return (
-    <main className="flex min-h-dvh flex-col pb-28">
+    <main className="flex min-h-full flex-col pb-28">
       <header className="flex flex-col gap-2 px-5 pt-6">
         <button type="button" onClick={onBack} className="self-start text-sm text-white/40">
           ← К списку
