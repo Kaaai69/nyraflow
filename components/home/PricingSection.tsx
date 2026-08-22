@@ -11,57 +11,105 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]"
+      className="py-section-mobile md:py-section-desktop bg-transparent text-white"
     >
       <SectionContainer>
         <SectionHeading
           title={content.title}
           description={content.description}
         />
-        {/* ARCHETYPE D: Featured Inverted Accent Card */}
-        <MotionGrid className="mt-14 grid items-stretch gap-8 md:mt-20 lg:grid-cols-3" staggerDelay={0.12}>
+        {/*
+          Asymmetric composition rather than three identical columns: the
+          featured tier runs full width across the top with its content in
+          three columns, the other two sit side by side beneath it. The
+          hierarchy is in the layout, not in a badge.
+        */}
+        <MotionGrid
+          className="mt-14 grid items-stretch gap-6 md:mt-20 lg:grid-cols-12"
+          staggerDelay={0.12}
+        >
           {items.map((item) => {
             const isFeatured = item.featured;
+            // Position of this tier among the non-featured ones, which decides
+            // which of the two right-hand rows it lands in.
+            const minorIndex = items
+              .filter((tier) => !tier.featured)
+              .findIndex((tier) => tier.id === item.id);
 
             return (
-              <MotionCard key={item.id}>
+              <MotionCard
+                key={item.id}
+                className={
+                  isFeatured
+                    ? "lg:col-start-1 lg:col-span-12 lg:row-start-1"
+                    : `lg:col-span-6 lg:row-start-2 ${
+                        minorIndex === 0 ? "lg:col-start-1" : "lg:col-start-7"
+                      }`
+                }
+              >
                 <article
-                  className={`flex h-full flex-col justify-between rounded-[22px] p-8 md:p-10 transition-all duration-300 ${
+                  className={`card-glass flex h-full flex-col justify-between text-white ${
                     isFeatured
-                      ? "bg-[#F0EFEA] text-[#101114] border border-[#101114]/20 shadow-2xl lg:-translate-y-6 hover:scale-[1.01]"
-                      : "bg-[#0E0F12]/90 text-white border border-white/14 backdrop-blur-md shadow-xl hover:border-white/28 hover:bg-[#0E0F12]/95 hover:scale-[1.01]"
+                      ? "card-glass-featured p-8 md:p-12"
+                      : "p-8 md:p-9"
                   }`}
                 >
-                  <div>
-                    {isFeatured && (
-                      <span className="inline-block rounded-full bg-[#101114] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white mb-6">
-                        Популярный выбор
-                      </span>
-                    )}
+                  {/* The wide featured panel splits into two columns; the
+                      narrow tiers stay a single stack. */}
+                  <div
+                    className={
+                      isFeatured
+                        ? "lg:grid lg:grid-cols-[1.15fr_1fr] lg:gap-14"
+                        : ""
+                    }
+                  >
+                    <div>
+                      {isFeatured && (
+                        <span className="mb-6 inline-block rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
+                          Популярный выбор
+                        </span>
+                      )}
 
-                    <h3 className={`text-2xl font-bold tracking-tight ${isFeatured ? "text-[#101114]" : "text-white"}`}>
-                      {item.title}
-                    </h3>
+                      <h3
+                        className={`font-bold tracking-tight text-white ${
+                          isFeatured ? "text-display-sm" : "text-2xl"
+                        }`}
+                      >
+                        {item.title}
+                      </h3>
 
-                    <p className={`mt-4 text-4xl sm:text-5xl font-black tracking-tight ${isFeatured ? "text-[#101114]" : "text-white"}`}>
-                      {item.price}
-                    </p>
+                      <p
+                        className={`mt-4 font-black tracking-tight text-white ${
+                          isFeatured
+                            ? "text-5xl lg:text-6xl"
+                            : "text-4xl sm:text-5xl"
+                        }`}
+                      >
+                        {item.price}
+                      </p>
 
-                    <p className={`mt-4 leading-relaxed ${isFeatured ? "text-[#101114]/75" : "text-white/75"}`}>
-                      {item.description}
-                    </p>
+                      <p className="mt-4 leading-relaxed text-white/75">
+                        {item.description}
+                      </p>
+                    </div>
 
-                    <div className={`mt-8 space-y-3.5 border-t pt-6 ${isFeatured ? "border-[#101114]/15" : "border-white/14"}`}>
+                    <div
+                      className={`space-y-3.5 ${
+                        isFeatured
+                          ? "mt-8 border-t border-white/14 pt-6 lg:mt-0 lg:border-t-0 lg:pt-0"
+                          : "mt-8 border-t border-white/14 pt-6"
+                      }`}
+                    >
                       {item.included.map((line) => (
                         <p
                           key={line}
-                          className={`flex gap-3 leading-relaxed text-sm ${isFeatured ? "text-[#101114]/85" : "text-white/85"}`}
+                          className="flex gap-3 text-sm leading-relaxed text-white/85"
                         >
                           <CheckIcon
                             aria-hidden
                             size={18}
                             weight="bold"
-                            className={`mt-0.5 shrink-0 ${isFeatured ? "text-[#101114]" : "text-white"}`}
+                            className="mt-0.5 shrink-0 text-white"
                           />
                           <span>{line}</span>
                         </p>
@@ -69,17 +117,13 @@ export default function PricingSection() {
 
                       {item.optional?.length ? (
                         <div
-                          className={`mt-6 rounded-xl p-4 text-xs ${
-                            isFeatured
-                              ? "border border-[#101114]/15 bg-[#101114]/5 text-[#101114]"
-                              : "border border-white/14 bg-white/5 text-white"
-                          }`}
+                          className="card-inset mt-6 p-4 text-xs text-white"
                         >
-                          <p className={`font-bold uppercase tracking-wider mb-2 ${isFeatured ? "text-[#101114]/60" : "text-white/60"}`}>
+                          <p className="mb-2 font-bold uppercase tracking-wider text-white/60">
                             Опционально
                           </p>
                           {item.optional.map((line) => (
-                            <p key={line} className={`mt-1 leading-relaxed ${isFeatured ? "text-[#101114]/75" : "text-white/75"}`}>
+                            <p key={line} className="mt-1 leading-relaxed text-white/75">
                               {line}
                             </p>
                           ))}
@@ -90,10 +134,10 @@ export default function PricingSection() {
 
                   <a
                     href="#contact"
-                    className={`mt-10 flex h-13 w-full items-center justify-center rounded-full font-semibold transition-all duration-200 ${
+                    className={`mt-10 flex h-13 w-full items-center justify-center rounded-full font-semibold transition-all duration-200 hover:scale-105 active:scale-95 ${
                       isFeatured
-                        ? "bg-[#101114] text-white hover:bg-black hover:scale-105 active:scale-95 shadow-md"
-                        : "border border-white/20 bg-white/10 text-white hover:bg-white/20 hover:scale-105 active:scale-95 shadow-sm"
+                        ? "bg-white text-[#101114] shadow-md hover:bg-white/90 lg:max-w-sm"
+                        : "border border-white/20 bg-white/10 text-white hover:bg-white/20"
                     }`}
                   >
                     {content.cta}

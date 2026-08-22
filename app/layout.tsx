@@ -5,6 +5,9 @@ import "@fontsource-variable/onest";
 
 import "./globals.css";
 
+import CustomCursor from "@/components/CustomCursor";
+import SmoothScroll from "@/components/SmoothScroll";
+
 const siteDescription =
   "Сайты, веб-сервисы и AI-автоматизация, которые превращают трафик в заявки, а сложные процессы — в понятную систему.";
 
@@ -35,8 +38,10 @@ type RootLayoutProps = Readonly<{
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ru" className="dark">
-      <body className="bg-[#000000] text-[#FFFFFF] antialiased selection:bg-white/20 selection:text-white">
+      <body className="bg-[#000000] text-white antialiased selection:bg-white/20 selection:text-white">
         {children}
+        <SmoothScroll />
+        <CustomCursor />
       </body>
     </html>
   );

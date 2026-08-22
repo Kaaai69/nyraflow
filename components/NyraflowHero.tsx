@@ -74,7 +74,7 @@ export default function NyraflowHero() {
     return (
       <section
         ref={containerRef}
-        className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center bg-transparent text-[#FFFFFF] px-6 text-center"
+        className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center bg-transparent text-white px-6 text-center"
       >
         <div className="mx-auto max-w-4xl">
           <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl lowercase">
@@ -99,7 +99,7 @@ export default function NyraflowHero() {
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center bg-transparent text-[#FFFFFF] select-none"
+      className="relative flex min-h-screen min-h-[100svh] w-full flex-col justify-center bg-transparent text-white select-none"
     >
       {/* Top Header Logo Bar */}
       <header className="absolute top-0 left-0 right-0 z-30 flex items-center justify-start px-6 py-6 md:px-12 md:py-8 max-w-7xl mx-auto w-full">
@@ -183,7 +183,7 @@ export default function NyraflowHero() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -30, scale: 0.95 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="inline-flex flex-col items-center justify-center rounded-2xl bg-[#F5F5F2] px-12 py-16 text-[#101114] shadow-2xl md:px-20 md:py-24"
+              className="card-glass inline-flex flex-col items-center justify-center px-12 py-16 text-white md:px-20 md:py-24"
             >
               <span className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
                 Automations
@@ -213,7 +213,7 @@ export default function NyraflowHero() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -30, scale: 0.95 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="inline-flex flex-col items-center justify-center rounded-2xl bg-[#F5F5F2] px-10 py-16 text-[#101114] shadow-2xl md:px-16 md:py-24"
+              className="card-glass inline-flex flex-col items-center justify-center px-10 py-16 text-white md:px-16 md:py-24"
             >
               <span className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
                 Telegram Apps

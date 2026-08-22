@@ -35,7 +35,7 @@ export function SectionHeading({
     <header className={`max-w-4xl ${className}`}>
       <h2
         className={`text-display text-balance font-bold tracking-tight ${
-          lightTheme ? "text-[#101114]" : "text-[#FFFFFF]"
+          lightTheme ? "text-[#101114]" : "text-white"
         }`}
       >
         {title}

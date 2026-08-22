@@ -15,7 +15,7 @@ export default function FaqAccordion({
   const renderFaqItem = (item: FaqItem, indexOffset: number) => (
     <details
       key={item.id}
-      className="group transition-all duration-300 border-b border-white/12 pb-4 open:bg-[#0E0F12]/85 open:border open:border-white/16 open:p-6 open:rounded-xl open:shadow-xl"
+      className="faq-item group border-b border-white/12 pb-4 transition-all duration-300"
     >
       <summary className="flex w-full items-start justify-between gap-4 text-left text-base md:text-lg font-bold leading-snug text-white transition-colors cursor-pointer select-none py-3">
         <div className="flex items-start gap-4 pr-2">

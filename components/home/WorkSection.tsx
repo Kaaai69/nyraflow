@@ -21,7 +21,7 @@ export default function WorkSection() {
   return (
     <section
       id="work"
-      className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]"
+      className="py-section-mobile md:py-section-desktop bg-transparent text-white"
     >
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
@@ -39,7 +39,7 @@ export default function WorkSection() {
                   onClick={() => toggleProject(project.id)}
                   aria-expanded={isOpen}
                   aria-controls={`project-panel-${project.id}`}
-                  className="w-full py-6 flex items-center justify-between gap-4 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg"
+                  className="w-full py-6 flex items-center justify-between gap-4 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-xl"
                 >
                   <div className="flex items-center gap-6 md:gap-10 min-w-0">
                     <span className="text-sm font-mono font-bold tracking-widest text-white/50 shrink-0">
@@ -112,7 +112,7 @@ export default function WorkSection() {
                               href={project.href}
                               target="_blank"
                               rel="noreferrer noopener"
-                              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 font-semibold text-[#101114] hover:bg-[#F0EFEA] hover:scale-105 active:scale-95 transition-all shadow-md group/btn"
+                              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 font-semibold text-[#101114] hover:bg-white/90 hover:scale-105 active:scale-95 transition-all shadow-md group/btn"
                             >
                               <span>Открыть проект</span>
                               <ArrowUpRightIcon size={18} weight="bold" className="transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />

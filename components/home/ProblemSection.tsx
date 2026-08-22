@@ -1,12 +1,13 @@
 import { homeContent } from "../../content/home";
 import { SectionContainer } from "./Layout";
 import { MotionHeading, MotionGrid, MotionCard } from "../ScrollRevealSection";
+import WordIlluminate from "../WordIlluminate";
 
 export default function ProblemSection() {
   const items = homeContent.problem.items;
 
   return (
-    <section id="problem" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="problem" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         {/* Editorial Problem Header */}
         <header className="pb-12 md:pb-16 border-b border-white/14">
@@ -14,10 +15,13 @@ export default function ProblemSection() {
             <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50">
               ПРОБЛЕМА
             </span>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl leading-tight max-w-4xl">
-              Почему сайт не превращает трафик в заявки?
-            </h2>
           </MotionHeading>
+          {/* The page's statement line: lights up word by word on scroll. */}
+          <WordIlluminate
+            as="h2"
+            text="Почему сайт не превращает трафик в заявки?"
+            className="text-display mt-4 max-w-4xl font-bold text-white"
+          />
         </header>
 
         {/* Open Editorial Rows (3 Problem Points) */}
@@ -27,7 +31,7 @@ export default function ProblemSection() {
               const rowNumber = String(index + 1).padStart(2, "0");
 
               return (
-                <MotionCard key={item.id}>
+                <MotionCard key={item.id} tilt={false} radius="12px">
                   <div className="py-10 md:py-14 grid gap-6 lg:grid-cols-12 items-start group/row transition-colors hover:bg-white/[0.015] px-2 md:px-4 rounded-xl">
                     {/* Oversized Low-Contrast Mono Index Number */}
                     <div className="lg:col-span-2">

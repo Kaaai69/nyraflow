@@ -16,7 +16,7 @@ export default function TeamSection() {
   const teamMembers = [arseny, fedor, artem];
 
   return (
-    <section id="team" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="team" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer className="grid gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-14 items-center">
         {/* Left Column: Headline with Controlled Typography & Balanced Wrapping */}
         <header className="min-w-0 lg:col-span-5 lg:pr-2 xl:pr-6">
@@ -24,7 +24,7 @@ export default function TeamSection() {
             <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50">
               Команда
             </span>
-            <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[44px] font-bold tracking-tight text-white leading-[1.18] max-w-lg">
+            <h2 className="text-display mt-4 max-w-lg font-bold text-white">
               {content.title}
             </h2>
             <p className="mt-6 text-base sm:text-lg leading-relaxed text-white/70 max-w-md">
@@ -39,11 +39,13 @@ export default function TeamSection() {
             const isCenter = index === 1;
 
             return (
-              <MotionCard key={member.id}>
+              <MotionCard
+                key={member.id}
+                radius="12px"
+                className={isCenter ? "sm:-mt-4 sm:mb-4 md:-mt-6 md:mb-6" : ""}
+              >
                 <article
-                  className={`min-w-0 group overflow-hidden transition-all duration-300 flex flex-col justify-between ${
-                    isCenter ? "sm:-translate-y-4 md:-translate-y-6" : ""
-                  }`}
+                  className="min-w-0 group overflow-hidden transition-all duration-300 flex flex-col justify-between h-full"
                 >
                   {/* Image Dominates Directly with Emergence Gradient */}
                   <div className="aspect-[4/5] overflow-hidden relative rounded-xl border border-white/14 bg-[#0E0F12]">

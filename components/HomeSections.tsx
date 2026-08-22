@@ -1,5 +1,7 @@
 import AnimatedServicesSection from "@/components/AnimatedServicesSection";
+import Marquee from "@/components/Marquee";
 import ScrollRevealSection from "@/components/ScrollRevealSection";
+import AutomationSection from "./home/AutomationSection";
 import BenefitsSection from "./home/BenefitsSection";
 import ContactSection from "./home/ContactSection";
 import CredibilitySection from "./home/CredibilitySection";
@@ -16,6 +18,7 @@ import WorkSection from "./home/WorkSection";
 export default function HomeSections() {
   return (
     <>
+      <Marquee />
       <ScrollRevealSection>
         <CredibilitySection />
       </ScrollRevealSection>
@@ -34,6 +37,9 @@ export default function HomeSections() {
       {/* EXISTING ANIMATION #2 - EXPLICITLY UNTOUCHED & UNWRAPPED */}
       <AnimatedServicesSection />
       <ScrollRevealSection>
+        <AutomationSection />
+      </ScrollRevealSection>
+      <ScrollRevealSection>
         <StarterSection />
       </ScrollRevealSection>
       <ScrollRevealSection>
@@ -42,9 +48,9 @@ export default function HomeSections() {
       <ScrollRevealSection>
         <TeamSection />
       </ScrollRevealSection>
-      <ScrollRevealSection>
-        <ProcessSection />
-      </ScrollRevealSection>
+      {/* Not wrapped: ProcessSection pins itself with position:sticky, and a
+          transformed ancestor interferes with that. It brings its own reveals. */}
+      <ProcessSection />
       <ScrollRevealSection>
         <FaqSection />
       </ScrollRevealSection>

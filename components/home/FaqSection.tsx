@@ -6,14 +6,14 @@ import { MotionHeading } from "../ScrollRevealSection";
 
 export default function FaqSection() {
   return (
-    <section id="faq" aria-label="Частые вопросы" className="py-section-mobile md:py-section-desktop bg-transparent text-[#FFFFFF]">
+    <section id="faq" aria-label="Частые вопросы" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         <header className="mb-12 border-b border-white/14 pb-8">
           <MotionHeading>
             <span className="text-xs font-mono font-bold uppercase tracking-widest text-white/50">
               Информация
             </span>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
+            <h2 className="text-display mt-2 font-bold text-white">
               Частые вопросы
             </h2>
           </MotionHeading>
