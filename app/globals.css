@@ -332,9 +332,15 @@ body {
   color: rgba(236, 238, 242, 0.55);
 }
 
+/* A small diamond drawn from a rotated square: monochrome by construction,
+   with no glyph and therefore no chance of an emoji presentation. */
 .marquee-sep {
-  font-style: normal;
-  color: rgba(236, 238, 242, 0.28);
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  background: rgba(236, 238, 242, 0.3);
+  transform: rotate(45deg);
 }
 
 /* Two identical runs; sliding exactly half the track lands the second copy

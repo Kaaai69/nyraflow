@@ -51,7 +51,10 @@ export default function Marquee() {
       {words.map((word, index) => (
         <span key={`${key}-${index}`} className="marquee-word">
           {word}
-          <i className="marquee-sep">✳</i>
+          {/* Drawn in CSS, not typed. The glyph that was here (U+2733) has an
+              emoji presentation on iOS, so the system painted it as a green
+              colour image. A separator must not depend on a font. */}
+          <i className="marquee-sep" aria-hidden="true" />
         </span>
       ))}
     </div>
