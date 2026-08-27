@@ -26,6 +26,28 @@
   --duration-base: 220ms;
   --duration-slow: 300ms;
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Семантический слой shadcn поверх нашей палитры: компоненты из
+     components/ui написаны на этих именах, и без них классы вроде
+     bg-muted или ring-ring в Tailwind v4 просто не существуют. */
+  --color-background: #000000;
+  --color-foreground: #ECEEF2;
+  --color-muted: #151515;
+  --color-muted-foreground: rgba(236, 238, 242, 0.6);
+  --color-ring: rgba(236, 238, 242, 0.7);
+
+  --animate-cf-fade-in: cf-fade-in 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes cf-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 :root {

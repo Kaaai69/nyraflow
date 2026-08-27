@@ -227,7 +227,7 @@ describe("home content assets", () => {
       ...homeContent.team.items.map((member) => member.photo),
     ];
 
-    expect(homeContent.work.media).toHaveLength(10);
+    expect(homeContent.work.media).toHaveLength(9);
     expect(homeContent.team.items).toHaveLength(3);
 
     for (const media of assets) {
@@ -250,65 +250,60 @@ describe("home content assets", () => {
     }
   });
 
-  it("publishes the ten approved projects in editorial order", async () => {
+  it("publishes the nine approved projects in editorial order", async () => {
     const { homeContent } = await loadHomeModule();
     const projects = homeContent.work.media;
 
-    expect(projects).toHaveLength(10);
+    expect(projects).toHaveLength(9);
     expect(projects.every((project) => project.status === "published")).toBe(true);
-    expect(new Set(projects.map((project) => project.href)).size).toBe(10);
+    expect(new Set(projects.map((project) => project.href)).size).toBe(9);
     expect(
       projects.map(({ title, caption, href }) => ({ title, caption, href })),
     ).toEqual([
       {
-        title: "Atelier Kitchens",
-        caption: "Кухонная студия",
-        href: "https://atelier-kitchens.vercel.app",
+        title: "BRABUS",
+        caption: "Тюнинг-ателье суперкаров",
+        href: "https://landings-for-message.vercel.app/",
       },
       {
-        title: "Лингва.Академия",
-        caption: "Онлайн-школа языков",
-        href: "https://premium-school-landing.vercel.app",
+        title: "OH Architecture",
+        caption: "Архитектурное бюро",
+        href: "https://landings-for-message.vercel.app/oharchitecture/",
       },
       {
-        title: "Silenzio",
-        caption: "Загородный глэмпинг",
-        href: "https://glamping-silenzio.vercel.app",
+        title: "Laser and Me",
+        caption: "Лазерная косметология",
+        href: "https://landings-for-message.vercel.app/laserandme/",
       },
       {
-        title: "Мезонин",
-        caption: "Агентство недвижимости",
-        href: "https://aether-landing-liard.vercel.app",
+        title: "New Legend 4x4",
+        caption: "Кастомные рестомоды",
+        href: "https://landings-for-message.vercel.app/newlegend4x4/",
       },
       {
-        title: "Дом в деталях",
-        caption: "Мебель на заказ",
-        href: "https://furniture-tau-two.vercel.app",
+        title: "Skin Laundry",
+        caption: "Сеть клиник лазерного ухода",
+        href: "https://landings-for-message.vercel.app/skinlaundry/",
       },
       {
-        title: "Florea",
-        caption: "Цветочная студия",
-        href: "https://florist-six.vercel.app",
+        title: "LAVA dental studio",
+        caption: "Стоматология",
+        href: "https://landings-for-message.vercel.app/lavadental/",
       },
       {
-        title: "Amore",
-        caption: "Свадебное агентство",
-        href: "https://amore-liart.vercel.app",
+        title: "Nordiska Kök",
+        caption: "Скандинавские кухни",
+        href: "https://landings-for-message.vercel.app/nordiskakok/",
       },
       {
-        title: "SOUL",
-        caption: "Студия йоги и пилатеса",
-        href: "https://soul-dun-two.vercel.app",
+        title: "Мастерская Rodewald",
+        caption: "Авторская мебель на заказ",
+        href: "https://landings-for-message.vercel.app/rodewald/",
       },
       {
-        title: "Detail Pro",
-        caption: "Студия автодетейлинга",
-        href: "https://detailing-silk.vercel.app",
-      },
-      {
-        title: "Groom Atelier",
-        caption: "Салон груминга",
-        href: "https://groom-woad.vercel.app",
+        title: "Ultraviolet Way",
+        caption: "Диджитал-продакшн",
+        href: "https://landings-for-message.vercel.app/ultraviolet-way/",
       },
     ]);
     expect(projects.every((project) => project.cta === "Открыть проект")).toBe(true);
