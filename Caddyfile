@@ -25,7 +25,12 @@ app.nyraflow.ru {
 }
 
 # n8n — автоматизация сценариев.
+#
+# Админка, которой нечего делать в поиске: своего robots.txt n8n не отдаёт
+# (SPA возвращает index.html на любой путь), поэтому закрываем заголовком —
+# он действует на любой ответ, включая не-HTML.
 n8n.nyraflow.ru {
 	encode zstd gzip
+	header X-Robots-Tag "noindex, nofollow"
 	reverse_proxy n8n:5678
 }
