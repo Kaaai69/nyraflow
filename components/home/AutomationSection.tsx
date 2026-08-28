@@ -64,21 +64,26 @@ export default function AutomationSection() {
               {content.note}
             </p>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <a
-                href={content.ctaHref}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-semibold text-[#101114] shadow-md transition-all hover:scale-105 hover:bg-white/90"
-              >
-                {content.cta}
-              </a>
-              <a
-                href="#contact"
-                className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 px-7 text-sm font-semibold text-white transition-colors hover:border-white/40"
-              >
-                {content.secondaryCta}
-              </a>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={content.ctaHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-semibold text-[#101114] shadow-md transition-all hover:scale-105 hover:bg-white/90"
+                >
+                  {content.cta}
+                </a>
+                <a
+                  href="#contact"
+                  className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 px-7 text-sm font-semibold text-white transition-colors hover:border-white/40"
+                >
+                  {content.secondaryCta}
+                </a>
+              </div>
+              {/* Кнопка уводит с сайта в Telegram. Без подписи человек попадает
+                  на страницу бота и не понимает, куда его привели. */}
+              <p className="text-xs leading-relaxed text-white/45">{content.ctaHint}</p>
             </div>
           </div>
         </div>

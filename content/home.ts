@@ -137,6 +137,8 @@ export type HomeContent = {
     note: string;
     cta: string;
     ctaHref: string;
+    /** Куда ведёт кнопка: ссылка уходит из сайта в Telegram, и это не должно быть сюрпризом. */
+    ctaHint: string;
     secondaryCta: string;
   };
   starter: {
@@ -463,6 +465,7 @@ export const homeContent = {
     // короткое имя через /newapp. Пока ведём в чат с ботом — эта ссылка
     // работает всегда и не может отдать 404.
     ctaHref: "https://t.me/nyrabusinessbot?start=site_automation",
+    ctaHint: "Откроется чат с ботом @nyrabusinessbot — бриф проходится прямо в Telegram.",
     secondaryCta: "Обсудить проект",
   },
   starter: {

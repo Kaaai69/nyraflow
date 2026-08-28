@@ -1,21 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { PlusIcon, MinusIcon, ArrowUpRightIcon } from "@phosphor-icons/react/ssr";
-import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRightIcon } from "@phosphor-icons/react/ssr";
 
+import { CoverflowCarousel } from "@/components/ui/coverflow-carousel";
 import { homeContent, type WorkMedia } from "../../content/home";
 import { SectionContainer, SectionHeading } from "./Layout";
-import { MotionImageReveal } from "../ScrollRevealSection";
 
 export default function WorkSection() {
   const content = homeContent.work;
   const projects: readonly WorkMedia[] = content.media;
-  const [openProjectId, setOpenProjectId] = useState<string | null>(null);
 
-  const toggleProject = (id: string) => {
-    setOpenProjectId((prev) => (prev === id ? null : id));
+  const [selected, setSelected] = useState(0);
+  const active = projects[selected];
+
+  const open = (index: number) => {
+    const project = projects[index];
+    if (project) window.open(project.href, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -25,107 +26,65 @@ export default function WorkSection() {
     >
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
+      </SectionContainer>
 
-        <div className="mt-12 md:mt-16 border-t border-white/14 divide-y divide-white/14">
-          {projects.map((project, index) => {
-            const isOpen = openProjectId === project.id;
-            const projectNumber = String(index + 1).padStart(2, "0");
+      {/* Карусель живёт вне контейнера: карточки уходят за края экрана,
+          и обрезать их шириной колонки — потерять весь эффект глубины. */}
+      <div className="mt-10 md:mt-14">
+        <CoverflowCarousel
+          slides={projects.map((project) => ({
+            src: project.src,
+            alt: project.alt,
+            title: project.title,
+            subtitle: project.caption,
+          }))}
+          cardWidth="clamp(280px, 54vw, 660px)"
+          cardAspect={1.6}
+          rotate={38}
+          depth={0.52}
+          perspective={2.6}
+          fade={0.13}
+          gap={0.06}
+          showNavigation
+          showPagination
+          label="Концепты лендингов"
+          onSelectedChange={setSelected}
+          onActivate={open}
+          cardClassName="rounded-2xl border border-white/12 bg-white/5 shadow-card-strong"
+        />
+      </div>
 
-            return (
-              <div key={project.id} className="py-3 transition-colors">
-                {/* ACCORDION HEADER BUTTON */}
-                <button
-                  type="button"
-                  onClick={() => toggleProject(project.id)}
-                  aria-expanded={isOpen}
-                  aria-controls={`project-panel-${project.id}`}
-                  className="w-full py-6 flex items-center justify-between gap-4 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-xl"
-                >
-                  <div className="flex items-center gap-6 md:gap-10 min-w-0">
-                    <span className="text-sm font-mono font-bold tracking-widest text-white/50 shrink-0">
-                      {projectNumber}
-                    </span>
-                    <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white group-hover:text-white/80 transition-colors truncate">
-                      {project.title}
-                    </h3>
-                    <span className="hidden md:inline-block text-sm text-white/50 truncate">
-                      {project.caption}
-                    </span>
-                  </div>
+      <SectionContainer>
+        <div
+          key={active?.id}
+          className="mt-10 flex animate-cf-fade-in flex-col items-center text-center md:mt-12"
+        >
+          <span className="font-mono text-xs font-bold tracking-widest text-white/45">
+            {String(selected + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+          </span>
 
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-sm font-medium text-white/70 hidden sm:inline-block">
-                      {isOpen ? "Свернуть" : "Открыть"}
-                    </span>
-                    <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-white group-hover:border-white transition-colors">
-                      {isOpen ? (
-                        <MinusIcon size={16} weight="bold" />
-                      ) : (
-                        <PlusIcon size={16} weight="bold" />
-                      )}
-                    </div>
-                  </div>
-                </button>
+          <h3 className="mt-4 text-3xl font-bold tracking-tight text-white md:text-4xl">
+            {active?.title}
+          </h3>
+          <p className="mt-2 text-base text-white/60">{active?.caption}</p>
 
-                {/* EXPANDABLE PANEL (ARCHETYPE E: Image-Led Open Layout) */}
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      id={`project-panel-${project.id}`}
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="py-8 grid gap-10 lg:grid-cols-12 lg:items-center">
-                        {/* Image Dominates Directly (No Enclosing Dark Card Box) */}
-                        <div className="lg:col-span-8 aspect-[16/10] overflow-hidden rounded-xl border border-white/16 shadow-2xl group/preview">
-                          <MotionImageReveal className="h-full w-full">
-                            <Image
-                              src={project.src}
-                              alt={project.alt}
-                              width={project.width}
-                              height={project.height}
-                              sizes="(max-width: 1024px) 100vw, 800px"
-                              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover/preview:scale-[1.03]"
-                            />
-                          </MotionImageReveal>
-                        </div>
+          <a
+            href={active?.href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="group/btn mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 font-semibold text-[#101114] shadow-md transition-all hover:scale-105 hover:bg-white/90 active:scale-95"
+          >
+            <span>{active?.cta}</span>
+            <ArrowUpRightIcon
+              size={18}
+              weight="bold"
+              className="transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"
+            />
+          </a>
 
-                        {/* Open Details (Outside Image Container) */}
-                        <div className="lg:col-span-4 flex flex-col justify-between space-y-6 lg:pl-4">
-                          <div>
-                            <span className="text-xs font-mono font-bold uppercase tracking-widest text-white/50">
-                              {project.caption}
-                            </span>
-                            <h4 className="mt-3 text-3xl font-bold tracking-tight text-white">
-                              {project.title}
-                            </h4>
-                            <p className="mt-4 text-base leading-relaxed text-white/75">
-                              {project.alt} — разработка визуальной концепции, интерфейсов и цифровой экосистемы.
-                            </p>
-                          </div>
-
-                          <div>
-                            <a
-                              href={project.href}
-                              target="_blank"
-                              rel="noreferrer noopener"
-                              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 font-semibold text-[#101114] hover:bg-white/90 hover:scale-105 active:scale-95 transition-all shadow-md group/btn"
-                            >
-                              <span>Открыть проект</span>
-                              <ArrowUpRightIcon size={18} weight="bold" className="transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
+          <p className="mt-6 text-[13px] text-white/35">
+            Перетащите карусель, кликните по соседней карточке или листайте стрелками ← →
+          </p>
         </div>
       </SectionContainer>
     </section>
