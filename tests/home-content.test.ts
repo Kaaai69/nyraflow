@@ -65,7 +65,6 @@ type HomeModule = {
       items: readonly {
         id: string;
         name: string;
-        role: string;
         photo: ImageAsset;
       }[];
     };
@@ -212,11 +211,11 @@ describe("home content assets", () => {
       "Три человека. Одна ответственность за результат.",
     );
     expect(
-      homeContent.team.items.map(({ id, name, role }) => ({ id, name, role })),
+      homeContent.team.items.map(({ id, name }) => ({ id, name })),
     ).toEqual([
-      { id: "fedor", name: "Федор", role: "Founder" },
-      { id: "arseniy", name: "Арсений", role: "Co-Founder & CGO" },
-      { id: "artem", name: "Артём", role: "CMO" },
+      { id: "fedor", name: "Федор" },
+      { id: "arseniy", name: "Арсений" },
+      { id: "artem", name: "Артём" },
     ]);
   });
 

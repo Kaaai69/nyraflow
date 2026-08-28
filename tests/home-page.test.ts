@@ -277,9 +277,12 @@ describe("home page sections", () => {
     const teamSection = readProjectFile("components/home/TeamSection.tsx");
 
     expect(markup).toContain("Три человека. Одна ответственность за результат.");
-    expect(teamMarkup).toContain("Федор, Founder");
-    expect(teamMarkup).toContain("Арсений, Co-Founder &amp; CGO");
-    expect(teamMarkup).toContain("Артём, CMO");
+    expect(teamMarkup).toContain("Федор");
+    expect(teamMarkup).toContain("Арсений");
+    expect(teamMarkup).toContain("Артём");
+    expect(teamMarkup).not.toContain("Founder");
+    expect(teamMarkup).not.toContain("CGO");
+    expect(teamMarkup).not.toContain("CMO");
     expect(teamMarkup.indexOf("Федор")).toBeLessThan(teamMarkup.indexOf("Арсений"));
     expect(teamMarkup).not.toContain("Место для третьего фото");
     expect(teamMarkup.match(/aspect-\[4\/5\]/g)).toHaveLength(3);

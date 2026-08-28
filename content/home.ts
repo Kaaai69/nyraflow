@@ -92,7 +92,6 @@ type ServiceItem = {
 type TeamMember = {
   id: string;
   name: string;
-  role: string;
   photo: ImageAsset;
 };
 
@@ -606,7 +605,6 @@ export const homeContent = {
       {
         id: "fedor",
         name: "Федор",
-        role: "Founder",
         photo: {
           src: "/images/team/fedor.webp",
           alt: "Федор",
@@ -617,7 +615,6 @@ export const homeContent = {
       {
         id: "arseniy",
         name: "Арсений",
-        role: "Co-Founder & CGO",
         photo: {
           src: "/images/team/arseniy.jpg",
           alt: "Арсений",
@@ -628,7 +625,6 @@ export const homeContent = {
       {
         id: "artem",
         name: "Артём",
-        role: "CMO",
         photo: {
           src: "/images/team/artem.jpg",
           alt: "Артём",

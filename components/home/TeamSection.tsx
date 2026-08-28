@@ -8,7 +8,7 @@ export default function TeamSection() {
   const content = homeContent.team;
   const originalItems = content.items;
 
-  // Reorder so Федор (Founder) is in the center position (#2) and staggered higher
+  // Reorder so Федор is in the center position (#2) and staggered higher
   const fedor = originalItems.find((m) => m.name === "Федор") ?? originalItems[0];
   const arseny = originalItems.find((m) => m.name === "Арсений") ?? originalItems[1];
   const artem = originalItems.find((m) => m.name === "Артём") ?? originalItems[2];
@@ -63,9 +63,6 @@ export default function TeamSection() {
                     <h3 className="text-lg font-bold tracking-tight text-white group-hover:text-white/90 transition-colors">
                       {member.name}
                     </h3>
-                    <p className="mt-1 text-xs md:text-sm text-white/60">
-                      {member.role}
-                    </p>
                   </div>
                 </article>
               </MotionCard>
