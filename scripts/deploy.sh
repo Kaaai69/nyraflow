@@ -19,12 +19,19 @@
 
 set -euo pipefail
 
+# Сверка сервера с локальным деревом идёт через sort/comm/join: под другой
+# локалью порядок строк разъедется, и join покажет расхождения там, где их нет.
+export LC_ALL=C
+
 HOST=${DEPLOY_HOST:-root@217.198.6.154}
 KEY=${DEPLOY_KEY:-'C:\Users\guere\.ssh\id_ed25519_nyraflow'}
 SSH=${DEPLOY_SSH:-/mnt/c/Windows/System32/OpenSSH/ssh.exe}
 SCP=${DEPLOY_SCP:-/mnt/c/Windows/System32/OpenSSH/scp.exe}
 WIN_TMP=${DEPLOY_WIN_TMP:-/mnt/c/Users/guere}
 WIN_TMP_DOS=${DEPLOY_WIN_TMP_DOS:-'C:\Users\guere'}
+# Путь к архиву в том виде, в каком его понимает scp: windows-овому нужен
+# DOS-путь с обратными слешами, обычному — то же место в POSIX-виде.
+STAGE_DOS=${DEPLOY_STAGE_DOS:-"$WIN_TMP_DOS\\deploy.tgz"}
 REMOTE=/opt/myland
 SITE=${DEPLOY_SITE:-https://nyraflow.ru}
 
@@ -121,7 +128,7 @@ tar czf "$WORK/deploy.tgz" \
 cp "$WORK/deploy.tgz" "$WIN_TMP/deploy.tgz"
 
 say "Заливка и распаковка"
-"$SCP" -i "$KEY" -o BatchMode=yes -o ConnectTimeout=25 "$WIN_TMP_DOS\\deploy.tgz" "$HOST:/root/deploy.tgz"
+"$SCP" -i "$KEY" -o BatchMode=yes -o ConnectTimeout=25 "$STAGE_DOS" "$HOST:/root/deploy.tgz"
 rm -f "$WIN_TMP/deploy.tgz"
 remote "tar tzf /root/deploy.tgz | grep -cE '^\./miniapp/|^\./\.env' | grep -qx 0 || { echo 'в архиве оказались miniapp или .env'; exit 1; }"
 remote "tar xzf /root/deploy.tgz -C $REMOTE && test -f $REMOTE/.env && echo '.env на месте' && rm -f /root/deploy.tgz"
