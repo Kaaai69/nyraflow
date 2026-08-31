@@ -119,11 +119,19 @@ remote "tar czf /root/myland-backup-\$(date +%F-%H%M).tgz -C /opt myland && ls -
 
 say "Сборка архива"
 # miniapp катится своим циклом, .env живёт только на сервере, секреты не кладём.
+#
+# Рабочие материалы (скриншоты, исходники карточек, git-worktree'ы) сайту на
+# проде не нужны и весят сотни мегабайт: без этих исключений архив разрастался
+# до 344 МБ вместо десятков. ._* и .DS_Store — мусор, который macOS создаёт при
+# распаковке на сервере: он копился в /opt/myland от раската к раскату.
 tar czf "$WORK/deploy.tgz" \
   --exclude=node_modules --exclude=.next --exclude=.git --exclude=miniapp \
   --exclude='.env*' --exclude='*.ogg' --exclude='*.ogg:Zone.Identifier' --exclude='*.mov' \
   --exclude=server.txt --exclude=telegram.txt --exclude=vpn.conf \
   --exclude=demo --exclude=.superpowers \
+  --exclude=.worktrees --exclude=avito-cards --exclude=portfolio-screenshots \
+  --exclude=test-results --exclude=playwright-report \
+  --exclude='._*' --exclude=.DS_Store \
   -C "$ROOT" .
 cp "$WORK/deploy.tgz" "$WIN_TMP/deploy.tgz"
 

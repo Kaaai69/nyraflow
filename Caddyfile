@@ -34,3 +34,14 @@ n8n.nyraflow.ru {
 	header X-Robots-Tag "noindex, nofollow"
 	reverse_proxy n8n:5678
 }
+
+# Парсер клиентов — операторская консоль.
+#
+# Приложение живёт в отдельном compose-проекте (/opt/client-parser-map) и
+# подключено к сети myland_web через docker-compose.override.yml.
+# Внутренний инструмент: из поиска закрываем заголовком.
+parser.nyraflow.ru {
+	encode zstd gzip
+	header X-Robots-Tag "noindex, nofollow"
+	reverse_proxy client-parser-api:8000
+}
