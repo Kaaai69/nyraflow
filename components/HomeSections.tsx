@@ -22,9 +22,9 @@ export default function HomeSections() {
       <ScrollRevealSection>
         <CredibilitySection />
       </ScrollRevealSection>
-      <ScrollRevealSection>
-        <ProblemSection />
-      </ScrollRevealSection>
+      {/* Не оборачиваем: ProblemSection держит карточки на position:sticky, а
+          трансформированный предок это ломает. Свои появления она делает сама. */}
+      <ProblemSection />
       <ScrollRevealSection>
         <MetricsSection />
       </ScrollRevealSection>
