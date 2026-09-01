@@ -43,11 +43,6 @@ type MetricItem = TextItem & {
   value: string;
 };
 
-/** Карточка блока «Проблема»: текст слева, иллюстрация справа. */
-export type ProblemItem = TextItem & {
-  image: ImageAsset;
-};
-
 export type StarterIconName =
   | "structure"
   | "copy"
@@ -119,7 +114,7 @@ export type HomeContent = {
     id: "problem";
     title: string;
     description: string;
-    items: readonly ProblemItem[];
+    items: readonly TextItem[];
     conclusion: string;
   };
   metrics: {
@@ -254,49 +249,19 @@ export const homeContent = {
         id: "unclear-value",
         title: "Ценность не считывается сразу",
         description:
-          "Посетитель открывает сайт, но не понимает, что вы предлагаете и почему это важно для него. Ключевое сообщение теряется в визуальном шуме и конкурирующих акцентах.",
-        image: {
-          src: "/images/problem/unclear-value.webp",
-          alt: "Экран сайта, перегруженный блоками одинакового веса: главное сообщение в нём не читается",
-          width: 557,
-          height: 511,
-        },
+          "Посетитель видит набор услуг, но не понимает, почему решение подходит именно его задаче.",
       },
       {
         id: "broken-path",
         title: "Путь обрывается до действия",
         description:
-          "Пользователь понимает предложение и движется по странице, но маршрут к целевому действию слабый, прерывается или обрывается до кнопки или формы.",
-        image: {
-          src: "/images/problem/broken-path.webp",
-          alt: "Тропа пользователя обрывается у края пропасти, не доходя до формы заявки",
-          width: 603,
-          height: 509,
-        },
+          "Контент объясняет продукт, но не переводит интерес в следующий понятный шаг.",
       },
       {
         id: "disconnected-systems",
         title: "Системы не связаны",
         description:
-          "Трафик, формы, CRM, Telegram и аналитика работают отдельно друг от друга. Из-за этого заявки теряются, задерживаются или обрабатываются хаотично.",
-        image: {
-          src: "/images/problem/disconnected-systems.webp",
-          alt: "Сайт, CRM, Telegram и аналитика соединены разорванными связями",
-          width: 625,
-          height: 569,
-        },
-      },
-      {
-        id: "scattered-traffic",
-        title: "Трафик рассеивается без результата",
-        description:
-          "Пользователи приходят на сайт, проявляют интерес, но поток рассеивается на пути: внимание распыляется, смысл теряется, а действие так и не происходит.",
-        image: {
-          src: "/images/problem/scattered-traffic.webp",
-          alt: "Плотный поток посетителей расходится веером и не доходит до целевого действия",
-          width: 578,
-          height: 503,
-        },
+          "Сайт, формы, аналитика и внутренние процессы существуют отдельно и создают ручную работу.",
       },
     ],
     conclusion:
