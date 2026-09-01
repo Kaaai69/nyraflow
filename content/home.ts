@@ -297,18 +297,18 @@ export const homeContent = {
     id: "work",
     title: "Концепты, которые можно посмотреть.",
     description:
-      "Девять редизайн-концептов реальных брендов. Каждый собран целиком и открывается в браузере — не мокап в презентации.",
+      "Девять концептов: редизайны реальных брендов и собственные проекты. Каждый собран целиком и открывается в браузере — не мокап в презентации.",
     media: [
       {
-        id: "brabus",
-        title: "BRABUS",
-        src: "/images/work/brabus.jpg",
-        alt: "Главная страница редизайн-концепта тюнинг-ателье BRABUS",
-        caption: "Тюнинг-ателье суперкаров",
-        width: 1600,
-        height: 1000,
+        id: "detailing",
+        title: "Detail Pro",
+        src: "/images/work/detailing.jpg",
+        alt: "Главная страница концепта студии автодетейлинга Detail Pro",
+        caption: "Студия автодетейлинга",
+        width: 1440,
+        height: 900,
         status: "published",
-        href: "https://landings-for-message.vercel.app/",
+        href: "https://detailing-silk.vercel.app",
         cta: "Открыть проект",
       },
       {

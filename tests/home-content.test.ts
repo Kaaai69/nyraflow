@@ -260,9 +260,9 @@ describe("home content assets", () => {
       projects.map(({ title, caption, href }) => ({ title, caption, href })),
     ).toEqual([
       {
-        title: "BRABUS",
-        caption: "Тюнинг-ателье суперкаров",
-        href: "https://landings-for-message.vercel.app/",
+        title: "Detail Pro",
+        caption: "Студия автодетейлинга",
+        href: "https://detailing-silk.vercel.app",
       },
       {
         title: "OH Architecture",
