@@ -24,14 +24,32 @@ set -euo pipefail
 export LC_ALL=C
 
 HOST=${DEPLOY_HOST:-root@217.198.6.154}
-KEY=${DEPLOY_KEY:-'C:\Users\guere\.ssh\id_ed25519_nyraflow'}
-SSH=${DEPLOY_SSH:-/mnt/c/Windows/System32/OpenSSH/ssh.exe}
-SCP=${DEPLOY_SCP:-/mnt/c/Windows/System32/OpenSSH/scp.exe}
-WIN_TMP=${DEPLOY_WIN_TMP:-/mnt/c/Users/guere}
-WIN_TMP_DOS=${DEPLOY_WIN_TMP_DOS:-'C:\Users\guere'}
-# Путь к архиву в том виде, в каком его понимает scp: windows-овому нужен
-# DOS-путь с обратными слешами, обычному — то же место в POSIX-виде.
-STAGE_DOS=${DEPLOY_STAGE_DOS:-"$WIN_TMP_DOS\\deploy.tgz"}
+
+# Раскат идёт с двух разных машин, и умолчания у них несовместимы. Из WSL
+# сервер виден только через windows-овые ssh/scp (VPN поднят на Windows), а с
+# macOS — через обычные, системные. Раньше здесь стояли только виндовые пути,
+# и запуск с мака падал на несуществующем /mnt/c, пока их не переопределишь
+# руками четырьмя переменными. Теперь ветка выбирается по наличию /mnt/c.
+if [ -d /mnt/c/Windows ]; then
+  KEY=${DEPLOY_KEY:-'C:\Users\guere\.ssh\id_ed25519_nyraflow'}
+  SSH=${DEPLOY_SSH:-/mnt/c/Windows/System32/OpenSSH/ssh.exe}
+  SCP=${DEPLOY_SCP:-/mnt/c/Windows/System32/OpenSSH/scp.exe}
+  STAGE_DIR=${DEPLOY_WIN_TMP:-/mnt/c/Users/guere}
+  WIN_TMP_DOS=${DEPLOY_WIN_TMP_DOS:-'C:\Users\guere'}
+  # windows-овому scp нужен DOS-путь с обратными слешами, обычному — POSIX.
+  STAGE_ARG=${DEPLOY_STAGE_DOS:-"$WIN_TMP_DOS\\deploy.tgz"}
+else
+  KEY=${DEPLOY_KEY:-$HOME/.ssh/id_ed25519}
+  SSH=${DEPLOY_SSH:-ssh}
+  SCP=${DEPLOY_SCP:-scp}
+  STAGE_DIR=${DEPLOY_WIN_TMP:-${TMPDIR:-/tmp}}
+  STAGE_ARG=${DEPLOY_STAGE_DOS:-"${STAGE_DIR%/}/deploy.tgz"}
+fi
+
+if [ ! -f "$KEY" ] && [ ! -d /mnt/c/Windows ]; then
+  echo "✗ ключ не найден: $KEY — задайте DEPLOY_KEY" >&2
+  exit 1
+fi
 REMOTE=/opt/myland
 SITE=${DEPLOY_SITE:-https://nyraflow.ru}
 
@@ -133,11 +151,11 @@ tar czf "$WORK/deploy.tgz" \
   --exclude=test-results --exclude=playwright-report \
   --exclude='._*' --exclude=.DS_Store \
   -C "$ROOT" .
-cp "$WORK/deploy.tgz" "$WIN_TMP/deploy.tgz"
+cp "$WORK/deploy.tgz" "${STAGE_DIR%/}/deploy.tgz"
 
 say "Заливка и распаковка"
-"$SCP" -i "$KEY" -o BatchMode=yes -o ConnectTimeout=25 "$STAGE_DOS" "$HOST:/root/deploy.tgz"
-rm -f "$WIN_TMP/deploy.tgz"
+"$SCP" -i "$KEY" -o BatchMode=yes -o ConnectTimeout=25 "$STAGE_ARG" "$HOST:/root/deploy.tgz"
+rm -f "${STAGE_DIR%/}/deploy.tgz"
 remote "tar tzf /root/deploy.tgz | grep -cE '^\./miniapp/|^\./\.env' | grep -qx 0 || { echo 'в архиве оказались miniapp или .env'; exit 1; }"
 remote "tar xzf /root/deploy.tgz -C $REMOTE && test -f $REMOTE/.env && echo '.env на месте' && rm -f /root/deploy.tgz"
 

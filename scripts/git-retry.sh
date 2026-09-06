@@ -15,7 +15,13 @@ set -uo pipefail
 ATTEMPTS=${GIT_RETRY_ATTEMPTS:-10}
 # Оборванный туннель не отдаёт ошибку, а молча висит: без потолка на попытку
 # скрипт залипает на первом же зависшем соединении вместо того, чтобы повторить.
-PER_TRY=${GIT_RETRY_TIMEOUT:-40}
+#
+# 40 секунд оказалось мало: с macOS без VPN fetch до GitHub проходит честно,
+# но за ~134 с, и все десять попыток обрывались по таймауту с пустой ошибкой —
+# выглядело как «сеть не работает», хотя работала. Потолок должен быть больше
+# самого медленного успешного прохода, иначе скрипт не повторяет операцию, а
+# гарантированно её проваливает.
+PER_TRY=${GIT_RETRY_TIMEOUT:-240}
 
 if [ $# -eq 0 ]; then
   echo "использование: $0 <аргументы git>, например: $0 push origin main" >&2
@@ -30,6 +36,10 @@ for attempt in $(seq 1 "$ATTEMPTS"); do
     exit 0
   fi
   rc=$?
+  if [ $rc -eq 127 ] && ! command -v timeout >/dev/null 2>&1; then
+    echo "✗ в PATH нет timeout — на macOS это coreutils: brew install coreutils" >&2
+    exit 1
+  fi
   if [ $rc -eq 124 ]; then
     echo "· попытка $attempt: соединение зависло, оборвали по $PER_TRY с" >&2
   else
