@@ -10,7 +10,7 @@ import MetricsSection from "./home/MetricsSection";
 import PricingSection from "./home/PricingSection";
 import ProblemSection from "./home/ProblemSection";
 import ProcessSection from "./home/ProcessSection";
-import ServicesSection from "./home/ServicesSection";
+import ServicesSquishySection from "./home/ServicesSquishySection";
 import StarterSection from "./home/StarterSection";
 import TeamSection from "./home/TeamSection";
 import WorkSection from "./home/WorkSection";
@@ -32,7 +32,7 @@ export default function HomeSections() {
         <WorkSection />
       </ScrollRevealSection>
       <ScrollRevealSection>
-        <ServicesSection />
+        <ServicesSquishySection />
       </ScrollRevealSection>
       {/* EXISTING ANIMATION #2 - EXPLICITLY UNTOUCHED & UNWRAPPED */}
       <AnimatedServicesSection />
