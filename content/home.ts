@@ -300,15 +300,15 @@ export const homeContent = {
       "Девять концептов: редизайны реальных брендов и собственные проекты. Каждый собран целиком и открывается в браузере — не мокап в презентации.",
     media: [
       {
-        id: "detailing",
-        title: "Detail Pro",
-        src: "/images/work/detailing.jpg",
-        alt: "Главная страница концепта студии автодетейлинга Detail Pro",
-        caption: "Студия автодетейлинга",
-        width: 1440,
-        height: 900,
+        id: "qrefinish",
+        title: "Q-Refinish",
+        src: "/images/work/qrefinish.jpg",
+        alt: "Главная страница русскоязычного демо Q-Refinish — материалы для кузовного ремонта",
+        caption: "Материалы для кузовного ремонта",
+        width: 1280,
+        height: 720,
         status: "published",
-        href: "https://detailing-silk.vercel.app",
+        href: "https://landings-for-message.vercel.app/qrefinish/",
         cta: "Открыть проект",
       },
       {
