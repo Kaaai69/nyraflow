@@ -142,12 +142,19 @@ say "Сборка архива"
 # проде не нужны и весят сотни мегабайт: без этих исключений архив разрастался
 # до 344 МБ вместо десятков. ._* и .DS_Store — мусор, который macOS создаёт при
 # распаковке на сервере: он копился в /opt/myland от раската к раскату.
+#
+# marketing/ — рассылка: шаблоны писем, а в leads/ и out/ выгрузки лидов с
+# чужими адресами и готовые письма. Сайту это не нужно (в .dockerignore каталог
+# уже исключён из образа), а класть базу с персональными данными на публичный
+# веб-сервер — тем более. В git из marketing/ уходит только инструментарий,
+# leads/ и out/ игнорируются; здесь режется весь каталог целиком.
 tar czf "$WORK/deploy.tgz" \
   --exclude=node_modules --exclude=.next --exclude=.git --exclude=miniapp \
   --exclude='.env*' --exclude='*.ogg' --exclude='*.ogg:Zone.Identifier' --exclude='*.mov' \
   --exclude=server.txt --exclude=telegram.txt --exclude=vpn.conf \
   --exclude=demo --exclude=.superpowers \
   --exclude=.worktrees --exclude=avito-cards --exclude=portfolio-screenshots \
+  --exclude=marketing \
   --exclude=test-results --exclude=playwright-report \
   --exclude='._*' --exclude=.DS_Store \
   -C "$ROOT" .

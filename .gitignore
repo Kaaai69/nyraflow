@@ -20,3 +20,9 @@ extract_video_frames.py
 server.txt
 telegram.txt
 vpn.conf
+
+# рабочие материалы рассылки: базы лидов и готовые письма. Сам каталог leads/
+# остаётся в репозитории (.gitkeep) — на него ссылается README рассылки.
+marketing/outreach/leads/*
+!marketing/outreach/leads/.gitkeep
+marketing/outreach/out/
