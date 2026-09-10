@@ -139,14 +139,19 @@ describe("home page sections", () => {
     expect(markup).not.toContain("Калькулятор стоимости проекта");
   });
 
-  it("renders three visually separated service panels without changing service copy", async () => {
-    const markup = await renderPageAfterHero();
-    const services = markup.slice(
-      markup.indexOf('<section id="services"'),
-      markup.indexOf('<section id="team"'),
+  it("renders three line-art service panels with a pointer-driven automation visual", async () => {
+    const { default: ServicesSquishySection } = await import(
+      "../components/home/ServicesSquishySection"
     );
+    const services = renderToStaticMarkup(createElement(ServicesSquishySection));
 
     expect(services.match(/class="[^"]*service-panel[^"]*"/g)).toHaveLength(3);
+    expect(services.match(/<article/g)).toHaveLength(3);
+    expect(services).toContain(">Web<");
+    expect(services).toContain(">System<");
+    expect(services).toContain(">Automation<");
+    expect(services).toContain('data-pointer-driven="true"');
+    expect(services).not.toMatch(/>0[1-3]\s*[—/]\s*/);
     expect(services.match(/>Когда нужны</g)).toHaveLength(3);
     expect(services.match(/>Что делаем</g)).toHaveLength(3);
     expect(services.match(/>Что получает бизнес</g)).toHaveLength(3);

@@ -1,331 +1,312 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useState, type PointerEvent } from "react";
 
 import { homeContent } from "../../content/home";
 import { SectionContainer, SectionHeading } from "./Layout";
-import { MotionGrid, MotionCard } from "../ScrollRevealSection";
+import {
+  createAutomationSheets,
+  resolveFanPosition,
+} from "./serviceVisualGeometry";
 
 type ServiceItem = (typeof homeContent.services.items)[number];
 
-// Timing lifted from the squishy-pricing reference: a long, overshooting
-// ease is what makes the card read as rubber rather than as a hover state.
-const SQUISH = { duration: 1, ease: "backInOut" } as const;
-const SQUISH_DELAYED = { ...SQUISH, delay: 0.2 } as const;
+const STROKE = "rgba(236,238,242,.48)";
+const STROKE_SOFT = "rgba(236,238,242,.17)";
 
-/*
-  The reference gets its impact from three saturated hues. This site has no
-  colour at all, so the three tiers are separated on the only axis we do have:
-  how much light the surface carries. Near-black, graphite, then the paper
-  inversion. Same ladder the cards elsewhere on the site already use.
-*/
-type Skin = Readonly<{
-  tag: string;
-  surface: string;
-  border: string;
-  glowTone: "light" | "dark";
-  title: string;
-  body: string;
-  label: string;
-  chip: string;
-  rule: string;
-  button: string;
-  shape: string;
-}>;
+function WebsiteStack() {
+  const [activeLayer, setActiveLayer] = useState(4);
+  const layers = Array.from({ length: 6 }, (_, index) => index);
 
-const SKINS: readonly Skin[] = [
-  {
-    tag: "WEB",
-    surface: "bg-[rgba(236,238,242,0.05)]",
-    border: "border-white/12",
-    glowTone: "light",
-    title: "text-white",
-    body: "text-white/75",
-    label: "text-white/50",
-    chip: "border-white/20 bg-white/10 text-white",
-    rule: "border-white/14",
-    button: "bg-white text-[#101114] hover:bg-white/90",
-    shape: "rgba(236, 238, 242, 0.07)",
-  },
-  {
-    tag: "SYSTEM",
-    surface: "bg-[rgba(236,238,242,0.12)]",
-    border: "border-white/22",
-    glowTone: "light",
-    title: "text-white",
-    body: "text-white/80",
-    label: "text-white/55",
-    chip: "border-white/25 bg-white/15 text-white",
-    rule: "border-white/18",
-    button: "bg-white text-[#101114] hover:bg-white/90",
-    shape: "rgba(236, 238, 242, 0.09)",
-  },
-  {
-    tag: "AI",
-    surface: "bg-[#F3F3EF]",
-    border: "border-[#101114]/10",
-    glowTone: "dark",
-    title: "text-[#101114]",
-    body: "text-[#101114]/75",
-    label: "text-[#101114]/50",
-    chip: "border-[#101114]/15 bg-[#101114]/8 text-[#101114]",
-    rule: "border-[#101114]/12",
-    button: "bg-[#101114] text-[#F3F3EF] hover:bg-[#101114]/90",
-    shape: "rgba(16, 17, 20, 0.07)",
-  },
-];
+  function updateLayer(event: PointerEvent<SVGSVGElement>) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const progress = Math.min(
+      0.999,
+      Math.max(0, (event.clientY - bounds.top) / bounds.height),
+    );
+    setActiveLayer(5 - Math.floor(progress * 6));
+  }
 
-/*
-  The three background figures from the reference, recoloured. They are the
-  part that actually squishes: the card scales a little, the shapes inside it
-  scale a lot and change proportion, so the surface reads as deformable.
-  `slice` rather than the default `meet` because these cards are wider than
-  the 320x384 the paths were drawn against, and they grow when expanded.
-*/
-type ShapeProps = Readonly<{ fill: string }>;
-
-function ShapeOrbs({ fill }: ShapeProps) {
   return (
-    <motion.svg
-      viewBox="0 0 320 384"
-      preserveAspectRatio="xMidYMid slice"
-      fill="none"
-      aria-hidden="true"
-      variants={{ hover: { scale: 1.5 } }}
-      transition={SQUISH}
-      className="absolute inset-0 z-0 h-full w-full"
+    <svg
+      viewBox="0 0 320 260"
+      role="img"
+      aria-label="Слои интерфейса реагируют на положение указателя"
+      className="h-full w-full touch-pan-y overflow-visible"
+      onPointerMove={updateLayer}
+      onPointerLeave={() => setActiveLayer(4)}
     >
-      <motion.circle
-        variants={{ hover: { scaleY: 0.5, y: -25 } }}
-        transition={SQUISH_DELAYED}
-        cx="160.5"
-        cy="114.5"
-        r="101.5"
-        fill={fill}
-      />
-      <motion.ellipse
-        variants={{ hover: { scaleY: 2.25, y: -25 } }}
-        transition={SQUISH_DELAYED}
-        cx="160.5"
-        cy="265.5"
-        rx="101.5"
-        ry="43.5"
-        fill={fill}
-      />
-    </motion.svg>
+      <defs>
+        <linearGradient id="web-top" x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#ECEEF2" stopOpacity=".075" />
+          <stop offset="1" stopColor="#ECEEF2" stopOpacity=".012" />
+        </linearGradient>
+      </defs>
+      {layers.map((index) => {
+        const y = 136 - index * 17;
+        const distance = Math.abs(activeLayer - index);
+        const lift = Math.max(0, 12 - distance * 4);
+        return (
+          <g
+            key={index}
+            style={{
+              transform: `translateY(${-lift}px)`,
+              transition: "transform 240ms cubic-bezier(.22,1,.36,1)",
+            }}
+          >
+            <path
+              d={`M 55 ${y} L 160 ${y - 55} L 266 ${y} L 160 ${y + 55} Z`}
+              fill={index === 5 ? "url(#web-top)" : "rgba(0,0,0,.22)"}
+              stroke={index === activeLayer ? STROKE : STROKE_SOFT}
+              strokeWidth={index === activeLayer ? 1.2 : 0.85}
+            />
+            <path
+              d={`M 55 ${y} L 55 ${y + 12} L 160 ${y + 67} L 160 ${y + 55} Z`}
+              fill="rgba(236,238,242,.018)"
+              stroke={STROKE_SOFT}
+              strokeWidth=".8"
+            />
+            <path
+              d={`M 160 ${y + 55} L 160 ${y + 67} L 266 ${y + 12} L 266 ${y} Z`}
+              fill="rgba(236,238,242,.01)"
+              stroke={STROKE_SOFT}
+              strokeWidth=".8"
+            />
+          </g>
+        );
+      })}
+      <g transform="translate(0 -11)" fill="none">
+        <ellipse cx="160" cy="87" rx="42" ry="21" stroke={STROKE_SOFT} />
+        <path d="M 119 87 H 201 M 126 94 H 194 M 136 101 H 184" stroke={STROKE} />
+      </g>
+    </svg>
   );
 }
 
-function ShapeSlabs({ fill }: ShapeProps) {
+function DotScreen({ x, y, delay = 0 }: Readonly<{ x: number; y: number; delay?: number }>) {
   return (
-    <motion.svg
-      viewBox="0 0 320 384"
-      preserveAspectRatio="xMidYMid slice"
-      fill="none"
-      aria-hidden="true"
-      variants={{ hover: { scale: 1.05 } }}
-      transition={SQUISH}
-      className="absolute inset-0 z-0 h-full w-full"
-    >
-      <motion.rect
-        x="14"
-        width="153"
-        height="153"
-        rx="15"
-        fill={fill}
-        style={{ y: 12 }}
-        variants={{ hover: { y: 219, rotate: "90deg", scaleX: 2 } }}
-        transition={SQUISH_DELAYED}
-      />
-      <motion.rect
-        x="155"
-        width="153"
-        height="153"
-        rx="15"
-        fill={fill}
-        style={{ y: 219 }}
-        variants={{ hover: { y: 12, rotate: "90deg", scaleX: 2 } }}
-        transition={SQUISH_DELAYED}
-      />
-    </motion.svg>
+    <g transform={`translate(${x} ${y}) rotate(27)`} aria-hidden="true">
+      {Array.from({ length: 12 }, (_, index) => {
+        const column = index % 4;
+        const row = Math.floor(index / 4);
+        return (
+          <circle
+            key={index}
+            cx={column * 3.2}
+            cy={row * 3.2}
+            r=".75"
+            fill="#ECEEF2"
+            className="service-screen-dot"
+            style={{ animationDelay: `${delay + index * 70}ms` }}
+          />
+        );
+      })}
+    </g>
   );
 }
 
-const DIAMOND_PATHS = [
-  "M148.893 157.531C154.751 151.673 164.249 151.673 170.107 157.531L267.393 254.818C273.251 260.676 273.251 270.173 267.393 276.031L218.75 324.674C186.027 357.397 132.973 357.397 100.25 324.674L51.6068 276.031C45.7489 270.173 45.7489 260.676 51.6068 254.818L148.893 157.531Z",
-  "M148.893 99.069C154.751 93.2111 164.249 93.2111 170.107 99.069L267.393 196.356C273.251 202.213 273.251 211.711 267.393 217.569L218.75 266.212C186.027 298.935 132.973 298.935 100.25 266.212L51.6068 217.569C45.7489 211.711 45.7489 202.213 51.6068 196.356L148.893 99.069Z",
-  "M148.893 40.6066C154.751 34.7487 164.249 34.7487 170.107 40.6066L267.393 137.893C273.251 143.751 273.251 153.249 267.393 159.106L218.75 207.75C186.027 240.473 132.973 240.473 100.25 207.75L51.6068 159.106C45.7489 153.249 45.7489 143.751 51.6068 137.893L148.893 40.6066Z",
-] as const;
-
-function ShapeStack({ fill }: ShapeProps) {
+function IsoModule({
+  x,
+  y,
+  width,
+  height,
+  screen,
+  delay,
+}: Readonly<{
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  screen?: boolean;
+  delay: number;
+}>) {
+  const depth = width * 0.47;
+  const side = 18;
   return (
-    <motion.svg
-      viewBox="0 0 320 384"
-      preserveAspectRatio="xMidYMid slice"
-      fill="none"
-      aria-hidden="true"
-      variants={{ hover: { scale: 1.25 } }}
-      transition={SQUISH}
-      className="absolute inset-0 z-0 h-full w-full"
+    <g
+      style={{
+        transformOrigin: `${x + width / 2}px ${y + depth / 2}px`,
+        animationDelay: `${delay}ms`,
+      }}
+      className="service-system-module"
     >
-      {DIAMOND_PATHS.map((d, index) => (
-        <motion.path
-          key={d}
-          d={d}
-          fill={fill}
-          variants={{ hover: { y: -50 } }}
-          transition={{ ...SQUISH, delay: 0.3 - index * 0.1 }}
+      <path
+        d={`M ${x} ${y + depth / 2} L ${x + width / 2} ${y} L ${x + width} ${y + depth / 2} L ${x + width / 2} ${y + depth} Z`}
+        fill="rgba(236,238,242,.025)"
+        stroke={STROKE}
+      />
+      <path
+        d={`M ${x} ${y + depth / 2} L ${x} ${y + depth / 2 + height} L ${x + width / 2} ${y + depth + height} L ${x + width / 2} ${y + depth} Z`}
+        fill="rgba(236,238,242,.012)"
+        stroke={STROKE_SOFT}
+      />
+      <path
+        d={`M ${x + width / 2} ${y + depth} L ${x + width / 2} ${y + depth + height} L ${x + width} ${y + depth / 2 + height} L ${x + width} ${y + depth / 2} Z`}
+        fill="rgba(0,0,0,.18)"
+        stroke={STROKE_SOFT}
+      />
+      {screen ? <DotScreen x={x + width * 0.63} y={y + 5} delay={delay} /> : null}
+      <path
+        d={`M ${x + width * 0.78} ${y + depth / 2 + height - side} l 8 4`}
+        stroke={STROKE_SOFT}
+      />
+    </g>
+  );
+}
+
+function SystemModules() {
+  return (
+    <svg
+      viewBox="0 0 320 260"
+      role="img"
+      aria-label="Связанные модули веб-сервиса"
+      className="h-full w-full overflow-visible"
+    >
+      <IsoModule x={116} y={36} width={90} height={46} screen delay={0} />
+      <IsoModule x={48} y={103} width={91} height={66} screen delay={100} />
+      <IsoModule x={184} y={104} width={88} height={63} delay={210} />
+      <IsoModule x={116} y={158} width={94} height={48} screen delay={320} />
+      <path
+        d="M 161 91 V 110 M 111 155 L 143 171 M 211 154 L 186 170"
+        stroke={STROKE_SOFT}
+        strokeDasharray="2 5"
+      />
+    </svg>
+  );
+}
+
+function AutomationFan() {
+  const [activeIndex, setActiveIndex] = useState(7);
+  const sheets = createAutomationSheets(activeIndex);
+
+  function updateFan(event: PointerEvent<SVGSVGElement>) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setActiveIndex(resolveFanPosition(event.clientX, bounds.left, bounds.width));
+  }
+
+  return (
+    <svg
+      viewBox="0 0 260 260"
+      role="img"
+      aria-label="Автоматизация следует за движением курсора или пальца"
+      data-pointer-driven="true"
+      className="h-full w-full touch-pan-y overflow-visible"
+      onPointerDown={(event) => {
+        event.currentTarget.setPointerCapture(event.pointerId);
+        updateFan(event);
+      }}
+      onPointerMove={updateFan}
+      onPointerUp={(event) => {
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+      }}
+      onPointerCancel={() => setActiveIndex(7)}
+      onPointerLeave={() => setActiveIndex(7)}
+    >
+      {sheets.map((sheet, index) => (
+        <path
+          key={index}
+          d={sheet.d}
+          fill="none"
+          stroke="#ECEEF2"
+          strokeOpacity={sheet.opacity}
+          strokeWidth={Math.abs(index - activeIndex) < 2 ? 1.15 : 0.8}
+          style={{
+            transform: `translateY(${-sheet.lift}px)`,
+            transition: "transform 170ms cubic-bezier(.22,1,.36,1), stroke-width 170ms ease",
+          }}
         />
       ))}
-    </motion.svg>
+    </svg>
   );
 }
 
-const SHAPES = [ShapeOrbs, ShapeSlabs, ShapeStack] as const;
+const VISUALS = [WebsiteStack, SystemModules, AutomationFan] as const;
+const LABELS = ["Web", "System", "Automation"] as const;
 
-function ServiceCard({
-  item,
-  index,
-}: Readonly<{ item: ServiceItem; index: number }>) {
-  const [open, setOpen] = useState(false);
-  const prefersReducedMotion = useReducedMotion();
-
-  const skin = SKINS[index % SKINS.length];
-  const Shape = SHAPES[index % SHAPES.length];
-  const panelId = `service-${item.id}-details`;
-
-  // With reduced motion the card stops deforming, but the disclosure still
-  // has to work, so only the squish variants are dropped.
-  const squishy = prefersReducedMotion ? undefined : "hover";
-
+function ServicePanel({ item, index }: Readonly<{ item: ServiceItem; index: number }>) {
+  const Visual = VISUALS[index];
   return (
-    <MotionCard tilt={false} tone={skin.glowTone} radius="1.25rem">
-      <motion.div
-        whileHover={squishy}
-        transition={SQUISH}
-        variants={{ hover: { scale: 1.03 } }}
-        className={`group relative flex h-full min-h-[26rem] flex-col overflow-hidden rounded-[1.25rem] border p-8 hover:z-10 ${skin.surface} ${skin.border}`}
-      >
-        <Shape fill={skin.shape} />
-
-        <div className="relative z-10 flex h-full flex-col">
-          <span
-            className={`mb-5 block w-fit rounded-full border px-3 py-0.5 font-mono text-xs font-bold uppercase tracking-widest ${skin.chip}`}
-          >
-            {String(index + 1).padStart(2, "0")} — {skin.tag}
-          </span>
-
-          {/* The slot the reference fills with a price. A two-word service
-              name sits in it far better than "от 120 000 ₽" ever would. */}
-          <motion.h3
-            initial={prefersReducedMotion ? undefined : { scale: 0.88 }}
-            variants={{ hover: { scale: 1 } }}
-            transition={SQUISH}
-            /*
-              Не text-display-sm: тот доходит до 2.75rem, а полезная ширина
-              карточки в трёхколоночной сетке — около 291px (1240 контейнера
-              минус 128 отступов, делить на три, минус паддинги). «Конверсионные»
-              на 44px занимает ~297px и вылезает за край в наведённом состоянии,
-              когда заголовок дорастает с 0.88 до единицы. Потолок опущен так,
-              чтобы самое длинное слово («AI-автоматизации», ~275px на этом кегле)
-              помещалось в строку целиком: переносить его нельзя — Chrome рвёт
-              русские слова вроде «Конверси-онные».
-            */
-            className={`origin-top-left text-balance text-[clamp(1.5rem,2.1vw,1.9rem)] font-bold leading-[1.06] tracking-tight ${skin.title}`}
-          >
-            {item.title}
-          </motion.h3>
-
-          <p className={`mt-5 text-base leading-relaxed ${skin.body}`}>
-            {item.whenNeeded}
-          </p>
-
-          <AnimatePresence initial={false}>
-            {open && (
-              <motion.div
-                id={panelId}
-                key="details"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden"
-              >
-                <div className={`mt-6 space-y-5 border-t pt-6 ${skin.rule}`}>
-                  <div>
-                    <p
-                      className={`text-xs font-bold uppercase tracking-wider ${skin.label}`}
-                    >
-                      Что делаем
-                    </p>
-                    <p className={`mt-2 text-sm leading-relaxed ${skin.body}`}>
-                      {item.whatWeDo}
-                    </p>
-                  </div>
-                  <div>
-                    <p
-                      className={`text-xs font-bold uppercase tracking-wider ${skin.label}`}
-                    >
-                      Что получает бизнес
-                    </p>
-                    <p className={`mt-2 text-sm leading-relaxed ${skin.body}`}>
-                      {item.businessOutcome}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* mt-auto, so the pill sits on the card floor the way it does in
-              the reference instead of riding up under a short paragraph. */}
-          <div className="mt-auto pt-8">
-            <button
-              type="button"
-              onClick={() => setOpen((value) => !value)}
-              aria-expanded={open}
-              aria-controls={panelId}
-              className={`flex h-12 w-full items-center justify-center rounded-lg font-mono text-sm font-black uppercase tracking-wider transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${skin.button}`}
-            >
-              {open ? "Свернуть" : "Подробнее"}
-            </button>
+    <article className="service-panel flex min-w-0 flex-col border-t border-white/[.11] py-10 first:border-t-0 md:border-t-0 md:border-l md:px-8 md:py-0 md:first:border-l-0 md:first:pl-0 md:last:pr-0">
+      <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/38">
+        {LABELS[index]}
+      </p>
+      <div className="mt-5 h-[17rem] w-full select-none md:h-[19rem]">
+        <Visual />
+      </div>
+      <div className="mt-4 flex flex-1 flex-col">
+        <h3 className="text-2xl font-semibold leading-tight tracking-[-0.025em] text-white md:text-[1.7rem]">
+          {item.title}
+        </h3>
+        <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/38">
+          Когда нужны
+        </p>
+        <p className="mt-2 text-[15px] leading-7 text-white/58">{item.whenNeeded}</p>
+        <details className="group mt-7 border-t border-white/[.11] pt-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between py-1 text-sm font-medium text-white/78 marker:content-none">
+            <span>Подробнее</span>
+            <span aria-hidden="true" className="text-lg font-light text-white/45 group-open:rotate-45">+</span>
+          </summary>
+          <div className="space-y-5 pb-2 pt-5">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/38">Что делаем</p>
+              <p className="mt-2 text-sm leading-6 text-white/58">{item.whatWeDo}</p>
+            </div>
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/38">Что получает бизнес</p>
+              <p className="mt-2 text-sm leading-6 text-white/58">{item.businessOutcome}</p>
+            </div>
           </div>
-        </div>
-      </motion.div>
-    </MotionCard>
+        </details>
+      </div>
+    </article>
   );
 }
 
 export default function ServicesSquishySection() {
   const content = homeContent.services;
-
   return (
-    <section
-      id="services"
-      className="py-section-mobile md:py-section-desktop bg-transparent text-white"
-    >
+    <section id="services" className="bg-[#070809] py-section-mobile text-white md:py-section-desktop">
       <SectionContainer>
         <SectionHeading title={content.title} description={content.description} />
-
-        <MotionGrid
-          className="mt-14 grid items-stretch gap-6 md:mt-16 lg:grid-cols-3"
-          staggerDelay={0.12}
-        >
+        <div className="mt-14 grid border-y border-white/[.11] md:mt-20 md:grid-cols-3 md:py-12">
           {content.items.map((item, index) => (
-            <ServiceCard key={item.id} item={item} index={index} />
+            <ServicePanel key={item.id} item={item} index={index} />
           ))}
-        </MotionGrid>
-
-        <div className="mt-12 text-center md:text-left">
+        </div>
+        <div className="mt-10 md:mt-12">
           <a
             href="#contact"
-            className="inline-flex h-14 items-center justify-center rounded-full bg-white px-9 text-base font-semibold text-[#101114] shadow-lg transition-all hover:scale-105 hover:bg-white/90 active:scale-95"
+            className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 bg-white px-7 text-sm font-semibold text-[#101114] transition-transform hover:scale-[1.03]"
           >
             {content.cta}
           </a>
         </div>
       </SectionContainer>
+      <style jsx global>{`
+        .service-screen-dot {
+          animation: screen-pulse 2.2s ease-in-out infinite alternate;
+        }
+        .service-system-module {
+          animation: module-breathe 4.8s cubic-bezier(.22,1,.36,1) infinite alternate;
+        }
+        @keyframes screen-pulse {
+          0%, 30% { opacity: .18; }
+          75%, 100% { opacity: .9; }
+        }
+        @keyframes module-breathe {
+          from { transform: translateY(0); }
+          to { transform: translateY(-5px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .service-screen-dot,
+          .service-system-module {
+            animation: none;
+          }
+          path { transition: none !important; }
+        }
+      `}</style>
     </section>
   );
 }
