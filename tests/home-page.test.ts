@@ -147,15 +147,19 @@ describe("home page sections", () => {
 
     expect(services.match(/class="[^"]*service-panel[^"]*"/g)).toHaveLength(3);
     expect(services.match(/<article/g)).toHaveLength(3);
-    expect(services).toContain(">Web<");
-    expect(services).toContain(">System<");
-    expect(services).toContain(">Automation<");
-    expect(services).toContain('data-pointer-driven="true"');
+    // Эйбрау — то, что меняется после запуска, а не английские ярлыки и не
+    // нумерация: три формата это альтернативы, а не шаги процесса.
+    expect(services).toContain(">Продажи<");
+    expect(services).toContain(">Сервис<");
+    expect(services).toContain(">Процесс<");
     expect(services).not.toMatch(/>0[1-3]\s*[—/]\s*/);
-    expect(services.match(/>Когда нужны</g)).toHaveLength(3);
+    expect(services.match(/data-pointer-driven="true"/g)).toHaveLength(2);
     expect(services.match(/>Что делаем</g)).toHaveLength(3);
     expect(services.match(/>Что получает бизнес</g)).toHaveLength(3);
     expect(services).toContain('href="#contact"');
+    // Секция лежит на общем анимированном фоне страницы: своя непрозрачная
+    // заливка превращала её в чёрное пятно поверх него.
+    expect(services).not.toMatch(/<section[^>]*id="services"[^>]*bg-\[#/);
   });
 
   it("renders a native FAQ baseline without client state or duplicate fallback markup", async () => {
