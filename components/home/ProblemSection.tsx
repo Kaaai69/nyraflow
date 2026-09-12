@@ -21,7 +21,7 @@ export default function ProblemSection() {
     <section id="problem" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
       <SectionContainer>
         {/* Editorial Problem Header */}
-        <header className="pb-12 md:pb-16 border-b border-white/14">
+        <header className="pb-12 md:pb-16 border-b border-white/14 text-center">
           <MotionHeading>
             <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50">
               ПРОБЛЕМА
@@ -31,11 +31,7 @@ export default function ProblemSection() {
               picture: the heading itself stays in the markup for search and
               for screen readers, which cannot read a rolling ladder. */}
           <h2 className="sr-only">Почему сайт не превращает трафик в заявки?</h2>
-          <LayeredText
-            words={PATH_WORDS}
-            align="start"
-            className="mt-6 text-white/90"
-          />
+          <LayeredText words={PATH_WORDS} className="mt-14 text-white/90 md:mt-20" />
         </header>
 
         {/* Open Editorial Rows (3 Problem Points) */}
