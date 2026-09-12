@@ -143,6 +143,11 @@ say "Сборка архива"
 # до 344 МБ вместо десятков. ._* и .DS_Store — мусор, который macOS создаёт при
 # распаковке на сервере: он копился в /opt/myland от раската к раскату.
 #
+# materials/ — тот же мусор, который раньше лежал россыпью в корне (учебник на
+# 22 МБ, скриншоты прогонов, исходники схем) и потому уезжал на прод в обход
+# всех исключений: они перечислялись по каталогам, а эти файлы каталога не
+# имели. Теперь у них есть свой, и он вырезан здесь и в .gitignore.
+#
 # marketing/ — рассылка: шаблоны писем, а в leads/ и out/ выгрузки лидов с
 # чужими адресами и готовые письма. Сайту это не нужно (в .dockerignore каталог
 # уже исключён из образа), а класть базу с персональными данными на публичный
@@ -154,7 +159,7 @@ tar czf "$WORK/deploy.tgz" \
   --exclude=server.txt --exclude=telegram.txt --exclude=vpn.conf \
   --exclude=demo --exclude=.superpowers \
   --exclude=.worktrees --exclude=avito-cards --exclude=portfolio-screenshots \
-  --exclude=marketing \
+  --exclude=marketing --exclude=materials \
   --exclude=test-results --exclude=playwright-report \
   --exclude='._*' --exclude=.DS_Store \
   -C "$ROOT" .

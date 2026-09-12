@@ -16,6 +16,11 @@ upscayl_png_upscayl-standard-4x_2x/
 *.mov
 extract_video_frames.py
 
+# Рабочие материалы: исходники карточек, скриншоты прогонов, голосовые,
+# учебники, схемы. Сайту они не нужны, в git не уезжают и вырезаны из
+# архива раската (scripts/deploy.sh) — раньше лежали россыпью в корне.
+materials/
+
 # deployment secrets — never commit
 server.txt
 telegram.txt
