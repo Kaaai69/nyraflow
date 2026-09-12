@@ -484,3 +484,27 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- contact mascot ---------- */
+/* The cloud drifts on its own so it reads as alive before the cursor ever
+   reaches it. Everything else about it is driven from the component. */
+.mascot-cloud {
+  animation: mascot-float 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes mascot-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-cloud {
+    animation: none;
+  }
+}

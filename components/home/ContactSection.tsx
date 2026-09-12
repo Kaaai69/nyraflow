@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { homeContent } from "../../content/home";
+import ContactMascot from "./ContactMascot";
 import { SectionContainer } from "./Layout";
 import { MotionHeading } from "../ScrollRevealSection";
 
@@ -14,6 +15,8 @@ export default function ContactSection() {
 
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  // The mascot stops watching while the task description is being written.
+  const [writingTask, setWritingTask] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -94,6 +97,13 @@ export default function ContactSection() {
               onSubmit={handleSubmit}
               className="card-glass p-8 text-white md:p-12"
             >
+              {/* Sits over the fields the way it does in the reference: it
+                  follows the cursor while the form is being filled in, and
+                  looks away while the task itself is being described. */}
+              <div className="mb-8 flex justify-center">
+                <ContactMascot eyesShut={writingTask} className="max-w-[11rem]" />
+              </div>
+
               <div>
                 <label htmlFor="contact-name" className="mb-2 block text-sm font-semibold text-white">
                   {nameLabel}
@@ -135,6 +145,8 @@ export default function ContactSection() {
                   required
                   maxLength={4000}
                   disabled={isSubmitting}
+                  onFocus={() => setWritingTask(true)}
+                  onBlur={() => setWritingTask(false)}
                   className="w-full resize-y rounded-xl border border-white/18 bg-black/35 px-4 py-3.5 text-base text-white transition-all placeholder-white/40 focus:border-white focus:outline-none focus:ring-1 focus:ring-white/30"
                 />
               </div>
