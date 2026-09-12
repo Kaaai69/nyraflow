@@ -1,5 +1,4 @@
 import AnimatedServicesSection from "@/components/AnimatedServicesSection";
-import Marquee from "@/components/Marquee";
 import ScrollRevealSection from "@/components/ScrollRevealSection";
 import AutomationSection from "./home/AutomationSection";
 import BenefitsSection from "./home/BenefitsSection";
@@ -18,7 +17,6 @@ import WorkSection from "./home/WorkSection";
 export default function HomeSections() {
   return (
     <>
-      <Marquee />
       <ScrollRevealSection>
         <CredibilitySection />
       </ScrollRevealSection>
