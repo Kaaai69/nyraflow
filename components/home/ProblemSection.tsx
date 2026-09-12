@@ -1,7 +1,18 @@
 import { homeContent } from "../../content/home";
 import { SectionContainer } from "./Layout";
 import { MotionHeading, MotionGrid, MotionCard } from "../ScrollRevealSection";
-import WordIlluminate from "../WordIlluminate";
+import LayeredText from "../ui/layered-text";
+
+/** The path a visitor is supposed to travel, and the one this section says
+    breaks. Each word rolls into the next as the stack passes the viewport. */
+const PATH_WORDS = [
+  "ТРАФИК",
+  "ВНИМАНИЕ",
+  "ИНТЕРЕС",
+  "ДОВЕРИЕ",
+  "ЗАЯВКА",
+  "ВЫРУЧКА",
+] as const;
 
 export default function ProblemSection() {
   const items = homeContent.problem.items;
@@ -16,11 +27,14 @@ export default function ProblemSection() {
               ПРОБЛЕМА
             </span>
           </MotionHeading>
-          {/* The page's statement line: lights up word by word on scroll. */}
-          <WordIlluminate
-            as="h2"
-            text="Почему сайт не превращает трафик в заявки?"
-            className="text-display mt-4 max-w-4xl font-bold text-white"
+          {/* The statement line is carried by the stack, but the stack is a
+              picture: the heading itself stays in the markup for search and
+              for screen readers, which cannot read a rolling ladder. */}
+          <h2 className="sr-only">Почему сайт не превращает трафик в заявки?</h2>
+          <LayeredText
+            words={PATH_WORDS}
+            align="start"
+            className="mt-6 text-white/90"
           />
         </header>
 
