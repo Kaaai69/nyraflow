@@ -596,8 +596,8 @@ export const homeContent = {
         photo: {
           src: "/images/team/fedor.webp",
           alt: "Федор",
-          width: 2316,
-          height: 3088,
+          width: 1448,
+          height: 1086,
         },
       },
       {
