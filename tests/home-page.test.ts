@@ -47,7 +47,7 @@ describe("home page sections", () => {
       "Быстрый старт",
       "Форматы работы и стоимость",
       "Собираем продукт вокруг бизнес-задачи.",
-      "Три человека. Одна ответственность за результат.",
+      "Два человека. Одна ответственность за результат.",
       "Этапы разработки",
       "Почему с нами безопасно и выгодно работать",
       "Обсудим, какой продукт нужен вашему бизнесу.",
@@ -254,7 +254,6 @@ describe("home page sections", () => {
     );
     expect(markupWithReadableImagePaths).toContain("/images/work/groom.jpg");
     expect(markupWithReadableImagePaths).toContain("/images/team/fedor.webp");
-    expect(markupWithReadableImagePaths).toContain("/images/team/arseniy.jpg");
     expect(markupWithReadableImagePaths).toContain("/images/team/artem.jpg");
     expect(markup).toContain('href="https://atelier-kitchens.vercel.app"');
     expect(markup).toContain('href="https://groom-woad.vercel.app"');
@@ -277,7 +276,7 @@ describe("home page sections", () => {
     }
   });
 
-  it("renders three verified team members in approved responsive cards", async () => {
+  it("renders two team members in responsive cards", async () => {
     const markup = await renderPageAfterHero();
     const teamMarkup = markup.slice(
       markup.indexOf('<section id="team"'),
@@ -285,25 +284,20 @@ describe("home page sections", () => {
     );
     const teamSection = readProjectFile("components/home/TeamSection.tsx");
 
-    expect(markup).toContain("Три человека. Одна ответственность за результат.");
+    expect(markup).toContain("Два человека. Одна ответственность за результат.");
     expect(teamMarkup).toContain("Федор");
-    expect(teamMarkup).toContain("Арсений");
     expect(teamMarkup).toContain("Артём");
+    expect(teamMarkup).not.toContain("Арсений");
     expect(teamMarkup).not.toContain("Founder");
     expect(teamMarkup).not.toContain("CGO");
     expect(teamMarkup).not.toContain("CMO");
-    expect(teamMarkup.indexOf("Федор")).toBeLessThan(teamMarkup.indexOf("Арсений"));
-    expect(teamMarkup).not.toContain("Место для третьего фото");
-    expect(teamMarkup.match(/aspect-\[4\/5\]/g)).toHaveLength(3);
-    expect(teamMarkup).toContain("md:grid-cols-2");
-    expect(teamMarkup).toContain("xl:grid-cols-3");
-    expect(teamMarkup).not.toContain("sm:grid-cols-2");
-    expect(teamMarkup).not.toContain("sm:mt-20");
-    expect(teamMarkup).not.toContain("md:mt-20");
+    expect(teamMarkup.indexOf("Федор")).toBeLessThan(teamMarkup.indexOf("Артём"));
+    expect(teamMarkup.match(/aspect-\[4\/5\]/g)).toHaveLength(2);
+    expect(teamMarkup).toContain("sm:grid-cols-2");
     expect(teamSection).toContain(
-      "grid min-w-0 gap-8 md:grid-cols-2 lg:col-span-7 xl:grid-cols-3 xl:gap-5",
+      "grid min-w-0 gap-5 sm:gap-6 sm:grid-cols-2 lg:col-span-7 items-stretch",
     );
-    expect(teamMarkup.match(/<article class="min-w-0"/g)).toHaveLength(3);
+    expect(teamMarkup.match(/<article class="min-w-0/g)).toHaveLength(2);
   });
 
   it("keeps HomeSections inside main and SiteFooter after main in app/page", () => {

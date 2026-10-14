@@ -204,17 +204,16 @@ describe("home content contract", () => {
 });
 
 describe("home content assets", () => {
-  it("defines the approved team heading and three verified members", async () => {
+  it("defines the team heading and two members", async () => {
     const { homeContent } = await loadHomeModule();
 
     expect(homeContent.team.title).toBe(
-      "Три человека. Одна ответственность за результат.",
+      "Два человека. Одна ответственность за результат.",
     );
     expect(
       homeContent.team.items.map(({ id, name }) => ({ id, name })),
     ).toEqual([
       { id: "fedor", name: "Федор" },
-      { id: "arseniy", name: "Арсений" },
       { id: "artem", name: "Артём" },
     ]);
   });
@@ -227,7 +226,7 @@ describe("home content assets", () => {
     ];
 
     expect(homeContent.work.media).toHaveLength(9);
-    expect(homeContent.team.items).toHaveLength(3);
+    expect(homeContent.team.items).toHaveLength(2);
 
     for (const media of assets) {
       const assetPath = resolve(projectRoot, `public${media.src}`);

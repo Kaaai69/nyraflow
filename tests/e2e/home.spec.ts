@@ -7,7 +7,7 @@ const approvedHeadings = [
   "Создаем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
   "Концепты, которые можно посмотреть.",
   "Собираем продукт вокруг бизнес-задачи.",
-  "Три человека. Одна ответственность за результат.",
+  "Два человека. Одна ответственность за результат.",
   "Сначала смысл. Потом система. Затем запуск.",
   "Обсудим, какой продукт нужен вашему бизнесу.",
 ] as const;
@@ -608,9 +608,9 @@ test("desktop home page keeps its published content and interactions intact", as
     await expect(locator).toBeVisible();
   }
 
-  for (const member of ["Арсений", "Артём"] as const) {
+  for (const member of ["Федор", "Артём"] as const) {
     const image = page.getByRole("img", { name: member, exact: true });
-    const source = `/images/team/${member === "Арсений" ? "arseniy" : "artem"}.jpg`;
+    const source = member === "Федор" ? "/images/team/fedor.webp" : "/images/team/artem.jpg";
     await image.scrollIntoViewIfNeeded();
     await expect(image).toBeVisible();
     expect(decodeURIComponent((await image.getAttribute("src")) ?? "")).toContain(
@@ -630,7 +630,7 @@ test("desktop home page keeps its published content and interactions intact", as
   }
 
   const teamHeading = page.getByRole("heading", {
-    name: "Три человека. Одна ответственность за результат.",
+    name: "Два человека. Одна ответственность за результат.",
     exact: true,
   });
   await teamHeading.scrollIntoViewIfNeeded();

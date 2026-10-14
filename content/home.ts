@@ -586,7 +586,7 @@ export const homeContent = {
   },
   team: {
     id: "team",
-    title: "Три человека. Одна ответственность за результат.",
+    title: "Два человека. Одна ответственность за результат.",
     description:
       "Работаем небольшой командой, чтобы сохранять контекст, быстро принимать решения и отвечать за продукт целиком.",
     items: [
@@ -598,16 +598,6 @@ export const homeContent = {
           alt: "Федор",
           width: 1448,
           height: 1086,
-        },
-      },
-      {
-        id: "arseniy",
-        name: "Арсений",
-        photo: {
-          src: "/images/team/arseniy.jpg",
-          alt: "Арсений",
-          width: 1280,
-          height: 960,
         },
       },
       {
