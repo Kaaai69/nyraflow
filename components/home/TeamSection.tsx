@@ -17,8 +17,10 @@ export default function TeamSection() {
               Команда
             </span>
             {/* В узкой колонке полный display-размер обрезал «ответственность»
-                по краю: слово длиннее колонки, а MotionHeading режет overflow. */}
-            <h2 className="text-display mt-4 max-w-lg font-bold text-white lg:text-[2.5rem] xl:text-[2.75rem]">
+                по краю: слово длиннее колонки, а MotionHeading режет overflow.
+                «!» нужен потому, что .text-display объявлен вне @layer и без
+                него перебивает любую утилиту размера. */}
+            <h2 className="text-display mt-4 max-w-lg font-bold text-white lg:text-[2.5rem]! xl:text-[2.75rem]!">
               {content.title}
             </h2>
           </MotionHeading>
