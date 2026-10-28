@@ -488,7 +488,6 @@ test("mobile layout stays single-column, overflow-free, and touch accessible", a
 
     for (const selector of [
       "#metrics article",
-      "#starter article",
       "#pricing article",
       "#work .project-card",
       "#services article",
@@ -581,13 +580,13 @@ test("desktop home page keeps its published content and interactions intact", as
   await expect(page.getByRole("contentinfo")).toBeVisible();
 
   const expectedSectionOrder = [
-    "credibility",
     "problem",
     "metrics",
     "work",
-    "starter",
-    "pricing",
     "services",
+    "automation",
+    "pricing",
+    "benefits",
     "team",
     "process",
     "faq",

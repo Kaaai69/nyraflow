@@ -1,78 +1,42 @@
-import {
-  ChartBarIcon,
-  FileTextIcon,
-  GraduationCapIcon,
-  InfinityIcon,
-} from "@phosphor-icons/react/ssr";
-
-import { homeContent, type BenefitIconName } from "../../content/home";
+import { homeContent } from "../../content/home";
 import { SectionContainer } from "./Layout";
-import { MotionHeading, MotionGrid, MotionCard } from "../ScrollRevealSection";
+import { MotionGrid, MotionCard } from "../ScrollRevealSection";
 
-const benefitIcons = {
-  marketing: ChartBarIcon,
-  legal: FileTextIcon,
-  result: InfinityIcon,
-  growth: GraduationCapIcon,
-} satisfies Record<BenefitIconName, typeof ChartBarIcon>;
-
+/**
+ * Условия работы одной строкой под прайсом: это снятие возражений о цене,
+ * а не отдельный разговор. Без рамки, иконок и нумерации — только линия
+ * над каждым пунктом.
+ */
 export default function BenefitsSection() {
   const content = homeContent.benefits;
 
   return (
-    <section id="benefits" className="py-section-mobile md:py-section-desktop bg-transparent text-white">
+    <section
+      id="benefits"
+      aria-labelledby="benefits-heading"
+      className="py-10 md:py-14 bg-transparent text-white"
+    >
       <SectionContainer>
-        <header className="border-b border-white/14 pb-8">
-          <MotionHeading>
-            <p className="text-xs font-mono font-bold uppercase tracking-[0.16em] text-white/50">
-              {content.eyebrow}
-            </p>
-            <h2 className="text-display mt-3 font-bold text-white">
-              {content.title}
-            </h2>
-          </MotionHeading>
-        </header>
-
-        {/* 2x2 Open Editorial Grid Frame with Cross Dividers (No Floating Boxes) */}
-        <div className="card-glass mt-12 p-6 sm:p-10">
-          <MotionGrid className="grid gap-0 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/14 items-stretch">
-            {content.items.map((item, index) => {
-              const Icon = benefitIcons[item.icon];
-              const isTop = index < 2;
-
-              return (
-                <MotionCard
-                  key={item.id}
-                  tilt={false}
-                  radius="12px"
-                  className={!isTop ? "md:border-t md:border-white/14" : ""}
-                >
-                  <article className="flex h-full flex-col justify-between p-6 lg:p-8 group/benefit transition-colors hover:bg-white/[0.02] rounded-xl">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                      <Icon
-                        aria-hidden
-                        size={32}
-                        weight="regular"
-                        className="shrink-0 text-white group-hover/benefit:scale-110 transition-transform duration-300"
-                      />
-                      <span className="text-xs font-mono font-bold tracking-widest uppercase text-white/50">
-                        0{index + 1}
-                      </span>
-                    </div>
-                    <div className="mt-8">
-                      <h3 className="text-xl font-bold leading-tight text-white group-hover/benefit:text-white transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="mt-3 text-base leading-relaxed text-white/75 group-hover/benefit:text-white/90 transition-colors">
-                        {item.description}
-                      </p>
-                    </div>
-                  </article>
-                </MotionCard>
-              );
-            })}
-          </MotionGrid>
-        </div>
+        <h2 id="benefits-heading" className="sr-only">
+          {content.title}
+        </h2>
+        <MotionGrid
+          className="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4"
+          staggerDelay={0.08}
+        >
+          {content.items.map((item) => (
+            <MotionCard key={item.id} tilt={false} radius="12px">
+              <article className="h-full border-t border-white/30 pt-5">
+                <h3 className="text-base font-bold leading-snug text-white">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-white/70">
+                  {item.description}
+                </p>
+              </article>
+            </MotionCard>
+          ))}
+        </MotionGrid>
       </SectionContainer>
     </section>
   );

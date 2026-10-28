@@ -19,10 +19,24 @@ export default function TeamSection() {
             <h2 className="text-display mt-4 max-w-lg font-bold text-white">
               {content.title}
             </h2>
-            <p className="mt-6 text-base sm:text-lg leading-relaxed text-white/70 max-w-md">
-              {content.description}
-            </p>
           </MotionHeading>
+
+          {/* Три довода «почему мы» — линиями, а не карточками: на живом фоне
+              разделитель читается лучше, чем ещё одна рамка. */}
+          <MotionGrid className="mt-8 max-w-md divide-y divide-white/20 border-y border-white/20" staggerDelay={0.1}>
+            {content.points.map((point) => (
+              <MotionCard key={point.id} tilt={false} radius="12px">
+                <div className="py-5">
+                  <h3 className="text-base font-bold leading-snug text-white">
+                    {point.title}
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-white/70">
+                    {point.description}
+                  </p>
+                </div>
+              </MotionCard>
+            ))}
+          </MotionGrid>
         </header>
 
         {/* Right Column: ARCHETYPE E Image-Led Portraits (Minimal Caption Slab) */}

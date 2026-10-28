@@ -1,17 +1,15 @@
 export type HomeSectionId =
   | "hero"
-  | "credibility"
   | "problem"
   | "metrics"
   | "work"
-  | "automation"
-  | "starter"
-  | "pricing"
   | "services"
+  | "automation"
+  | "pricing"
+  | "benefits"
   | "team"
   | "process"
   | "faq"
-  | "benefits"
   | "contact";
 
 export type ImageAsset = {
@@ -43,32 +41,11 @@ type MetricItem = TextItem & {
   value: string;
 };
 
-export type StarterIconName =
-  | "structure"
-  | "copy"
-  | "analytics"
-  | "automation";
-
-type StarterItem = TextItem & {
-  icon: StarterIconName;
-};
-
-export type BenefitIconName =
-  | "marketing"
-  | "legal"
-  | "result"
-  | "growth";
-
-type BenefitItem = TextItem & {
-  icon: BenefitIconName;
-};
-
+/** Шаг пути клиента, а не функция системы: что он делает и что получает. */
 export type AutomationStep = {
   id: string;
   title: string;
-  description: string;
-  /** Факт, который делает шаг проверяемым: время, гарантия, поведение при сбое. */
-  proof: string;
+  detail: string;
 };
 
 export type PricingItem = {
@@ -106,10 +83,6 @@ export type HomeContent = {
     id: "hero";
     isLockedInSpline: true;
   };
-  credibility: {
-    id: "credibility";
-    items: readonly TextItem[];
-  };
   problem: {
     id: "problem";
     title: string;
@@ -129,22 +102,15 @@ export type HomeContent = {
   };
   automation: {
     id: "automation";
-    eyebrow: string;
     title: string;
     description: string;
     steps: readonly AutomationStep[];
-    note: string;
     cta: string;
     ctaHref: string;
     /** Куда ведёт кнопка: ссылка уходит из сайта в Telegram, и это не должно быть сюрпризом. */
     ctaHint: string;
-    secondaryCta: string;
-  };
-  starter: {
-    id: "starter";
-    title: string;
-    price: string;
-    items: readonly StarterItem[];
+    /** Как это устроено — одна строка мелким шрифтом, не крупнее. */
+    tech: string;
   };
   pricing: {
     id: "pricing";
@@ -163,7 +129,8 @@ export type HomeContent = {
   team: {
     id: "team";
     title: string;
-    description: string;
+    /** Три довода «почему мы», которые раньше жили отдельной секцией. */
+    points: readonly TextItem[];
     items: readonly TeamMember[];
   };
   process: {
@@ -178,9 +145,9 @@ export type HomeContent = {
   };
   benefits: {
     id: "benefits";
-    eyebrow: string;
+    /** Визуально не показывается: нужен только как имя группы для скринридера. */
     title: string;
-    items: readonly BenefitItem[];
+    items: readonly TextItem[];
   };
   contact: {
     id: "contact";
@@ -195,18 +162,16 @@ export type HomeContent = {
 
 export const homeSectionOrder = [
   "hero",
-  "credibility",
   "problem",
   "metrics",
   "work",
-  "automation",
-  "starter",
-  "pricing",
   "services",
+  "automation",
+  "pricing",
+  "benefits",
   "team",
   "process",
   "faq",
-  "benefits",
   "contact",
 ] as const satisfies readonly HomeSectionId[];
 
@@ -214,29 +179,6 @@ export const homeContent = {
   hero: {
     id: "hero",
     isLockedInSpline: true,
-  },
-  credibility: {
-    id: "credibility",
-    items: [
-      {
-        id: "direct-team-contact",
-        title: "Прямой контакт с командой",
-        description:
-          "Задачу ведут те же люди, которые проектируют и собирают продукт. Без цепочки менеджеров и потери контекста.",
-      },
-      {
-        id: "one-process",
-        title: "Один процесс от идеи до запуска",
-        description:
-          "Стратегия, дизайн, разработка и автоматизация собираются вокруг одной бизнес-цели.",
-      },
-      {
-        id: "foundation-for-growth",
-        title: "Основа для развития",
-        description:
-          "Передаём понятную систему, которую можно измерять, обновлять и расширять после запуска.",
-      },
-    ],
   },
   problem: {
     id: "problem",
@@ -411,84 +353,36 @@ export const homeContent = {
   },
   automation: {
     id: "automation",
-    eyebrow: "Автоматизация в работе",
-    title: "Мы собрали это себе. Так же соберём вам.",
+    // Секция продаёт результат («получите разбор своей задачи»), а не
+    // инструмент — см. docs/landing-section-desk.md. Технология уходит в tech.
+    title: "Разбор вашей задачи за две минуты",
     description:
-      "Наш пресейл работает без ручной обработки: клиент отвечает на восемь вопросов в Telegram, разбор задачи готовится за пару секунд, заявка попадает в работу с приоритетом и уходит в сценарии n8n. Ниже — та же система, которую мы ставим клиентам.",
+      "Восемь вопросов в Telegram — и вы увидите структуру будущего сайта и гипотезу оффера. Бесплатно, ни к чему не обязывает.",
     steps: [
       {
-        id: "brief",
-        title: "Бриф вместо анкеты",
-        description:
-          "Восемь вопросов по одному на экран. Ответы сохраняются на каждом шаге, поэтому закрытое приложение не стоит клиенту заполненной формы.",
-        proof: "8 вопросов · 2 минуты",
+        id: "answer",
+        title: "Отвечаете на восемь вопросов",
+        detail: "Две минуты, без регистрации и созвона.",
       },
       {
         id: "analysis",
-        title: "Разбор задачи",
-        description:
-          "Языковая модель по нашей методике собирает структуру будущего сайта, гипотезу оффера и вопросы, которых клиент себе не задавал. Если модель недоступна, разбор собирается по правилам — пустого экрана не бывает.",
-        proof: "около 2 секунд",
+        title: "Получаете разбор",
+        detail: "Структура сайта по секциям и гипотеза оффера.",
       },
       {
-        id: "priority",
-        title: "Заявка с приоритетом",
-        description:
-          "Бюджет и срок вычитываются из ответов, к ним добавляются формат задачи и реакция клиента. В ленте видно, с кем говорить первым и на каком основании.",
-        proof: "бюджет · срок · формат",
-      },
-      {
-        id: "delivery",
-        title: "Сценарии n8n",
-        description:
-          "Каждое событие уходит в автоматизацию подписанным запросом: уведомление команде, саммари разбора, напоминание через сутки. Если сценарий недоступен, события копятся и доставляются повторами.",
-        proof: "доставка с повторами",
+        id: "decide",
+        title: "Решаете, что дальше",
+        detail: "Хотите обсудить — нажимаете кнопку. Не хотите — разбор остаётся у вас.",
       },
     ],
-    note:
-      "Это не демонстрационный стенд: студия ведёт через эту систему собственные заявки каждый день.",
     cta: "Пройти бриф в Telegram",
     // Прямая ссылка на мини-апп появится, когда в BotFather будет заведено
     // короткое имя через /newapp. Пока ведём в чат с ботом — эта ссылка
     // работает всегда и не может отдать 404.
     ctaHref: "https://t.me/nyrabusinessbot?start=site_automation",
-    ctaHint: "Откроется чат с ботом @nyrabusinessbot — бриф проходится прямо в Telegram.",
-    secondaryCta: "Обсудить проект",
-  },
-  starter: {
-    id: "starter",
-    title: "Быстрый старт",
-    price: "от 30 000 ₽",
-    items: [
-      {
-        id: "selling-structure",
-        icon: "structure",
-        title: "Продающая структура",
-        description:
-          "Оффер, блоки доверия и понятный путь к заявке собираются вокруг одной бизнес-задачи.",
-      },
-      {
-        id: "copy-and-packaging",
-        icon: "copy",
-        title: "Тексты и упаковка",
-        description:
-          "Формулируем ценность продукта и аргументы для клиента, даже если подробного ТЗ пока нет.",
-      },
-      {
-        id: "integrations-and-analytics",
-        icon: "analytics",
-        title: "Интеграции и аналитика",
-        description:
-          "Подключаем формы, Telegram и базовые события, чтобы видеть обращения и ключевые действия.",
-      },
-      {
-        id: "automation-ready",
-        icon: "automation",
-        title: "Готовность к автоматизации",
-        description:
-          "Закладываем структуру, к которой позже можно подключить CRM, ботов и новые сценарии.",
-      },
-    ],
+    ctaHint: "Откроется чат с ботом @nyrabusinessbot. Займёт две минуты.",
+    tech:
+      "Разбор готовит языковая модель по нашей методике, заявки уходят в работу через сценарии n8n. Так же устроены собственные заявки студии.",
   },
   pricing: {
     id: "pricing",
@@ -587,8 +481,26 @@ export const homeContent = {
   team: {
     id: "team",
     title: "Два человека. Одна ответственность за результат.",
-    description:
-      "Работаем небольшой командой, чтобы сохранять контекст, быстро принимать решения и отвечать за продукт целиком.",
+    points: [
+      {
+        id: "direct-team-contact",
+        title: "Прямой контакт с командой",
+        description:
+          "Задачу ведут те, кто проектирует и собирает продукт. Без цепочки менеджеров.",
+      },
+      {
+        id: "one-process",
+        title: "Один процесс от идеи до запуска",
+        description:
+          "Стратегия, дизайн, код и автоматизация собираются вокруг одной цели.",
+      },
+      {
+        id: "foundation-for-growth",
+        title: "Основа для развития",
+        description:
+          "Передаём систему, которую можно измерять и расширять.",
+      },
+    ],
     items: [
       {
         id: "fedor",
@@ -692,36 +604,27 @@ export const homeContent = {
   },
   benefits: {
     id: "benefits",
-    eyebrow: "Почему с нами",
-    title: "Почему с нами безопасно и выгодно работать",
+    title: "Условия работы",
     items: [
       {
         id: "marketing",
-        icon: "marketing",
-        title: "Глубокий маркетинг",
-        description:
-          "Не просим у вас «ТЗ и тексты». Сами изучаем нишу, вытаскиваем смыслы и пишем продающий копирайтинг.",
+        title: "Тексты и смыслы — на нас",
+        description: "Не просим ТЗ: сами изучаем нишу и пишем продающие тексты.",
       },
       {
         id: "legal",
-        icon: "legal",
-        title: "Юридическая чистота",
-        description:
-          "Работаем официально по договору: чеки самозанятого, закрывающие документы и зафиксированные обязательства.",
+        title: "Работа по договору",
+        description: "Чеки самозанятого и закрывающие документы.",
       },
       {
         id: "result",
-        icon: "result",
-        title: "Работа до результата",
-        description:
-          "Правки включены в стоимость. Запускаем проект только тогда, когда он выглядит убедительно.",
+        title: "Правки включены в цену",
+        description: "Запускаем, когда проект выглядит убедительно.",
       },
       {
         id: "growth",
-        icon: "growth",
-        title: "Помощь в дальнейшем развитии проекта",
-        description:
-          "Вы сможете менять цены и тексты в 2 клика. Запишем видеоинструкцию под ваш сайт и поможем развивать проект после запуска.",
+        title: "Помощь после запуска",
+        description: "Цены и тексты меняются в 2 клика — запишем видеоинструкцию.",
       },
     ],
   },

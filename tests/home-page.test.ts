@@ -39,17 +39,14 @@ describe("home page sections", () => {
   it("renders every approved heading with its semantic heading level", async () => {
     const markup = await renderPageAfterHero();
     const expectedH2 = [
-      "Прямой контакт с командой",
-      "Один процесс от идеи до запуска",
-      "Основа для развития",
       "Создаем сайты, которые окупают трафик, а не просто «красиво висят» в интернете.",
       "Концепты, которые можно посмотреть.",
-      "Быстрый старт",
-      "Форматы работы и стоимость",
       "Собираем продукт вокруг бизнес-задачи.",
+      "Разбор вашей задачи за две минуты",
+      "Форматы работы и стоимость",
+      "Условия работы",
       "Два человека. Одна ответственность за результат.",
       "Этапы разработки",
-      "Почему с нами безопасно и выгодно работать",
       "Обсудим, какой продукт нужен вашему бизнесу.",
     ];
     const expectedH3 = [
@@ -64,10 +61,16 @@ describe("home page sections", () => {
       "Дизайн-концепт",
       "Разработка и интеграции",
       "Запуск и рост",
-      "Глубокий маркетинг",
-      "Юридическая чистота",
-      "Работа до результата",
-      "Помощь в дальнейшем развитии проекта",
+      "Отвечаете на восемь вопросов",
+      "Получаете разбор",
+      "Решаете, что дальше",
+      "Тексты и смыслы — на нас",
+      "Работа по договору",
+      "Правки включены в цену",
+      "Помощь после запуска",
+      "Прямой контакт с командой",
+      "Один процесс от идеи до запуска",
+      "Основа для развития",
     ];
     expectedH2.forEach((copy) => expectExactElement(markup, "h2", copy));
     expectedH3.forEach((copy) => expectExactElement(markup, "h3", copy));
@@ -90,17 +93,16 @@ describe("home page sections", () => {
   it("keeps the conversion landmarks in the approved order", async () => {
     const markup = await renderPageAfterHero();
     const ids = [
-      "credibility",
       "problem",
       "metrics",
       "work",
-      "starter",
-      "pricing",
       "services",
+      "automation",
+      "pricing",
+      "benefits",
       "team",
       "process",
       "faq",
-      "benefits",
       "contact",
     ];
     const positions = ids.map((id) => markup.indexOf(`id="${id}"`));
@@ -116,22 +118,19 @@ describe("home page sections", () => {
       markup.indexOf('<section id="metrics"'),
       markup.indexOf('<section id="work"'),
     );
-    const starter = markup.slice(
-      markup.indexOf('<section id="starter"'),
-      markup.indexOf('<section id="pricing"'),
-    );
     const pricing = markup.slice(
       markup.indexOf('<section id="pricing"'),
-      markup.indexOf('<section id="services"'),
+      markup.indexOf('<section id="benefits"'),
     );
 
     expect(metrics.match(/<article/g)).toHaveLength(3);
     expect(metrics).toContain("2+");
     expect(metrics).toContain("20+");
     expect(metrics).toContain("100%");
-    expect(starter.match(/<article/g)).toHaveLength(4);
-    expect(starter).toContain("от 30 000 ₽");
-    expect(starter).toMatch(/<h2[^>]*text-blue[^>]*>Быстрый старт<\/h2>/);
+    // «Быстрый старт» убран: та же цена и состав уже есть в тарифе «Лендинг».
+    expect(markup).not.toContain('<section id="starter"');
+    expect(markup).not.toContain('<section id="credibility"');
+    expect(pricing).toContain("от 30 000 ₽");
     expect(pricing.match(/<article/g)).toHaveLength(3);
     expect(pricing).toContain("от 120 000 ₽");
     expect(pricing.match(/href="#contact"/g)).toHaveLength(3);
@@ -166,7 +165,7 @@ describe("home page sections", () => {
     const markup = await renderPageAfterHero();
     const faqMarkup = markup.slice(
       markup.indexOf('<section id="faq"'),
-      markup.indexOf('<section id="benefits"'),
+      markup.indexOf('<section id="contact"'),
     );
     const faqSource = readProjectFile("components/home/FaqAccordion.tsx");
 
@@ -285,6 +284,9 @@ describe("home page sections", () => {
     const teamSection = readProjectFile("components/home/TeamSection.tsx");
 
     expect(markup).toContain("Два человека. Одна ответственность за результат.");
+    // Бывшая секция Credibility теперь живёт внутри команды.
+    expect(teamMarkup).toContain("Прямой контакт с командой");
+    expect(teamMarkup).toContain("Основа для развития");
     expect(teamMarkup).toContain("Федор");
     expect(teamMarkup).toContain("Артём");
     expect(teamMarkup).not.toContain("Арсений");
@@ -391,7 +393,6 @@ describe("home page sections", () => {
     const styles = readProjectFile("app/globals.css");
     const sources = [
       readProjectFile("components/home/Layout.tsx"),
-      readProjectFile("components/home/CredibilitySection.tsx"),
       readProjectFile("components/home/ProblemSection.tsx"),
       readProjectFile("components/home/WorkSection.tsx"),
       readProjectFile("components/home/ServicesSection.tsx"),

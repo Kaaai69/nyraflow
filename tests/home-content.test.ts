@@ -24,7 +24,6 @@ type WorkMedia = ImageAsset & {
 type HomeModule = {
   homeSectionOrder: readonly string[];
   homeContent: {
-    credibility: { items: readonly unknown[] };
     problem: { title: string };
     metrics: {
       items: readonly {
@@ -34,16 +33,7 @@ type HomeModule = {
         description: string;
       }[];
     };
-    starter: {
-      title: string;
-      price: string;
-      items: readonly {
-        id: string;
-        title: string;
-        description: string;
-        icon: string;
-      }[];
-    };
+    automation: { title: string; steps: readonly unknown[] };
     pricing: {
       title: string;
       cta: string;
@@ -62,12 +52,14 @@ type HomeModule = {
     work: { media: readonly WorkMedia[] };
     team: {
       title: string;
+      points: readonly unknown[];
       items: readonly {
         id: string;
         name: string;
         photo: ImageAsset;
       }[];
     };
+    benefits: { items: readonly unknown[] };
   };
 };
 
@@ -76,16 +68,16 @@ async function loadHomeModule(): Promise<HomeModule> {
     return {
       homeSectionOrder: [],
       homeContent: {
-        credibility: { items: [] },
         problem: { title: "" },
         metrics: { items: [] },
-        starter: { title: "", price: "", items: [] },
+        automation: { title: "", steps: [] },
         pricing: { title: "", cta: "", items: [] },
         services: { items: [] },
         process: { items: [] },
         faq: { items: [] },
         work: { media: [] },
-        team: { title: "", items: [] },
+        team: { title: "", points: [], items: [] },
+        benefits: { items: [] },
       },
     };
   }
@@ -135,17 +127,16 @@ describe("home content contract", () => {
 
     expect(homeSectionOrder).toEqual([
       "hero",
-      "credibility",
       "problem",
       "metrics",
       "work",
-      "starter",
-      "pricing",
       "services",
+      "automation",
+      "pricing",
+      "benefits",
       "team",
       "process",
       "faq",
-      "benefits",
       "contact",
     ]);
   });
@@ -161,8 +152,8 @@ describe("home content contract", () => {
       "20+",
       "100%",
     ]);
-    expect(homeContent.starter.price).toBe("от 30 000 ₽");
-    expect(homeContent.starter.items).toHaveLength(4);
+    expect(homeContent.automation.title).toBe("Разбор вашей задачи за две минуты");
+    expect(homeContent.automation.steps).toHaveLength(3);
     expect(
       homeContent.pricing.items.map(({ title, price }) => ({ title, price })),
     ).toEqual([
@@ -184,8 +175,15 @@ describe("home content contract", () => {
     ]);
   });
 
+  it("keeps the starter offer out of the page: pricing already carries the 30 000 ₽ tier", async () => {
+    const { homeContent } = await loadHomeModule();
+
+    expect("starter" in homeContent).toBe(false);
+    expect(homeContent.pricing.items[0]?.price).toBe("от 30 000 ₽");
+  });
+
   it.each([
-    ["credibility", 3],
+    ["benefits", 4],
     ["services", 3],
     ["process", 5],
     ["faq", 6],
@@ -210,6 +208,7 @@ describe("home content assets", () => {
     expect(homeContent.team.title).toBe(
       "Два человека. Одна ответственность за результат.",
     );
+    expect(homeContent.team.points).toHaveLength(3);
     expect(
       homeContent.team.items.map(({ id, name }) => ({ id, name })),
     ).toEqual([

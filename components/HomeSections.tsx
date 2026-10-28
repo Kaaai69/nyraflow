@@ -3,23 +3,18 @@ import ScrollRevealSection from "@/components/ScrollRevealSection";
 import AutomationSection from "./home/AutomationSection";
 import BenefitsSection from "./home/BenefitsSection";
 import ContactSection from "./home/ContactSection";
-import CredibilitySection from "./home/CredibilitySection";
 import FaqSection from "./home/FaqSection";
 import MetricsSection from "./home/MetricsSection";
 import PricingSection from "./home/PricingSection";
 import ProblemSection from "./home/ProblemSection";
 import ProcessSection from "./home/ProcessSection";
 import ServicesSquishySection from "./home/ServicesSquishySection";
-import StarterSection from "./home/StarterSection";
 import TeamSection from "./home/TeamSection";
 import WorkSection from "./home/WorkSection";
 
 export default function HomeSections() {
   return (
     <>
-      <ScrollRevealSection>
-        <CredibilitySection />
-      </ScrollRevealSection>
       <ScrollRevealSection>
         <ProblemSection />
       </ScrollRevealSection>
@@ -38,10 +33,10 @@ export default function HomeSections() {
         <AutomationSection />
       </ScrollRevealSection>
       <ScrollRevealSection>
-        <StarterSection />
+        <PricingSection />
       </ScrollRevealSection>
       <ScrollRevealSection>
-        <PricingSection />
+        <BenefitsSection />
       </ScrollRevealSection>
       <ScrollRevealSection>
         <TeamSection />
@@ -53,12 +48,8 @@ export default function HomeSections() {
         <FaqSection />
       </ScrollRevealSection>
       <ScrollRevealSection>
-        <BenefitsSection />
-      </ScrollRevealSection>
-      <ScrollRevealSection>
         <ContactSection />
       </ScrollRevealSection>
     </>
   );
 }
-
