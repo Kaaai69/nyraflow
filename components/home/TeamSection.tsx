@@ -16,7 +16,9 @@ export default function TeamSection() {
             <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-white/50">
               Команда
             </span>
-            <h2 className="text-display mt-4 max-w-lg font-bold text-white">
+            {/* В узкой колонке полный display-размер обрезал «ответственность»
+                по краю: слово длиннее колонки, а MotionHeading режет overflow. */}
+            <h2 className="text-display mt-4 max-w-lg font-bold text-white lg:text-[2.5rem] xl:text-[2.75rem]">
               {content.title}
             </h2>
           </MotionHeading>
