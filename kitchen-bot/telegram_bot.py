@@ -47,7 +47,7 @@ async def apply_profile(bot: Bot, profile: dict[str, str]) -> None:
         log.exception("не удалось обновить профиль бота — работаем дальше")
 
 
-async def with_retry(send: Callable[[], Awaitable[Any]], attempts: int = 3) -> Any:
+async def with_retry(send: Callable[[], Awaitable[Any]], attempts: int = 5) -> Any:
     """Связь сервера с Telegram изредка рвётся на connect — без повтора клиент остался бы без ответа."""
     for attempt in range(attempts):
         try:
@@ -84,7 +84,8 @@ async def main() -> None:
     store = SessionStore(os.getenv("DATA_DIR", here / "data"))
     # На сервере нет IPv6, а api.telegram.org отдаёт AAAA-запись: aiohttp сначала стучится
     # по IPv6 и первый запрос падает по таймауту. Публичного параметра нет — правим конфиг коннектора.
-    tg_session = AiohttpSession()
+    # 20 с вместо 60: зависшее подключение лучше быстро бросить и повторить (with_retry).
+    tg_session = AiohttpSession(timeout=20)
     tg_session._connector_init["family"] = socket.AF_INET
     bot = Bot(os.environ["TELEGRAM_TOKEN"], session=tg_session)
     dp = Dispatcher()
@@ -139,13 +140,18 @@ async def main() -> None:
     async def on_other(message: Message) -> None:
         await message.answer("Пока понимаю только текст — напишите, пожалуйста, словами.")
 
-    await bot.set_my_commands([
+    # Настройка профиля — не повод падать: при плохой связи с Telegram контейнер уходил
+    # в цикл перезапусков. Опрос дальше сам переживает обрывы.
+    commands = [
         BotCommand(command="start", description="Начать заново"),
         BotCommand(command="reset", description="Сбросить диалог"),
-    ])
+    ]
+    try:
+        await with_retry(lambda: bot.set_my_commands(commands))
+    except TelegramNetworkError:
+        log.warning("команды не выставлены — Telegram недоступен")
     await apply_profile(bot, cfg.get("bot_profile", {}))
-    me = await bot.get_me()
-    log.info("запущен @%s, модель %s, менеджер %s", me.username, llm.model, manager_chat_id or "—")
+    log.info("запущен, модель %s, менеджер %s", llm.model, manager_chat_id or "—")
     try:
         await dp.start_polling(bot)
     finally:

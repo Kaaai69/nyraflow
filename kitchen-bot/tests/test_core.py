@@ -225,6 +225,33 @@ def test_first_quote_asks_budget_then_timeline_before_measure():
     assert "когда планируете" in client_texts(run(s, "3 м лдсп, до 100", llm))[1]
 
 
+def test_default_countertop_is_called_out_once():
+    s = core.Session("1")
+    llm = FakeLLM(ans("Вот ориентир:", {"length_m": 3, "facade": "ЛДСП"}), ans("С пластиком так:", {"facade": "МДФ пластик"}))
+    assert "Столешница в расчёте — из ЛДСП" in client_texts(run(s, "3 м лдсп", llm))[1]
+    assert "Столешница в расчёте" not in client_texts(run(s, "а пластик?", llm))[1]
+
+    s = core.Session("2")
+    llm = FakeLLM(ans("Вот ориентир:", {"length_m": 3, "facade": "ЛДСП", "countertop": "кварц"}))
+    assert "Столешница в расчёте" not in client_texts(run(s, "3 м лдсп, кварц", llm))[1]
+
+
+def test_price_objection_offers_cheaper_variant():
+    s = core.Session("1", fields={"length_m": 4.5, "facade": "МДФ эмаль", "shape": "угловая",
+                                  "countertop": "кварц", "upper_to_ceiling": True})
+    s.quoted_fingerprint = core._price_fingerprint(s.fields)
+    llm = FakeLLM(ans("Понимаю. Подобрать под бюджет можно.", price_objection=True))
+    texts = client_texts(run(s, "дороговато, не укладываюсь", llm))
+    assert texts[1].startswith("Как можно сэкономить: фасады МДФ пластик вместо МДФ эмаль, "
+                               "столешница искусственный камень вместо кварц, верхние шкафы стандартной высоты")
+    # Сам выбор клиента не меняется — это только вариант.
+    assert s.fields["facade"] == "МДФ эмаль"
+
+
+def test_no_cheaper_variant_for_cheapest_kitchen():
+    assert core.cheaper_variant({"length_m": 3, "facade": "ЛДСП"}, P) is None
+
+
 def test_budget_is_asked_once():
     s = core.Session("1")
     llm = FakeLLM(ans("Вот ориентир:", {"length_m": 3, "facade": "ЛДСП"}), ans("Конечно, можно без телефона."))

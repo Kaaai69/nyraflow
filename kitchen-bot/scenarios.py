@@ -35,6 +35,10 @@ def bot_text(out):
     return " ".join(o.text for o in out if o.to == "client").casefold()
 
 
+def has_quit(out):  # бот сдался вместо отработки возражения
+    return any(w in bot_text(out) for w in ("подумайте", "всего доброго", "если передумаете"))
+
+
 LONG_CHAT = [
     "здравствуйте, хочу кухню",
     "угловую",
@@ -98,6 +102,11 @@ SCENARIOS = {
           "к новому году хотелось бы", "давайте", "Федор, +7 987 765 23 61"],
          lambda outs, s: s.lead_sent and s.fields.get("budget") and s.fields.get("timeline")
          and any(w in bot_text(outs[-1]) for w in ("когда", "время", "день"))),
+    15: ("Возражение «дорого»", ["угловая 3 и 1,5, фасады эмаль, столешница кварц",
+                                "дороговато, немного не укладываюсь"],
+         lambda outs, s: any("сэкономить" in o.text for o in outs[1])),
+    16: ("Возражение на самой дешёвой кухне", ["прямая 2,5 м, лдсп", "дорого, у других дешевле"],
+         lambda outs, s: "рассроч" in bot_text(outs[1]) and not has_quit(outs[1])),
     13: ("Телефон → заявка менеджеру", ["прямая 3 м, лдсп", "Иван, 8 916 555 12 34, в субботу после 12"],
          lambda outs, s: to_manager(outs[1]) and s.lead_sent),
 }

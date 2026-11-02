@@ -52,7 +52,7 @@ TURN_SCHEMA: dict[str, Any] = {
     "additionalProperties": False,
     "required": [
         "reply", "updates", "wants_price", "offered_measure", "needs_manager", "manager_question",
-        "lead_score", "lead_score_reason",
+        "price_objection", "lead_score", "lead_score_reason",
     ],
     "properties": {
         "reply": {"type": "string"},
@@ -83,6 +83,7 @@ TURN_SCHEMA: dict[str, Any] = {
         "offered_measure": {"type": "boolean"},
         "needs_manager": {"type": "boolean"},
         "manager_question": _nullable("string"),
+        "price_objection": {"type": "boolean"},
         "lead_score": {"type": "string", "enum": ["hot", "warm", "cold"]},
         "lead_score_reason": {"type": "string"},
     },
@@ -181,14 +182,17 @@ def _fmt_length(m: float) -> str:
     return f"{m:g}".replace(".", ",") + f"{NBSP}м"
 
 
-def describe_kitchen(fields: dict[str, Any], *, for_manager: bool = False) -> str:
+def describe_kitchen(
+    fields: dict[str, Any], *, for_manager: bool = False, with_countertop: bool = True
+) -> str:
     """«угловая, 4,2 м, МДФ эмаль, столешница кварц, верх до потолка, без острова»."""
     parts = [fields.get("shape") or DEFAULT_SHAPE]
     if fields.get("length_m") is not None:
         parts.append(_fmt_length(fields["length_m"]))
     if fields.get("facade"):
         parts.append(f"фасады {fields['facade']}" if not for_manager else fields["facade"])
-    parts.append(f"столешница {fields.get('countertop') or DEFAULT_COUNTERTOP}")
+    if with_countertop:
+        parts.append(f"столешница {fields.get('countertop') or DEFAULT_COUNTERTOP}")
     if fields.get("upper_to_ceiling"):
         parts.append("верх до потолка")
     if fields.get("island"):
@@ -198,7 +202,34 @@ def describe_kitchen(fields: dict[str, Any], *, for_manager: bool = False) -> st
     return ", ".join(parts)
 
 
-MEASURE_INVITE = "Хотите, запишу на бесплатный замер? Подскажите, как к вам обращаться и номер телефона."
+def cheaper_variant(fields: dict[str, Any], pricing: dict[str, Any]) -> tuple[list[str], Quote] | None:
+    """Та же кухня на ступень дешевле: фасады и столешница на шаг вниз по прайсу,
+    без верха до потолка и острова. None — дешевле по прайсу уже некуда."""
+    alt = dict(fields)
+    changes: list[str] = []
+
+    def step_down(kind: str, current: str) -> str | None:
+        by_price = sorted(pricing[kind], key=lambda k: pricing[kind][k][0])
+        i = by_price.index(current)
+        return by_price[i - 1] if i > 0 else None
+
+    if fields.get("facade") and (cheaper := step_down("facades", fields["facade"])):
+        alt["facade"] = cheaper
+        changes.append(f"фасады {cheaper} вместо {fields['facade']}")
+    if fields.get("countertop") and (cheaper := step_down("countertops", fields["countertop"])):
+        alt["countertop"] = cheaper
+        changes.append(f"столешница {cheaper} вместо {fields['countertop']}")
+    if fields.get("upper_to_ceiling"):
+        alt["upper_to_ceiling"] = False
+        changes.append("верхние шкафы стандартной высоты")
+    if fields.get("island"):
+        alt["island"] = False
+        changes.append("без острова")
+    q = calc_quote(alt, pricing)
+    return (changes, q) if changes and q else None
+
+
+MEASURE_INVITE ="Хотите, запишу на бесплатный замер? Подскажите, как к вам обращаться и номер телефона."
 
 
 def first_quote_followup(fields: dict[str, Any], session: Session, cfg: dict[str, Any]) -> str | None:
@@ -227,7 +258,13 @@ def mark_asked(session: Session, text: str) -> None:
 
 
 def quote_text(
-    q: Quote, fields: dict[str, Any], cfg: dict[str, Any], *, followup: str | None, disclaimer: bool = True
+    q: Quote,
+    fields: dict[str, Any],
+    cfg: dict[str, Any],
+    *,
+    followup: str | None,
+    disclaimer: bool = True,
+    countertop_note: bool = False,
 ) -> str:
     demo = f" (демо-прайс)" if cfg.get("demo_mode") else ""
     if q.assumed:
@@ -239,10 +276,18 @@ def quote_text(
         ]
         return "\n\n".join(lines)
 
-    lines = [f"Ориентировочно {format_range(q)}{demo}: {describe_kitchen(fields)}."]
+    # Столешница двигает цену в разы (ЛДСП 0 ₽/м, кварц до 55 000 ₽/м) — не прячем допущение.
+    default_top = countertop_note and not fields.get("countertop")
+    kitchen = describe_kitchen(fields, with_countertop=not default_top)
+    lines = [f"Ориентировочно {format_range(q)}{demo}: {kitchen}."]
     if disclaimer:
+        note = (
+            f"Столешница в расчёте — из {DEFAULT_COUNTERTOP}; хотите камень или кварц — пересчитаю. "
+            if default_top
+            else ""
+        )
         lines.append(
-            "Точную стоимость посчитаем после бесплатного замера — по реальным размерам "
+            note + "Точную стоимость посчитаем после бесплатного замера — по реальным размерам "
             "и выбранным материалам."
         )
     if followup:
@@ -443,6 +488,12 @@ def build_system_prompt(cfg: dict[str, Any], session: Session) -> str:
     contact_known = "телефон уже получен — больше не проси" if f.get("phone") else "телефона пока нет"
     offers_left = max(0, cfg.get("max_measure_offers", 2) - session.measure_offers)
     forwarded = "; ".join(f"«{q}»" for q in session.manager_questions) or "ничего"
+    cheaper_status = (
+        "есть — система пришлёт его с цифрами сразу после твоего ответа, сошлись на него («вариант дешевле ниже»)"
+        if cheaper_variant(f, pricing)
+        else "нет — это уже самая доступная комплектация; не обещай вариант дешевле, а предложи рассрочку "
+        "и подбор размеров и наполнения на бесплатном замере"
+    )
     asked = ", ".join({"budget": "бюджет", "timeline": "сроки"}[t] for t in session.asked) or "ничего"
 
     return f"""Ты — {cfg.get('assistant_name', 'ИИ-ассистент')} компании «{cfg['company']['name']}» (кухни на заказ) и переписываешься с клиентом в мессенджере. Задача: понять, какую кухню хочет клиент, чтобы система посчитала ориентировочную вилку цены, и записать клиента на бесплатный замер.
@@ -473,6 +524,11 @@ def build_system_prompt(cfg: dict[str, Any], session: Session) -> str:
 - В истории сообщения со словом «Ориентировочно …» — это и есть такие вилки. Они верные и отправлены по правилам: не извиняйся за них, не отрекайся от них и не исправляй их.
 - Если в этом сообщении клиент дал недостающее для расчёта или поменял параметр кухни — reply должен быть одной короткой фразой-подводкой без вопросов, без перечисления параметров и без «сейчас посчитаю/пришлю»: например «Отлично, вот ориентир:» или «С пластиком выходит так:». Если клиент попутно что-то спросил — ответь на это одной фразой.
 - Если клиент спрашивает цену или торгуется («сколько будет?», «просто скажите цену», «соседи сделают за 200, сделаете?») — поставь wants_price=true: следом придёт вилка по тому, что известно (если данных мало — с оговоркой). В reply без цифр и коротко: ориентир ниже, а точную стоимость и итоговые условия зафиксируем после бесплатного замера.
+
+ВОЗРАЖЕНИЕ ПО ЦЕНЕ («дороговато», «не укладываюсь», «а дешевле можно?», «у других дешевле»)
+- Поставь price_objection=true. Вариант дешевле по прайсу: {cheaper_status}.
+- В reply (2–3 предложения, без цифр цены): спокойно признай, не споря и не соглашаясь, что «дорого»; скажи, что под бюджет можно подобрать — сильнее всего цену двигают материал фасадов и столешница; если в справке есть рассрочка — предложи её как способ не выходить из бюджета. Закончи одним вопросом: на какую сумму клиент ориентируется (если бюджет в цифрах ещё неизвестен) или подойдёт ли вариант дешевле.
+- Не сдавайся и не прощайся, не обещай скидок и не говори «ну тогда подумайте». На замере дизайнер подберёт комплектацию под бюджет — это сильный довод записаться.
 
 ЗАМЕР И КОНТАКТЫ
 - После бюджета и сроков веди к бесплатному замеру. Для записи нужны имя, телефон и удобное время — спрашивай по одному.
@@ -670,13 +726,23 @@ async def process_message(
             followup = first_quote_followup(f, session, cfg) if first else None
             q = calc_quote(f, pricing)
             # Оговорку про замер — при первой вилке и когда клиент торгуется, на пересчётах она шум.
-            client_texts.append(quote_text(q, f, cfg, followup=followup, disclaimer=first or wants_price))
+            client_texts.append(quote_text(
+                q, f, cfg, followup=followup, disclaimer=first or wants_price, countertop_note=first,
+            ))
             if followup == MEASURE_INVITE:
                 session.measure_offers += 1
             session.quoted_fingerprint = fp
     elif wants_price:
         q = calc_quote(f, pricing, cfg["fallback_assumptions"])
         client_texts.append(quote_text(q, f, cfg, followup=None))
+
+    # «Дорого» — показываем, на чём сэкономить, с цифрами из прайса, а не просто соглашаемся.
+    if data.get("price_objection") and (variant := cheaper_variant(f, pricing)):
+        changes, alt_q = variant
+        demo = " (демо-прайс)" if cfg.get("demo_mode") else ""
+        client_texts.append(
+            f"Как можно сэкономить: {', '.join(changes)} — ориентировочно {format_range(alt_q)}{demo}."
+        )
 
     for t in client_texts:
         mark_asked(session, t)
