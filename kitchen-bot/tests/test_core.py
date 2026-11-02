@@ -208,10 +208,49 @@ def test_phone_triggers_lead_once_and_regex_fallback():
     out = run(s, "89991234567", llm)
     manager = [o.text for o in out if o.to == "manager"]
     assert len(manager) == 1 and manager[0].startswith("🔔 Новая заявка")
-    assert "Иван (Тест (@test)), +7 999 123-45-67" in manager[0]
+    assert "Иван, в Telegram: Тест (@test), +7 999 123-45-67" in manager[0]
     assert "Ориентир: 55–70" in manager[0]
     out = run(s, "спасибо", llm)
     assert not [o for o in out if o.to == "manager"]
+
+
+def test_first_quote_asks_budget_then_timeline_before_measure():
+    s = core.Session("1")
+    llm = FakeLLM(ans("Вот ориентир:", {"length_m": 3, "facade": "ЛДСП"}))
+    assert "укладывается в бюджет" in client_texts(run(s, "3 м лдсп", llm))[1]
+    assert s.measure_offers == 0
+
+    s = core.Session("2")
+    llm = FakeLLM(ans("Вот ориентир:", {"length_m": 3, "facade": "ЛДСП", "budget": "до 100"}))
+    assert "когда планируете" in client_texts(run(s, "3 м лдсп, до 100", llm))[1]
+
+
+def test_budget_is_asked_once():
+    s = core.Session("1")
+    llm = FakeLLM(ans("Вот ориентир:", {"length_m": 3, "facade": "ЛДСП"}), ans("Конечно, можно без телефона."))
+    run(s, "3 м лдсп", llm)
+    assert s.asked == ["budget"]
+    run(s, "можно без телефона?", llm)
+    assert "Уже спрашивали (больше не спрашивай, даже если клиент не ответил): бюджет" in llm.calls[1][0]["content"]
+
+
+def test_lead_score_reaches_manager():
+    s = core.Session("1", fields={"length_m": 3, "facade": "ЛДСП"})
+    llm = FakeLLM(ans("Спасибо! Когда удобно принять замерщика?", {"phone": "89991234567"},
+                      lead_score="hot", lead_score_reason="сам записался, кухня нужна в декабре"))
+    manager = [o.text for o in run(s, "89991234567", llm) if o.to == "manager"]
+    assert manager[0].endswith("Оценка: 🔥 горячий — сам записался, кухня нужна в декабре")
+
+
+def test_greeting_is_one_message():
+    out = core.start(core.Session("1"), CFG)
+    assert len(out) == 1 and "Демо-версия" in out[0].text
+
+
+def test_name_matching_telegram_label_is_not_repeated():
+    fields = {"name": "Фёдор", "phone": "+7 987 765-23-61"}
+    summary = core.lead_summary(fields, "Федор (@nyraflow)", CFG, update=False)
+    assert summary.splitlines()[1] == "Федор (@nyraflow), +7 987 765-23-61"
 
 
 def test_llm_failure_asks_to_repeat_and_keeps_history_clean():

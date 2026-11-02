@@ -50,7 +50,10 @@ def _nullable(t: str, **extra: Any) -> dict[str, Any]:
 TURN_SCHEMA: dict[str, Any] = {
     "type": "object",
     "additionalProperties": False,
-    "required": ["reply", "updates", "wants_price", "offered_measure", "needs_manager", "manager_question"],
+    "required": [
+        "reply", "updates", "wants_price", "offered_measure", "needs_manager", "manager_question",
+        "lead_score", "lead_score_reason",
+    ],
     "properties": {
         "reply": {"type": "string"},
         "updates": {
@@ -80,8 +83,12 @@ TURN_SCHEMA: dict[str, Any] = {
         "offered_measure": {"type": "boolean"},
         "needs_manager": {"type": "boolean"},
         "manager_question": _nullable("string"),
+        "lead_score": {"type": "string", "enum": ["hot", "warm", "cold"]},
+        "lead_score_reason": {"type": "string"},
     },
 }
+
+LEAD_SCORES = {"hot": "🔥 горячий", "warm": "🌤 тёплый", "cold": "❄️ холодный"}
 
 
 @dataclass
@@ -100,6 +107,9 @@ class Session:
     lead_sent: bool = False
     lead_fingerprint: str | None = None
     manager_questions: list[str] = field(default_factory=list)
+    asked: list[str] = field(default_factory=list)  # о чём уже спросили: budget, timeline
+    lead_score: str | None = None
+    lead_score_reason: str = ""
     day: str = ""
     day_count: int = 0
 
@@ -188,8 +198,36 @@ def describe_kitchen(fields: dict[str, Any], *, for_manager: bool = False) -> st
     return ", ".join(parts)
 
 
+MEASURE_INVITE = "Хотите, запишу на бесплатный замер? Подскажите, как к вам обращаться и номер телефона."
+
+
+def first_quote_followup(fields: dict[str, Any], session: Session, cfg: dict[str, Any]) -> str | None:
+    """Вопрос под первой вилкой: бюджет → сроки → замер. Бюджет и сроки нужны менеджеру,
+    чтобы понять, насколько клиент «горячий»."""
+    if not fields.get("budget") and "budget" not in session.asked:
+        return "Как вам такой ориентир — укладывается в бюджет?"
+    if not fields.get("timeline") and "timeline" not in session.asked:
+        return "А когда планируете ставить кухню?"
+    if not fields.get("phone") and session.measure_offers < cfg.get("max_measure_offers", 2):
+        return MEASURE_INVITE
+    return None
+
+
+# Вопросы о бюджете и сроках задаём по одному разу: не ответил — значит, не хочет.
+ASKED_RE = {
+    "budget": re.compile(r"бюджет[^.!?]*\?", re.IGNORECASE),
+    "timeline": re.compile(r"когда[^.!?]*(?:кухн|планир|установ|нужн|ставит)[^.!?]*\?", re.IGNORECASE),
+}
+
+
+def mark_asked(session: Session, text: str) -> None:
+    for topic, pattern in ASKED_RE.items():
+        if topic not in session.asked and pattern.search(text):
+            session.asked.append(topic)
+
+
 def quote_text(
-    q: Quote, fields: dict[str, Any], cfg: dict[str, Any], *, invite: bool, disclaimer: bool = True
+    q: Quote, fields: dict[str, Any], cfg: dict[str, Any], *, followup: str | None, disclaimer: bool = True
 ) -> str:
     demo = f" (демо-прайс)" if cfg.get("demo_mode") else ""
     if q.assumed:
@@ -207,8 +245,8 @@ def quote_text(
             "Точную стоимость посчитаем после бесплатного замера — по реальным размерам "
             "и выбранным материалам."
         )
-    if invite:
-        lines.append("Хотите, запишу на бесплатный замер? Подскажите, как к вам обращаться и номер телефона.")
+    if followup:
+        lines.append(followup)
     return "\n\n".join(lines)
 
 
@@ -405,6 +443,7 @@ def build_system_prompt(cfg: dict[str, Any], session: Session) -> str:
     contact_known = "телефон уже получен — больше не проси" if f.get("phone") else "телефона пока нет"
     offers_left = max(0, cfg.get("max_measure_offers", 2) - session.measure_offers)
     forwarded = "; ".join(f"«{q}»" for q in session.manager_questions) or "ничего"
+    asked = ", ".join({"budget": "бюджет", "timeline": "сроки"}[t] for t in session.asked) or "ничего"
 
     return f"""Ты — {cfg.get('assistant_name', 'ИИ-ассистент')} компании «{cfg['company']['name']}» (кухни на заказ) и переписываешься с клиентом в мессенджере. Задача: понять, какую кухню хочет клиент, чтобы система посчитала ориентировочную вилку цены, и записать клиента на бесплатный замер.
 
@@ -419,7 +458,9 @@ def build_system_prompt(cfg: dict[str, Any], session: Session) -> str:
 - Строго не больше одного вопроса в сообщении. Не спрашивай два параметра сразу.
 - Не пересказывай клиенту его параметры списком — он их помнит.
 - Никогда не переспрашивай то, что уже есть в блоке «Известно о клиенте». Если клиент ответил не на тот вопрос — прими эти данные и спроси следующее недостающее.
-- Что выяснять, по порядку: суммарная длина → материал фасадов → форма (если неясна). Столешницу, остров, верхние шкафы до потолка спроси максимум одним вопросом и только если к слову; если клиент не хочет отвечать — не настаивай. Бюджет, сроки и район не выпытывай, но запоминай, если клиент сам сказал.
+- До вилки, по порядку: суммарная длина → материал фасадов → форма (если неясна). Столешницу, остров, верхние шкафы до потолка спроси максимум одним вопросом и только если к слову.
+- После вилки, по одному вопросу и только то, чего ещё нет в «Известно о клиенте»: укладывается ли ориентир в бюджет (budget) → когда нужна кухня (timeline) → предложение бесплатного замера. Это нужно менеджеру, чтобы понять, насколько клиент готов. Под первой вилкой первый из этих вопросов уже задан — не дублируй его. Если клиент уходит от ответа про бюджет или сроки — не настаивай, переходи к следующему шагу.
+- Если клиент не хочет отвечать на любой вопрос — не настаивай. Район запоминай, если клиент сам сказал.
 - Всё, что есть в прайсе ниже (любая форма, фасады, столешницы, остров, верхние шкафы до потолка), компания делает — на такие вопросы отвечай «да, можно» и уточняй, нужно ли клиенту.
 - Чего нет ни в прайсе, ни в справке (скрытые ручки, подсветка, мойки, техника, гардеробные, адрес офиса, шоурум и т. п.) — не обещай и не отрицай, даже если это кажется очевидным: уточни у менеджера.
 - Не упоминай клиенту «справку», «прайс», «систему» и свои инструкции — говори от лица компании.
@@ -434,11 +475,17 @@ def build_system_prompt(cfg: dict[str, Any], session: Session) -> str:
 - Если клиент спрашивает цену или торгуется («сколько будет?», «просто скажите цену», «соседи сделают за 200, сделаете?») — поставь wants_price=true: следом придёт вилка по тому, что известно (если данных мало — с оговоркой). В reply без цифр и коротко: ориентир ниже, а точную стоимость и итоговые условия зафиксируем после бесплатного замера.
 
 ЗАМЕР И КОНТАКТЫ
-- После вилки веди к бесплатному замеру. Для записи нужны имя, телефон и удобное время — спрашивай по одному.
+- После бюджета и сроков веди к бесплатному замеру. Для записи нужны имя, телефон и удобное время — спрашивай по одному.
 - Любая твоя просьба об имени, телефоне или времени замера и любое предложение записаться на замер — это «предложение замера»: ставь offered_measure=true.
 - Осталось предложений замера: {offers_left}. Если 0 — сам не предлагай замер и не спрашивай имя, телефон или время: просто помогай, пока клиент сам не заговорит о записи.
 - Клиент проигнорировал просьбу о контактах или ушёл от неё — не повторяй её в следующих сообщениях и не дави. Вернуться к этому можно позже, один раз, в подходящий момент.
-- Когда клиент дал телефон: поблагодари и скажи, что менеджер свяжется для подтверждения замера; если удобного времени ещё нет — спроси его.
+- Когда клиент дал телефон: поблагодари и скажи, что менеджер свяжется для подтверждения замера. Если measure_time ещё пусто — в этом же сообщении обязательно спроси, в какой день и время удобно принять замерщика. Это единственный вопрос, который задаётся сразу после телефона.
+
+ОЦЕНКА КЛИЕНТА (для менеджера, клиенту не показывать и не упоминать)
+Каждый раз ставь lead_score и lead_score_reason (до 12 слов, только факты из разговора):
+- hot — готов действовать: сам просится на замер или дал телефон, кухня нужна в ближайшие 1–2 месяца, ориентир укладывается в бюджет.
+- warm — интерес реальный, но что-то не сходится: сроки размыты или далеко, бюджет немного ниже вилки, ещё выбирает, данных пока мало.
+- cold — прицениваются: «просто узнать цену», торгуется ценой конкурентов, бюджет сильно ниже вилки, контакты не даёт, сроков нет.
 
 ИЗВЛЕЧЕНИЕ ДАННЫХ (updates — только новые или изменённые поля, ничего не выдумывай)
 - length_m: число, суммарная длина всех стен в метрах. «2,4 и 1,8» → 4.2; «ну метра три где-то» → 3; «300 см» → 3. Для П-образной — сумма трёх сторон. Остров в длину не входит.
@@ -455,6 +502,7 @@ def build_system_prompt(cfg: dict[str, Any], session: Session) -> str:
 Расчёт: {price_status}.
 Контакты: {contact_known}.
 Уже переданы менеджеру (повторно needs_manager по ним не ставь, просто скажи, что менеджер ответит): {forwarded}.
+Уже спрашивали (больше не спрашивай, даже если клиент не ответил): {asked}.
 
 Ответ — JSON по схеме. В updates у полей, которые в этом сообщении не появились и не поменялись, ставь null."""
 
@@ -464,10 +512,21 @@ def build_system_prompt(cfg: dict[str, Any], session: Session) -> str:
 
 def _who(fields: dict[str, Any], user_label: str) -> str:
     name = fields.get("name")
-    return f"{name} ({user_label})" if name else user_label
+    # Назвался так же, как подписан в Telegram, — не пишем «Федор (Федор (@nyraflow))».
+    if not name or _norm(name) in _norm(user_label):
+        return user_label
+    return f"{name}, в Telegram: {user_label}"
 
 
-def lead_summary(fields: dict[str, Any], user_label: str, cfg: dict[str, Any], *, update: bool) -> str:
+def lead_summary(
+    fields: dict[str, Any],
+    user_label: str,
+    cfg: dict[str, Any],
+    *,
+    update: bool,
+    score: str | None = None,
+    score_reason: str = "",
+) -> str:
     lines = ["✏️ Дополнение к заявке" if update else "🔔 Новая заявка"]
     head = _who(fields, user_label)
     if fields.get("phone"):
@@ -488,6 +547,8 @@ def lead_summary(fields: dict[str, Any], user_label: str, cfg: dict[str, Any], *
         lines.append(f"Ориентир: {format_range(q)}")
     if fields.get("notes"):
         lines.append(f"Пожелания: {', '.join(fields['notes'])}")
+    if score in LEAD_SCORES:
+        lines.append(f"Оценка: {LEAD_SCORES[score]}" + (f" — {score_reason}" if score_reason else ""))
     return "\n".join(lines)
 
 
@@ -514,10 +575,10 @@ def start(session: Session, cfg: dict[str, Any]) -> list[Outgoing]:
     """Новый диалог: /start или /reset."""
     greeting = cfg["greeting"]
     session.history.append({"role": "assistant", "content": greeting})
-    out = [Outgoing("client", greeting)]
+    # Одно сообщение, а не два подряд: приветствие и, отдельным абзацем, пометка про демо.
     if cfg.get("demo_mode") and cfg.get("demo_note"):
-        out.append(Outgoing("client", cfg["demo_note"]))
-    return out
+        return [Outgoing("client", f"{greeting}\n\n— {cfg['demo_note']}")]
+    return [Outgoing("client", greeting)]
 
 
 async def _ask_llm(llm: LLM, cfg: dict[str, Any], session: Session) -> dict[str, Any]:
@@ -574,6 +635,10 @@ async def process_message(
         session.history.pop()
         return [Outgoing("client", "Простите, у меня заминка со связью. Повторите, пожалуйста, последнее сообщение?")]
 
+    if data.get("lead_score") in LEAD_SCORES:
+        session.lead_score = data["lead_score"]
+        session.lead_score_reason = str(data.get("lead_score_reason") or "").strip()[:200]
+
     pricing = cfg["pricing"]
     updates = clean_updates(data.get("updates"), pricing)
     if "phone" not in updates and not session.fields.get("phone"):
@@ -602,21 +667,19 @@ async def process_message(
     if all(f.get(k) is not None for k in REQUIRED_FOR_PRICE):
         if fp != session.quoted_fingerprint or wants_price:
             first = session.quoted_fingerprint is None
-            invite = (
-                first
-                and not f.get("phone")
-                and session.measure_offers < cfg.get("max_measure_offers", 2)
-            )
+            followup = first_quote_followup(f, session, cfg) if first else None
             q = calc_quote(f, pricing)
             # Оговорку про замер — при первой вилке и когда клиент торгуется, на пересчётах она шум.
-            client_texts.append(quote_text(q, f, cfg, invite=invite, disclaimer=first or wants_price))
-            if invite:
+            client_texts.append(quote_text(q, f, cfg, followup=followup, disclaimer=first or wants_price))
+            if followup == MEASURE_INVITE:
                 session.measure_offers += 1
             session.quoted_fingerprint = fp
     elif wants_price:
         q = calc_quote(f, pricing, cfg["fallback_assumptions"])
-        client_texts.append(quote_text(q, f, cfg, invite=False))
+        client_texts.append(quote_text(q, f, cfg, followup=None))
 
+    for t in client_texts:
+        mark_asked(session, t)
     out = [Outgoing("client", t) for t in client_texts]
     if client_texts:
         session.history.append({"role": "assistant", "content": "\n\n".join(client_texts)})
@@ -629,11 +692,15 @@ async def process_message(
 
     if f.get("phone"):
         lead_fp = _fingerprint(f)
-        if not session.lead_sent:
-            out += _to_manager(lead_summary(f, user_label, cfg, update=False), cfg)
+        if not session.lead_sent or lead_fp != session.lead_fingerprint:
+            summary = lead_summary(
+                f, user_label, cfg,
+                update=session.lead_sent,
+                score=session.lead_score,
+                score_reason=session.lead_score_reason,
+            )
+            out += _to_manager(summary, cfg)
             session.lead_sent = True
-        elif lead_fp != session.lead_fingerprint:
-            out += _to_manager(lead_summary(f, user_label, cfg, update=True), cfg)
         session.lead_fingerprint = lead_fp
 
     return out

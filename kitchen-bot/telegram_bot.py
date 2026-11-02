@@ -8,10 +8,13 @@ import logging
 import os
 import socket
 from collections import defaultdict
+from collections.abc import Awaitable, Callable
 from pathlib import Path
+from typing import Any
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.session.aiohttp import AiohttpSession
+from aiogram.exceptions import TelegramNetworkError
 from aiogram.filters import Command, CommandStart
 from aiogram.types import BotCommand, Message, User
 from aiogram.utils.chat_action import ChatActionSender
@@ -42,6 +45,18 @@ async def apply_profile(bot: Bot, profile: dict[str, str]) -> None:
             await bot.set_my_short_description(short_description=profile["short_description"])
     except Exception:
         log.exception("не удалось обновить профиль бота — работаем дальше")
+
+
+async def with_retry(send: Callable[[], Awaitable[Any]], attempts: int = 3) -> Any:
+    """Связь сервера с Telegram изредка рвётся на connect — без повтора клиент остался бы без ответа."""
+    for attempt in range(attempts):
+        try:
+            return await send()
+        except TelegramNetworkError:
+            if attempt == attempts - 1:
+                raise
+            log.warning("Telegram не ответил, повтор %d", attempt + 1)
+            await asyncio.sleep(1 + attempt)
 
 
 def user_label(user: User | None) -> str:
@@ -79,7 +94,7 @@ async def main() -> None:
         if not manager_chat_id:
             return
         try:
-            await bot.send_message(manager_chat_id, text)
+            await with_retry(lambda: bot.send_message(manager_chat_id, text))
         except Exception:
             log.exception("не доставили менеджеру")
 
@@ -87,7 +102,7 @@ async def main() -> None:
         chat_id = str(message.chat.id)
         for o in out:
             if o.to == "client":
-                await message.answer(o.text)
+                await with_retry(lambda: message.answer(o.text))
                 store.log(chat_id, "bot", o.text)
             else:
                 await to_manager(o.text)
@@ -102,7 +117,10 @@ async def main() -> None:
             store.save(session)
             store.log(chat_id, "client", message.text or "")
             await deliver(message, out)
-        await to_manager(f"👤 Демо открыл: {user_label(message.from_user)}")
+        # t.me/<бот>?start=avito приходит как «/start avito» — так видно, откуда пришёл человек.
+        source = (message.text or "").partition(" ")[2].strip()
+        note = f" · источник: {source}" if source else ""
+        await to_manager(f"👤 Демо открыл: {user_label(message.from_user)}{note}")
 
     @dp.message(F.text)
     async def on_text(message: Message) -> None:
